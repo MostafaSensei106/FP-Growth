@@ -1,0 +1,162 @@
+{
+  "frequentItemsets": [
+    {
+      "itemset": [
+        "beer"
+      ],
+      "support": 3
+    },
+    {
+      "itemset": [
+        "beer",
+        "diaper"
+      ],
+      "support": 3
+    },
+    {
+      "itemset": [
+        "bread"
+      ],
+      "support": 4
+    },
+    {
+      "itemset": [
+        "milk"
+      ],
+      "support": 4
+    },
+    {
+      "itemset": [
+        "milk",
+        "bread"
+      ],
+      "support": 3
+    },
+    {
+      "itemset": [
+        "diaper"
+      ],
+      "support": 4
+    },
+    {
+      "itemset": [
+        "diaper",
+        "bread"
+      ],
+      "support": 3
+    },
+    {
+      "itemset": [
+        "diaper",
+        "milk"
+      ],
+      "support": 3
+    }
+  ],
+  "associationRules": [
+    {
+      "antecedent": [
+        "beer"
+      ],
+      "consequent": [
+        "diaper"
+      ],
+      "support": 0.6,
+      "confidence": 1.0,
+      "lift": 1.25,
+      "leverage": 0.12,
+      "conviction": null
+    },
+    {
+      "antecedent": [
+        "diaper"
+      ],
+      "consequent": [
+        "beer"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 1.2499999999999998,
+      "leverage": 0.12,
+      "conviction": 1.5999999999999994
+    },
+    {
+      "antecedent": [
+        "milk"
+      ],
+      "consequent": [
+        "bread"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    },
+    {
+      "antecedent": [
+        "bread"
+      ],
+      "consequent": [
+        "milk"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    },
+    {
+      "antecedent": [
+        "diaper"
+      ],
+      "consequent": [
+        "bread"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    },
+    {
+      "antecedent": [
+        "bread"
+      ],
+      "consequent": [
+        "diaper"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    },
+    {
+      "antecedent": [
+        "diaper"
+      ],
+      "consequent": [
+        "milk"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    },
+    {
+      "antecedent": [
+        "milk"
+      ],
+      "consequent": [
+        "diaper"
+      ],
+      "support": 0.6,
+      "confidence": 0.7499999999999999,
+      "lift": 0.9374999999999998,
+      "leverage": -0.04000000000000015,
+      "conviction": 0.7999999999999995
+    }
+  ]
+}

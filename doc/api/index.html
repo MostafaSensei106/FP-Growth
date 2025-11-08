@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="fpgrowth_dart API docs, for the Dart programming language.">
+  <title>fpgrowth_dart - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/mostafasensei/fpgrowth_dart">fpgrowth_dart package</a></li>
+  </ol>
+  <div class="self-name">fpgrowth_dart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 align="center">fpgrowth_dart</h1>
+<p align="center">
+  <!-- No image available yet, placeholder or remove -->
+  <!-- <img src="https://socialify.git.ci/MostafaSensei106/Radix_Pulse/image?custom_language=Dart&font=KoHo&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F138288138%3Fv%3D4&name=1&owner=1&pattern=Floating+Cogs&theme=Light" alt="fpgrowth_dart Banner"> -->
+</p>
+<p align="center">
+  <strong>A high-performance Dart library for FP-Growth algorithm and association rule mining.</strong><br>
+  Efficiently discover frequent patterns and generate insightful association rules from your data.
+</p>
+<p align="center">
+  <a href="#about">About</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage-examples">Usage</a> •
+  <a href="#technologies">Technologies</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
+</p>
+<hr>
+<h2 id="about">About</h2>
+<p>Welcome to <strong>fpgrowth_dart</strong> — a robust and efficient Dart library for implementing the FP-Growth algorithm. This library is designed to help you discover frequent itemsets and generate association rules from transactional datasets. It's an essential tool for tasks like market basket analysis, user behavior prediction, and understanding relationships within large data collections. Built with performance and ease of use in mind, <code>fpgrowth_dart</code> provides a comprehensive solution for pattern mining in Dart and Flutter applications.</p>
+<hr>
+<h2 id="features">Features</h2>
+<h3 id="-core-algorithm--functionality">🌟 Core Algorithm &amp; Functionality</h3>
+<ul>
+<li><strong>FP-Growth Algorithm</strong>: A complete and optimized implementation of the Frequent Pattern Growth algorithm.</li>
+<li><strong>FP-Tree Construction</strong>: Efficiently builds a compressed FP-Tree to represent transactional data.</li>
+<li><strong>Header Table</strong>: Utilizes a header table for quick access and traversal of item nodes within the tree.</li>
+<li><strong>Optimized Mining</strong>: Features a recursive mining approach with dynamic pruning and a <strong>single-path optimization</strong> for faster pattern discovery.</li>
+<li><strong>Association Rule Generation</strong>: Extracts all possible association rules from frequent itemsets.
+<ul>
+<li>Calculates key metrics: <code>Support</code>, <code>Confidence</code>, <code>Lift</code>, <code>Leverage</code>, and <code>Conviction</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="-performance--utilities">🛠️ Performance &amp; Utilities</h3>
+<ul>
+<li><strong>Memory Efficiency</strong>: Employs internal integer mapping for items to significantly reduce memory footprint and improve processing speed.</li>
+<li><strong>CSV Data Adapter</strong>: Easily load transactional data directly from CSV files.</li>
+<li><strong>Command-Line Interface (CLI)</strong>: A powerful and user-friendly CLI tool for performing analysis directly from your terminal.</li>
+</ul>
+<hr>
+<h2 id="installation">Installation</h2>
+<h3 id="-add-to-your-project">📦 Add to your project</h3>
+<ol>
+<li>
+<p>Add this to your package's <code>pubspec.yaml</code> file:</p>
+<pre class="language-yaml"><code class="language-yaml">dependencies:
+  fpgrowth_dart: ^1.0.0 # Replace with the latest version
+</code></pre>
+</li>
+<li>
+<p>Install it from your terminal:</p>
+<pre class="language-bash"><code class="language-bash">dart pub get
+</code></pre>
+<p>or</p>
+<pre class="language-bash"><code class="language-bash">flutter pub get
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="-quick-start">🚀 Quick Start</h2>
+<p>Import the library and start mining patterns.</p>
+<pre class="language-dart"><code class="language-dart">import 'package:fpgrowth_dart/fpgrowth_dart.dart';
+
+void main() {
+  // 1. Define your transactions
+  final transactions = [
+    ['bread', 'milk'],
+    ['bread', 'diaper', 'beer', 'eggs'],
+    ['milk', 'diaper', 'beer', 'cola'],
+    ['bread', 'milk', 'diaper', 'beer'],
+    ['bread', 'milk', 'diaper', 'cola'],
+  ];
+  final totalTransactions = transactions.length;
+
+  // 2. Instantiate FPGrowth with a minimum support threshold
+  // minSupport can be a percentage (0.0-1.0) or an absolute count (e.g., 3).
+  final fpGrowth = FPGrowth&lt;String&gt;(minSupport: 3);
+
+  // 3. Add transactions and mine for frequent itemsets
+  fpGrowth.addTransactions(transactions);
+  final frequentItemsets = fpGrowth.mineFrequentItemsets();
+
+  print('Frequent Itemsets:');
+  frequentItemsets.forEach((itemset, support) {
+    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(1);
+    print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
+  });
+
+  // 4. Generate association rules with a minimum confidence threshold
+  final ruleGenerator = RuleGenerator&lt;String&gt;(
+    minConfidence: 0.7, // 70% minimum confidence
+    frequentItemsets: frequentItemsets,
+    totalTransactions: totalTransactions,
+  );
+
+  final rules = ruleGenerator.generateRules();
+
+  print('\nAssociation Rules:');
+  rules.forEach((rule) {
+    // formatWithMetrics() provides a readable output with all key metrics.
+    print('  ${rule.formatWithMetrics()}');
+  });
+}
+</code></pre>
+<hr>
+<h2 id="-cli-usage">📋 CLI Usage</h2>
+<p>The <code>fpgrowth_dart</code> package includes a command-line interface (CLI) tool for quick analysis of CSV files without writing any Dart code.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Create a CSV file (e.g., <code>transactions.csv</code>) where each line represents a transaction, and items within the transaction are comma-separated.</p>
+<pre class="language-csv"><code class="language-csv">itemA,itemB,itemC
+itemB,itemD
+itemA,itemC,itemE
+</code></pre>
+<h3 id="running-the-cli">Running the CLI</h3>
+<p>Execute the CLI tool using <code>dart run</code>:</p>
+<pre class="language-bash"><code class="language-bash">dart run fpgrowth_dart --input transactions.csv --minSupport 0.6 --minConfidence 0.7
+</code></pre>
+<h3 id="options">Options</h3>
+<ul>
+<li><code>--input</code> or <code>-i</code>: (Mandatory) Path to the input CSV file.</li>
+<li><code>--minSupport</code> or <code>-s</code>: Minimum support threshold. Can be a percentage (e.g., <code>0.05</code>) or an absolute count (e.g., <code>3</code>). Defaults to <code>0.05</code>.</li>
+<li><code>--minConfidence</code> or <code>-c</code>: Minimum confidence threshold for association rules. Defaults to <code>0.7</code>.</li>
+</ul>
+<p>The CLI will output the discovered frequent itemsets and association rules directly to your console.</p>
+<hr>
+<h2 id="technologies">Technologies</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🧠 <strong>Dart</strong></td>
+<td><a href="https://dart.dev">dart.dev</a> — The core language for the library.</td>
+</tr>
+<tr>
+<td>📦 <strong>args</strong></td>
+<td><code>package:args</code> — Used for parsing command-line arguments in the CLI tool.</td>
+</tr>
+<tr>
+<td>📄 <strong>csv</strong></td>
+<td><code>package:csv</code> — Provides robust CSV parsing capabilities for data input.</td>
+</tr>
+<tr>
+<td>📚 <strong>collection</strong></td>
+<td><code>package:collection</code> — Provides utility functions for collections.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions are welcome! Here’s how to get started:</p>
+<ol>
+<li>Fork the repository.</li>
+<li>Create a new branch:
+<code>git checkout -b feature/YourFeature</code></li>
+<li>Commit your changes:
+<code>git commit -m "Add amazing feature"</code></li>
+<li>Push to your branch:
+<code>git push origin feature/YourFeature</code></li>
+<li>Open a pull request.</li>
+</ol>
+<blockquote>
+<p>💡 Please read our <a href="./CONTRIBUTING.md">Contributing Guidelines</a> and open an issue first for major feature ideas or changes.</p>
+</blockquote>
+<hr>
+<h2 id="license">License</h2>
+<p>This project is licensed under the <strong>GPL-V3.0 License</strong>.
+See the <a href="LICENSE">LICENSE</a> file for full details.</p>
+<p align="center">
+Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
+</p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="fpgrowth_dart">
+  <span class="name"><a href="fpgrowth_dart/">fpgrowth_dart</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+        </dl>
+      </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="https://github.com/mostafasensei/fpgrowth_dart">fpgrowth_dart package</a></li>
+</ol>
+
+    <h5 class="hidden-xs"><span class="package-name">fpgrowth_dart</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="fpgrowth_dart/">fpgrowth_dart</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+</main>
+<footer>
+  <span class="no-break">
+    fpgrowth_dart
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
