@@ -1,6 +1,10 @@
 ## 1.0.1
 
 - docs(readme): Update README with CLI usage and performance benchmarks
+- refactor(fp-growth): Extract parallel mining to platform modules
+  Move isolate-based parallel mining into a dedicated `parallel_runner.dart` file.
+  Provide a web-specific `parallel_runner_web.dart` that falls back to single-threaded execution.
+  Adjust `fp_growth.dart` to use conditional imports for platform-aware parallelism and promote internal helper functions for reuse.
 - chore(changelog): Add 1.0.1 release notes
 
 ## 1.0.0
