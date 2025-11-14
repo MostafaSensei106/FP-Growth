@@ -1,3 +1,7 @@
+## 1.0.1
+
+- docs(readme): Update README with CLI usage and performance benchmarks
+
 ## 1.0.0
 
 - Initial release of the **fp_growth** package.
