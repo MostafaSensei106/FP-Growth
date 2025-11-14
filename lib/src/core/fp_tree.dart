@@ -1,6 +1,7 @@
 import 'fp_node.dart';
 
-// A record to hold header table information for type safety.
+/// A record to hold header table information, including the total count
+/// of an item and the head/tail of its node-link list in the FP-Tree.
 typedef Header = ({int count, FPNode? head, FPNode? tail});
 
 /// Represents the FP-Tree (Frequent Pattern Tree).
