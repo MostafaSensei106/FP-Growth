@@ -7,19 +7,11 @@ homepage: https://github.com/MostafaSensei106/FP-Growth
 license: GPL-3.0-or-later
 topics:
   [
-    dart-cli,
-    data-mining-algorithm,
     fp-growth,
-    performance,
-    algorithm,
-    flutter,
     dart,
+    algorithm,
     frequent-pattern-mining,
     association-rule-learning,
-    csv-processing,
-    command-line-tool,
-    analytics,
-    machine-learning,
   ]
 
 environment:
