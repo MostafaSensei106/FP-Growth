@@ -32,24 +32,24 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
 ### Core Algorithm & Functionality
 
--   **FP-Growth Algorithm**: A complete and optimized implementation of the Frequent Pattern Growth algorithm.
--   **FP-Tree Construction**: Efficiently builds a compressed FP-Tree to represent transactional data.
--   **Header Table**: Utilizes a header table for quick access and traversal of item nodes within the tree.
--   **Optimized Mining**: Features a recursive mining approach with dynamic pruning and a **single-path optimization** for faster pattern discovery.
--   **Association Rule Generation**: Extracts all possible association rules from frequent itemsets.
-    -   Calculates key metrics: `Support`, `Confidence`, `Lift`, `Leverage`, and `Conviction`.
+- **FP-Growth Algorithm**: A complete and optimized implementation of the Frequent Pattern Growth algorithm.
+- **FP-Tree Construction**: Efficiently builds a compressed FP-Tree to represent transactional data.
+- **Header Table**: Utilizes a header table for quick access and traversal of item nodes within the tree.
+- **Optimized Mining**: Features a recursive mining approach with dynamic pruning and a **single-path optimization** for faster pattern discovery.
+- **Association Rule Generation**: Extracts all possible association rules from frequent itemsets.
+  - Calculates key metrics: `Support`, `Confidence`, `Lift`, `Leverage`, and `Conviction`.
 
 ### 🛠️ Performance & Scalability
 
--   **Parallel Processing**: Harnesses the power of multiple CPU cores by using **Isolates** to parallelize the mining process, significantly speeding up analysis on large datasets.
--   **Stream Processing**: Built to handle massive datasets that don't fit in memory. The `StreamProcessor` allows you to process transaction data as a stream, ensuring a low and constant memory footprint.
--   **Memory Efficiency**: Employs internal integer mapping for items to dramatically reduce memory usage and improve processing speed.
+- **Parallel Processing**: Harnesses the power of multiple CPU cores by using **Isolates** to parallelize the mining process, significantly speeding up analysis on large datasets.
+- **Stream Processing**: Built to handle massive datasets that don't fit in memory. The `StreamProcessor` allows you to process transaction data as a stream, ensuring a low and constant memory footprint.
+- **Memory Efficiency**: Employs internal integer mapping for items to dramatically reduce memory usage and improve processing speed.
 
 ### ⚙️ Utilities
 
--   **CSV Data Adapter**: Easily load transactional data directly from CSV files.
--   **Data Exporters**: Export frequent itemsets and association rules to `JSON`, `CSV`, or formatted `Text`.
--   **Command-Line Interface (CLI)**: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, now with support for streaming large files and multiple output formats.
+- **CSV Data Adapter**: Easily load transactional data directly from CSV files.
+- **Data Exporters**: Export frequent itemsets and association rules to `JSON`, `CSV`, or formatted `Text`.
+- **Command-Line Interface (CLI)**: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, now with support for streaming large files and multiple output formats.
 
 ---
 
@@ -59,7 +59,7 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
     ```yaml
     dependencies:
-      fp_growth: ^1.0.1 # Replace with the latest version
+      fp_growth: ^1.0.0 # Replace with the latest version
     ```
 
 2.  Install it from your terminal:
@@ -153,7 +153,7 @@ Future<void> runStreamExample() async {
 
   // 4. Mine the frequent itemsets from the processed transactions
   final frequentItemsets = await fpGrowth.mineFrequentItemsets();
-  
+
   print('Found ${frequentItemsets.length} frequent itemsets from stream.');
   // ...and generate rules as in the standard example.
 }
@@ -192,14 +192,14 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 
 ### Options
 
-| Flag              | Abbreviation | Description                                                                 | Default |
-| ----------------- | ------------ | --------------------------------------------------------------------------- | ------- |
-| `--input`         | `-i`         | (Mandatory) Path to the input CSV file.                                     |         |
-| `--minSupport`    | `-s`         | Minimum support as a percentage (`0.05`) or an absolute count (`5`).        | `0.05`  |
-| `--minConfidence` | `-c`         | Minimum confidence threshold for association rules.                         | `0.7`   |
-| `--output-file`   | `-o`         | Path to an output file to save results.                                     | `null`  |
+| Flag              | Abbreviation | Description                                                               | Default |
+| ----------------- | ------------ | ------------------------------------------------------------------------- | ------- |
+| `--input`         | `-i`         | (Mandatory) Path to the input CSV file.                                   |         |
+| `--minSupport`    | `-s`         | Minimum support as a percentage (`0.05`) or an absolute count (`5`).      | `0.05`  |
+| `--minConfidence` | `-c`         | Minimum confidence threshold for association rules.                       | `0.7`   |
+| `--output-file`   | `-o`         | Path to an output file to save results.                                   | `null`  |
 | `--output-format` | `-f`         | Output format (`json` or `csv`). Only used if `output-file` is specified. | `json`  |
-| `--log-level`     |              | Set the logging level (`debug`, `info`, `warning`, `error`, `none`).        | `info`  |
+| `--log-level`     |              | Set the logging level (`debug`, `info`, `warning`, `error`, `none`).      | `info`  |
 
 ---
 
