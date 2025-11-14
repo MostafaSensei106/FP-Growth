@@ -105,8 +105,7 @@
   if (parallelism == 1) {
     mappedItemsets = _mineSingleThreaded(tree, frequentItems);
   } else {
-    mappedItemsets =
-        await _mineParallel(tree, orderedTransactions, frequentItems);
+    mappedItemsets = await _mineParallel(tree, frequentItems);
   }
 
   _logger.info(

@@ -253,6 +253,14 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 </tbody>
 </table>
 <hr>
+<h2 id="-performance">⚡ Performance</h2>
+<p>The <code>fp_growth</code> library is designed for high performance. The following benchmark was run on a standard machine <strong>AMD Ryzen™ 7 5800H</strong>. to demonstrate its capability in handling a large dataset.</p>
+<p><strong>Benchmark</strong>: Mining frequent itemsets from a dataset of <strong>1,000,000 transactions</strong>. The result is the average of 10 consecutive runs with a minSupport of 0.05 (5%).</p>
+<ul>
+<li><strong>Command</strong>: <code>dart run bin/fp_growth.dart -i &lt;large_dataset.csv&gt;</code></li>
+<li><strong>Average Execution Time</strong>: <strong>6.18 seconds</strong></li>
+</ul>
+<hr>
 <h2 id="-contributing">🤝 Contributing</h2>
 <p>Contributions are welcome! Here’s how to get started:</p>
 <ol>
