@@ -1,12 +1,12 @@
 ## 1.0.0
 
-- Initial release of fpgrowth_dart.
-- Implemented core FP-Growth algorithm.
-- Added association rule generation with Support, Confidence, and Lift.
-- Introduced internal integer mapping for performance optimization.
-- Implemented single-path optimization for recursive mining.
-- Added CSV data adapter for input.
-- Developed a Command-Line Interface (CLI) for easy analysis.
-- Integrated a flexible logging system.
-- Restructured project for better maintainability.
-- Enhanced association rules with Leverage and Conviction metrics.
+- Initial release of the **fp_growth** package.
+- Implemented the full FP-Growth algorithm for frequent itemset mining.
+- Added association rule generation with **Support**, **Confidence**, and **Lift** metrics.
+- Introduced internal integer-item mapping for improved performance.
+- Implemented **single-path optimization** in recursive mining.
+- Added a CSV data adapter for loading transaction datasets.
+- Developed a Command-Line Interface (CLI) for effortless dataset analysis.
+- Integrated a flexible and extensible logging system.
+- Refactored and reorganized the project structure for better maintainability.
+- Enhanced association rules with additional metrics: **Leverage** and **Conviction**.
