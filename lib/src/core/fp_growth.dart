@@ -7,10 +7,10 @@ import 'fp_node.dart';
 
 /// Arguments passed to the _mineInIsolateEntrypoint function.
 class _MineTaskArgs<T> {
-  final List<List<int>> transactions;
-  final Map<int, int> frequentItemsForTree;
-  final List<int> itemsToProcess;
-  final double minSupport;
+  final Map<List<int>, int> conditionalPatternBases;
+  final Map<int, int> conditionalFrequentItems;
+  final List<int> prefix;
+  final int absoluteMinSupport;
   final Map<T, int> itemToId;
   final Map<int, T> idToItem;
   final int nextId;
@@ -18,10 +18,10 @@ class _MineTaskArgs<T> {
   final SendPort sendPort;
 
   _MineTaskArgs({
-    required this.transactions,
-    required this.frequentItemsForTree,
-    required this.itemsToProcess,
-    required this.minSupport,
+    required this.conditionalPatternBases,
+    required this.conditionalFrequentItems,
+    required this.prefix,
+    required this.absoluteMinSupport,
     required this.itemToId,
     required this.idToItem,
     required this.nextId,
@@ -34,41 +34,57 @@ class _MineTaskArgs<T> {
 /// This function must be a top-level or static function.
 Future<void> _mineInIsolateEntrypoint<T>(_MineTaskArgs<T> args) async {
   try {
-    // Reconstruct ItemMapper
+    // Reconstruct ItemMapper and Logger
     final mapper = ItemMapper<T>.fromMaps(
       args.itemToId,
       args.idToItem,
       args.nextId,
     );
-
-    // Reconstruct Logger
     final logger = Logger(initialLevel: args.logLevel);
 
-    // Calculate absolute min support
-    final absoluteMinSupport = _calculateAbsoluteMinSupport(
-      args.minSupport,
-      args.transactions.length,
-    );
+    final frequentItemsets = <List<int>, int>{};
 
-    // Reconstruct FPTree
-    final tree = FPTree(args.transactions, args.frequentItemsForTree);
-
-    // Mine only the assigned items
-    final result = <List<int>, int>{};
-    for (final item in args.itemsToProcess) {
-      final itemResult = _mineForItem(
-        tree,
-        item,
-        [],
-        args.frequentItemsForTree,
-        absoluteMinSupport,
-        mapper,
-        logger,
+    if (args.conditionalFrequentItems.isNotEmpty) {
+      // Reconstruct transactions for conditional tree
+      final unrolledTransactions = _buildConditionalTransactions(
+        args.conditionalPatternBases,
+        args.conditionalFrequentItems,
       );
-      result.addAll(itemResult);
+
+      if (unrolledTransactions.isNotEmpty) {
+        final conditionalTree =
+            FPTree(unrolledTransactions, args.conditionalFrequentItems);
+
+        // Single-path optimization
+        if (conditionalTree.isSinglePath()) {
+          logger.debug(
+              '    Single-path optimization applied for prefix: ${args.prefix.map(mapper.getItem).join(', ')}');
+          final pathNodes = conditionalTree.getSinglePathNodes();
+          final allSubsets = _generateSubsets(pathNodes);
+
+          for (final subset in allSubsets) {
+            final itemset = subset.map((node) => node.item!).toList();
+            final support =
+                subset.map((node) => node.count).reduce((a, b) => a < b ? a : b);
+            frequentItemsets[List<int>.from(args.prefix)..addAll(itemset)] =
+                support;
+          }
+        } else {
+          // Recursively mine the conditional tree
+          final minedPatterns = _mineLogic(
+            conditionalTree,
+            args.prefix,
+            args.conditionalFrequentItems,
+            args.absoluteMinSupport,
+            mapper,
+            logger,
+          );
+          frequentItemsets.addAll(minedPatterns);
+        }
+      }
     }
 
-    args.sendPort.send(result);
+    args.sendPort.send(frequentItemsets);
   } catch (e, stackTrace) {
     args.sendPort
         .send({'error': e.toString(), 'stackTrace': stackTrace.toString()});
@@ -371,8 +387,7 @@ class FPGrowth<T> {
     if (parallelism == 1) {
       mappedItemsets = _mineSingleThreaded(tree, frequentItems);
     } else {
-      mappedItemsets =
-          await _mineParallel(tree, orderedTransactions, frequentItems);
+      mappedItemsets = await _mineParallel(tree, frequentItems);
     }
 
     _logger.info(
@@ -414,7 +429,6 @@ class FPGrowth<T> {
   /// Mines frequent itemsets using parallel isolates.
   Future<Map<List<int>, int>> _mineParallel(
     FPTree tree,
-    List<List<int>> orderedTransactions,
     Map<int, int> frequentItems,
   ) async {
     _logger.info('Parallel mining using $parallelism isolates...');
@@ -423,24 +437,38 @@ class FPGrowth<T> {
       ..sort((a, b) => frequentItems[a]!.compareTo(frequentItems[b]!));
 
     final futures = <Future<Map<List<int>, int>>>[];
-    final itemsPerIsolate = (sortedItems.length / parallelism).ceil();
+    final mappedItemsets = <List<int>, int>{};
 
-    for (int i = 0; i < parallelism; i++) {
-      final start = i * itemsPerIsolate;
-      if (start >= sortedItems.length) break;
+    // The top-level frequent items (size 1) are the base case.
+    for (final item in sortedItems) {
+      mappedItemsets[[item]] = frequentItems[item]!;
+    }
 
-      final end = (start + itemsPerIsolate).clamp(0, sortedItems.length);
-      final itemsForThisIsolate = sortedItems.sublist(start, end);
+    for (final item in sortedItems) {
+      // This logic is from _mineForItem
+      final conditionalPatternBases = tree.findPaths(item);
 
-      futures.add(_spawnMiningIsolate(
-        orderedTransactions,
-        frequentItems,
-        itemsForThisIsolate,
-      ));
+      final conditionalFrequency = <int, int>{};
+      for (final entry in conditionalPatternBases.entries) {
+        for (final itemInPath in entry.key) {
+          conditionalFrequency[itemInPath] =
+              (conditionalFrequency[itemInPath] ?? 0) + entry.value;
+        }
+      }
+
+      final conditionalFrequentItems =
+          _filterFrequentItems(conditionalFrequency, _absoluteMinSupport);
+
+      if (conditionalFrequentItems.isNotEmpty) {
+        futures.add(_spawnMiningIsolate(
+          conditionalPatternBases: conditionalPatternBases,
+          conditionalFrequentItems: conditionalFrequentItems,
+          prefix: [item],
+        ));
+      }
     }
 
     final results = await Future.wait(futures);
-    final mappedItemsets = <List<int>, int>{};
 
     for (final result in results) {
       mappedItemsets.addAll(result);
@@ -450,17 +478,17 @@ class FPGrowth<T> {
   }
 
   /// Spawns a mining isolate for a subset of items.
-  Future<Map<List<int>, int>> _spawnMiningIsolate(
-    List<List<int>> transactions,
-    Map<int, int> frequentItems,
-    List<int> itemsToProcess,
-  ) async {
+  Future<Map<List<int>, int>> _spawnMiningIsolate({
+    required Map<List<int>, int> conditionalPatternBases,
+    required Map<int, int> conditionalFrequentItems,
+    required List<int> prefix,
+  }) async {
     final receivePort = ReceivePort();
     final args = _MineTaskArgs<T>(
-      transactions: transactions,
-      frequentItemsForTree: frequentItems,
-      itemsToProcess: itemsToProcess,
-      minSupport: minSupport,
+      conditionalPatternBases: conditionalPatternBases,
+      conditionalFrequentItems: conditionalFrequentItems,
+      prefix: prefix,
+      absoluteMinSupport: _absoluteMinSupport,
       itemToId: _mapper.itemToIdMap,
       idToItem: _mapper.idToItemMap,
       nextId: _mapper.nextId,

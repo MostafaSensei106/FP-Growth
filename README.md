@@ -203,6 +203,67 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 
 ---
 
+## ⚡ Performance
+
+The `fp_growth` library is designed for high performance, leveraging Dart's strengths in parallel processing and efficient memory management. The following benchmark was run on a standard machine to demonstrate its capability in handling a large dataset.
+
+**Benchmark**: Mining frequent itemsets from a dataset of **1,000,000 transactions**.
+
+```bash
+$ time dart run bin/fp_growth.dart -i ~/Downloads/realistic_large_transactions.csv
+[2025-11-14T12:32:40.884946] [INFO    ] Initializing FP-Growth with minSupport: 0.05...
+[2025-11-14T12:32:40.887347] [INFO    ] Reading and processing transactions from /home/ottafa/Downloads/realistic_large_transactions.csv...
+[2025-11-14T12:32:43.675280] [INFO    ] Finished processing 1000000 transactions.
+[2025-11-14T12:32:43.675344] [INFO    ] Mining frequent itemsets...
+[2025-11-14T12:32:43.675843] [INFO    ] Starting frequent itemset mining with minSupport: 0.05
+[2025-11-14T12:32:45.480245] [INFO    ] Starting recursive mining...
+[2025-11-14T12:32:46.230985] [INFO    ] Finished mining. Found 30 frequent itemsets.
+[2025-11-14T12:32:46.231772] [INFO    ] Found 30 frequent itemsets.
+--------------------
+{soda} - Support: 165907 (16.59%)
+{tomato} - Support: 166248 (16.62%)
+{onion} - Support: 166303 (16.63%)
+{chicken} - Support: 166319 (16.63%)
+{yogurt} - Support: 166369 (16.64%)
+{rice} - Support: 166479 (16.65%)
+{cheese} - Support: 166515 (16.65%)
+{coffee} - Support: 166516 (16.65%)
+{chips} - Support: 166544 (16.65%)
+{bread} - Support: 166564 (16.66%)
+{diaper} - Support: 166600 (16.66%)
+{juice} - Support: 166643 (16.66%)
+{cereal} - Support: 166651 (16.67%)
+{cola} - Support: 166716 (16.67%)
+{eggs} - Support: 166739 (16.67%)
+{tea} - Support: 166787 (16.68%)
+{banana} - Support: 166800 (16.68%)
+{milk} - Support: 166879 (16.69%)
+{butter} - Support: 166880 (16.69%)
+{peach} - Support: 166904 (16.69%)
+{pasta} - Support: 166912 (16.69%)
+{water} - Support: 166951 (16.70%)
+{grapes} - Support: 167002 (16.70%)
+{beef} - Support: 167136 (16.71%)
+{apple} - Support: 167148 (16.71%)
+{ham} - Support: 167151 (16.72%)
+{beer} - Support: 167174 (16.72%)
+{orange} - Support: 167202 (16.72%)
+{chocolate} - Support: 167273 (16.73%)
+{flour} - Support: 167353 (16.74%)
+--------------------
+[2025-11-14T12:32:46.232668] [INFO    ] Generating association rules with minConfidence: 0.7...
+[2025-11-14T12:32:46.235211] [INFO    ] Found 0 association rules.
+--------------------
+--------------------
+
+________________________________________________________
+Executed in    6.18 secs    fish           external
+   usr time    7.81 secs    0.00 micros    7.81 secs
+   sys time    0.45 secs  838.00 micros    0.45 secs
+```
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Here’s how to get started:
