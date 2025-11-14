@@ -47,23 +47,6 @@ void main() {
       ['c', 'e']
     ];
 
-    final simpleExpected = {
-      ['a']: 8,
-      ['b']: 6,
-      ['c']: 5,
-      ['d']: 5,
-      ['e']: 3,
-      ['a', 'b']: 5,
-      ['a', 'd']: 4,
-      ['a', 'c']: 3,
-      ['b', 'c']: 3,
-      ['b', 'd']: 3,
-      ['c', 'd']: 3,
-      // Note: The original test was missing this itemset.
-      // It is generated from the conditional tree of {c,d} -> a
-      ['a', 'c', 'd']: 2,
-    };
-
     test('correctly mines frequent itemsets with a simple dataset', () async {
       final fpGrowth = FPGrowth<String>(minSupport: 3);
       fpGrowth.addTransactions(simpleTransactions);

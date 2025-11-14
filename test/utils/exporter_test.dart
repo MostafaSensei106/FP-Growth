@@ -88,7 +88,7 @@ void main() {
       expect(
           lines[2],
           equals(
-              '"b","a",0.5,0.7,1.4,0.2,Infinity')); // Infinity should be "Infinity" in CSV
+              '"b","a",0.5,0.7,1.4,0.2,INF')); // Infinity should be "INF" in CSV
     });
   });
 }

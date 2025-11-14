@@ -1,12 +1,34 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 import 'package:args/args.dart';
 import 'package:fp_growth/fp_growth.dart';
 import 'package:fp_growth/src/utils/exporter.dart';
 import 'package:fp_growth/src/utils/logger.dart';
 
 Future<void> main(List<String> arguments) async {
-  final parser = ArgParser()
+  final parser = _createArgParser();
+  try {
+    final argResults = parser.parse(arguments);
+    await _runFPGrowth(argResults);
+  } on ArgParserException catch (e) {
+    print('Error parsing arguments: ${e.message}');
+    print('\nUsage:');
+    print(parser.usage);
+    exit(1);
+  } on FormatException catch (e) {
+    print('Error parsing numeric arguments: ${e.message}');
+    print('\nUsage:');
+    print(parser.usage);
+    exit(1);
+  } catch (e, s) {
+    print('An unexpected error occurred: $e');
+    print('Stack trace:\n$s');
+    exit(1);
+  }
+}
+
+ArgParser _createArgParser() {
+  return ArgParser()
     ..addOption('input',
         abbr: 'i', help: 'Path to the input CSV file.', mandatory: true)
     ..addOption('minSupport',
@@ -26,128 +48,119 @@ Future<void> main(List<String> arguments) async {
         abbr: 'o', help: 'Path to an output file to save results.')
     ..addOption('output-format',
         abbr: 'f', help: 'Output format (json or csv).', defaultsTo: 'json');
+}
 
-  try {
-    final argResults = parser.parse(arguments);
+LogLevel _parseLogLevel(String levelStr,
+    {LogLevel defaultLevel = LogLevel.info}) {
+  const levelMap = {
+    'debug': LogLevel.debug,
+    'info': LogLevel.info,
+    'warning': LogLevel.warning,
+    'error': LogLevel.error,
+    'critical': LogLevel.critical,
+    'none': LogLevel.none,
+  };
+  final level = levelMap[levelStr.toLowerCase()];
+  if (level == null) {
+    print(
+        'Warning: Invalid log level "$levelStr". Defaulting to "${defaultLevel.name}".');
+    return defaultLevel;
+  }
+  return level;
+}
 
-    final inputFile = File(argResults['input']);
-    if (!inputFile.existsSync()) {
-      print('Error: Input file not found at ${inputFile.path}');
-      exit(1);
-    }
-
-    final minSupport = double.parse(argResults['minSupport']);
-    final minConfidence = double.parse(argResults['minConfidence']);
-
-    // Parse log level
-    final logLevelString = argResults['log-level'].toString().toLowerCase();
-    LogLevel logLevel;
-    switch (logLevelString) {
-      case 'debug':
-        logLevel = LogLevel.debug;
-        break;
-      case 'info':
-        logLevel = LogLevel.info;
-        break;
-      case 'warning':
-        logLevel = LogLevel.warning;
-        break;
-      case 'error':
-        logLevel = LogLevel.error;
-        break;
-      case 'critical':
-        logLevel = LogLevel.critical;
-        break;
-      case 'none':
-        logLevel = LogLevel.none;
-        break;
-      default:
-        print(
-            'Warning: Invalid log level "$logLevelString". Defaulting to "info".');
-        logLevel = LogLevel.info;
-    }
-    final logger = Logger(initialLevel: logLevel);
-
-    logger.info('Reading transactions from ${inputFile.path}...');
-    final csvContent = inputFile.readAsStringSync();
-    final transactions = transactionsFromCsv(csvContent);
-    final totalTransactions = transactions.length;
-    logger.info('Found $totalTransactions transactions.');
-
-    logger.info('Mining frequent itemsets with minSupport: $minSupport...');
-    final fpGrowth = FPGrowth<String>(minSupport: minSupport, logger: logger);
-    fpGrowth.addTransactions(transactions);
-    final frequentItemsetsFuture = fpGrowth.mineFrequentItemsets();
-    final frequentItemsets = await frequentItemsetsFuture;
-    logger.info('Found ${frequentItemsets.length} frequent itemsets.');
-    print('-' * 20); // Print separator
-    frequentItemsets.forEach((itemset, support) {
-      final supportPercent =
-          (support / totalTransactions * 100).toStringAsFixed(2);
-      print('{${itemset.join(', ')}} - Support: $support ($supportPercent%)');
-    });
-    print('-' * 20);
-
-    logger.info(
-        'Generating association rules with minConfidence: $minConfidence...');
-    final ruleGenerator = RuleGenerator<String>(
-      minConfidence: minConfidence,
-      frequentItemsets: frequentItemsets,
-      totalTransactions: totalTransactions,
-    );
-    final rules = ruleGenerator.generateRules();
-    logger.info('Found ${rules.length} association rules.');
-    print('-' * 20);
-    for (var rule in rules) {
-      print(rule.formatWithMetrics());
-    }
-    print('-' * 20);
-
-    // Handle output to file
-    final outputFile = argResults['output-file'];
-    if (outputFile != null) {
-      final outputFormat = argResults['output-format'].toString().toLowerCase();
-      String outputContent;
-
-      if (outputFormat == 'json') {
-        final String frequentItemsetsJson =
-            exportFrequentItemsetsToJson(frequentItemsets);
-        final String rulesJson = exportRulesToJson(rules);
-
-        // Combine into a single JSON object for better structure
-        final Map<String, dynamic> combinedResults = {
-          'frequentItemsets': jsonDecode(frequentItemsetsJson),
-          'associationRules': jsonDecode(rulesJson),
-        };
-        outputContent = JsonEncoder.withIndent('  ').convert(combinedResults);
-      } else if (outputFormat == 'csv') {
-        final String itemsetsCsv =
-            exportFrequentItemsetsToCsv(frequentItemsets);
-        final String rulesCsv = exportRulesToCsv(rules);
-        outputContent =
-            'Frequent Itemsets:\n$itemsetsCsv\n\nAssociation Rules:\n$rulesCsv';
-      } else {
-        logger.error(
-            'Unsupported output format: $outputFormat. Supported formats are "json" and "csv".');
-        exit(1);
-      }
-
-      File(outputFile).writeAsStringSync(outputContent);
-      logger.info(
-          'Results successfully written to $outputFile in $outputFormat format.');
-    }
-  } on ArgParserException catch (e) {
-    print('Error parsing arguments: ${e.message}');
-    print('\nUsage:');
-    print(parser.usage);
-    exit(1);
-  } on FormatException catch (e) {
-    print('Error parsing numeric arguments: ${e.message}');
-    print('\nUsage:');
-    print(parser.usage);
-    exit(1);
-  } catch (e) {
-    print('An unexpected error occurred: $e');
+Future<void> _runFPGrowth(ArgResults argResults) async {
+  final inputFile = File(argResults['input']);
+  if (!inputFile.existsSync()) {
+    print('Error: Input file not found at ${inputFile.path}');
     exit(1);
   }
+
+  final minSupport = double.parse(argResults['minSupport']);
+  final minConfidence = double.parse(argResults['minConfidence']);
+  final logger = Logger(initialLevel: _parseLogLevel(argResults['log-level']));
+
+  logger.info('Initializing FP-Growth with minSupport: $minSupport...');
+  final fpGrowth = FPGrowth<String>(minSupport: minSupport, logger: logger);
+
+  logger.info('Reading and processing transactions from ${inputFile.path}...');
+  final lines = inputFile
+      .openRead()
+      .transform(utf8.decoder)
+      .transform(const LineSplitter());
+
+  int transactionCount = 0;
+  await for (final line in lines) {
+    if (line.trim().isEmpty) continue;
+    final transactionsInLine = transactionsFromCsv(line);
+    if (transactionsInLine.isNotEmpty) {
+      fpGrowth.addTransactions(transactionsInLine);
+      transactionCount += transactionsInLine.length;
+    }
+  }
+  final totalTransactions = transactionCount;
+  logger.info('Finished processing $totalTransactions transactions.');
+
+  logger.info('Mining frequent itemsets...');
+  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+  logger.info('Found ${frequentItemsets.length} frequent itemsets.');
+  print('-' * 20);
+  frequentItemsets.forEach((itemset, support) {
+    final supportPercent =
+        (support / totalTransactions * 100).toStringAsFixed(2);
+    print('{${itemset.join(', ')}} - Support: $support ($supportPercent%)');
+  });
+  print('-' * 20);
+
+  logger.info(
+      'Generating association rules with minConfidence: $minConfidence...');
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: minConfidence,
+    frequentItemsets: frequentItemsets,
+    totalTransactions: totalTransactions,
+  );
+  final rules = ruleGenerator.generateRules();
+  logger.info('Found ${rules.length} association rules.');
+  print('-' * 20);
+  for (var rule in rules) {
+    print(rule.formatWithMetrics());
+  }
+  print('-' * 20);
+
+  final outputFile = argResults['output-file'];
+  if (outputFile != null) {
+    await _writeOutput(outputFile, argResults['output-format'],
+        frequentItemsets, rules, logger);
+  }
+}
+
+Future<void> _writeOutput(
+  String path,
+  String format,
+  Map<List<String>, int> frequentItemsets,
+  List<AssociationRule<String>> rules,
+  Logger logger,
+) async {
+  String outputContent;
+  final outputFormat = format.toLowerCase();
+
+  if (outputFormat == 'json') {
+    final combinedResults = {
+      'frequentItemsets': frequentItemsetsToJsonEncodable(frequentItemsets),
+      'associationRules': rulesToJsonEncodable(rules),
+    };
+    outputContent = JsonEncoder.withIndent('  ').convert(combinedResults);
+  } else if (outputFormat == 'csv') {
+    final itemsetsCsv = exportFrequentItemsetsToCsv(frequentItemsets);
+    final rulesCsv = exportRulesToCsv(rules);
+    outputContent =
+        'Frequent Itemsets:\n$itemsetsCsv\n\nAssociation Rules:\n$rulesCsv';
+  } else {
+    logger.error(
+        'Unsupported output format: $format. Supported formats are "json" and "csv".');
+    exit(1);
+  }
+
+  await File(path).writeAsString(outputContent);
+  logger.info('Results successfully written to $path in $format format.');
 }

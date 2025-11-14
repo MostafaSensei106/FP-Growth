@@ -1,19 +1,23 @@
 import 'dart:convert';
 import '../../fp_growth.dart';
 
-/// Exports frequent itemsets to a JSON string.
-///
-/// [itemsets] is a map where keys are frequent itemsets (List  < T > ) and values are their support counts.
-/// Returns a JSON string representing the itemsets.
-String exportFrequentItemsetsToJson<T>(Map<List<T>, int> itemsets) {
-  final jsonList = itemsets.entries
+/// Exports frequent itemsets to a JSON-encodable list of maps.
+List<Map<String, dynamic>> frequentItemsetsToJsonEncodable<T>(
+    Map<List<T>, int> itemsets) {
+  return itemsets.entries
       .map((entry) => {
             'itemset': entry.key.map((e) => e.toString()).toList(),
             'support': entry.value,
           })
       .toList();
+}
 
-  return jsonEncode(jsonList);
+/// Exports frequent itemsets to a JSON string.
+///
+/// [itemsets] is a map where keys are frequent itemsets (List  < T > ) and values are their support counts.
+/// Returns a JSON string representing the itemsets.
+String exportFrequentItemsetsToJson<T>(Map<List<T>, int> itemsets) {
+  return jsonEncode(frequentItemsetsToJsonEncodable(itemsets));
 }
 
 /// Exports frequent itemsets to a CSV string.
@@ -35,12 +39,10 @@ String exportFrequentItemsetsToCsv<T>(
   return buffer.toString();
 }
 
-/// Exports association rules to a JSON string.
-///
-/// [rules] is a list of AssociationRule< T > objects.
-/// Returns a JSON string representing the rules.
-String exportRulesToJson<T>(List<AssociationRule<T>> rules) {
-  final jsonList = rules
+/// Exports association rules to a JSON-encodable list of maps.
+List<Map<String, dynamic>> rulesToJsonEncodable<T>(
+    List<AssociationRule<T>> rules) {
+  return rules
       .map((rule) => {
             'antecedent': rule.antecedent.map((e) => e.toString()).toList(),
             'consequent': rule.consequent.map((e) => e.toString()).toList(),
@@ -51,8 +53,14 @@ String exportRulesToJson<T>(List<AssociationRule<T>> rules) {
             'conviction': rule.conviction.isInfinite ? null : rule.conviction,
           })
       .toList();
+}
 
-  return jsonEncode(jsonList);
+/// Exports association rules to a JSON string.
+///
+/// [rules] is a list of AssociationRule< T > objects.
+/// Returns a JSON string representing the rules.
+String exportRulesToJson<T>(List<AssociationRule<T>> rules) {
+  return jsonEncode(rulesToJsonEncodable(rules));
 }
 
 /// Exports association rules to a CSV string.

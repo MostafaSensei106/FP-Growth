@@ -20,7 +20,7 @@ class StreamProcessor<T> {
   /// Returns a [Future] that completes when the stream has been fully consumed.
   Future<void> process(Stream<List<T>> transactionStream) async {
     await for (final transaction in transactionStream) {
-      fpGrowth.addTransactions([transaction]);
+      fpGrowth.addTransaction(transaction);
     }
   }
 }

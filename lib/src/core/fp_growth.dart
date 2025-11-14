@@ -313,17 +313,20 @@ class FPGrowth<T> {
     }
   }
 
+  /// Adds a single transaction to the miner.
+  void addTransaction(List<T> transaction) {
+    if (transaction.isNotEmpty) {
+      _mappedTransactions.add(_mapper.mapTransaction(transaction));
+    }
+  }
+
   /// Adds a list of transactions to the miner.
   void addTransactions(List<List<T>> transactions) {
-    _logger.info('Adding ${transactions.length} transactions.');
-
+    // This is intentionally not logged to avoid verbose output when streaming.
+    // The caller is responsible for entry/exit logging if needed.
     for (final transaction in transactions) {
-      if (transaction.isNotEmpty) {
-        _mappedTransactions.add(_mapper.mapTransaction(transaction));
-      }
+      addTransaction(transaction);
     }
-
-    _logger.debug('Total mapped transactions: ${_mappedTransactions.length}');
   }
 
   /// Calculates the absolute minimum support count from the relative [minSupport].
