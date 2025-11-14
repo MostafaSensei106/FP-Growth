@@ -1,4 +1,4 @@
-<h1 align="center">fpgrowth_dart</h1>
+<h1 align="center">FP-Growth</h1>
 <p align="center">
   <!-- No image available yet, placeholder or remove -->
   <!-- <img src="https://socialify.git.ci/MostafaSensei106/Radix_Pulse/image?custom_language=Dart&font=KoHo&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F138288138%3Fv%3D4&name=1&owner=1&pattern=Floating+Cogs&theme=Light" alt="fpgrowth_dart Banner"> -->
@@ -23,7 +23,7 @@
 
 ## About
 
-Welcome to **fpgrowth_dart** — a robust and efficient Dart library for implementing the FP-Growth algorithm. This library is designed to help you discover frequent itemsets and generate association rules from transactional datasets. It's an essential tool for tasks like market basket analysis, user behavior prediction, and understanding relationships within large data collections. Built with performance and ease of use in mind, `fpgrowth_dart` provides a comprehensive solution for pattern mining in Dart and Flutter applications.
+Welcome to **FP-Growth** — a robust and efficient Dart library for implementing the FP-Growth algorithm. This library is designed to help you discover frequent itemsets and generate association rules from transactional datasets. It's an essential tool for tasks like market basket analysis, user behavior prediction, and understanding relationships within large data collections. Built with performance and ease of use in mind, `FP-Growth` provides a comprehensive solution for pattern mining in Dart and Flutter applications.
 
 ---
 
@@ -54,7 +54,7 @@ Welcome to **fpgrowth_dart** — a robust and efficient Dart library for impleme
 
     ```yaml
     dependencies:
-      fpgrowth_dart: ^1.0.0 # Replace with the latest version
+      fp_growth: ^1.0.0 # Replace with the latest version
     ```
 
 2.  Install it from your terminal:
@@ -76,7 +76,7 @@ Welcome to **fpgrowth_dart** — a robust and efficient Dart library for impleme
 Import the library and start mining patterns.
 
 ```dart
-import 'package:fpgrowth_dart/fpgrowth_dart.dart';
+import 'package:fp_growth/fp_growth.dart';
 
 void main() {
   // 1. Define your transactions
@@ -124,7 +124,7 @@ void main() {
 
 ## 📋 CLI Usage
 
-The `fpgrowth_dart` package includes a command-line interface (CLI) tool for quick analysis of CSV files without writing any Dart code.
+The `fp_growth` package includes a command-line interface (CLI) tool for quick analysis of CSV files without writing any Dart code.
 
 ### Prerequisites
 
@@ -141,7 +141,7 @@ itemA,itemC,itemE
 Execute the CLI tool using `dart run`:
 
 ```bash
-dart run fpgrowth_dart --input transactions.csv --minSupport 0.6 --minConfidence 0.7
+dart run fp_growth --input transactions.csv --minSupport 0.6 --minConfidence 0.7
 ```
 
 ### Options
@@ -156,12 +156,12 @@ The CLI will output the discovered frequent itemsets and association rules direc
 
 ## Technologies
 
-| Technology   | Description                                                                |
-| ------------ | -------------------------------------------------------------------------- |
-| 🧠 **Dart**  | [dart.dev](https://dart.dev) — The core language for the library.          |
-| 📦 **args**  | `package:args` — Used for parsing command-line arguments in the CLI tool.  |
-| 📄 **csv**   | `package:csv` — Provides robust CSV parsing capabilities for data input.   |
-| 📚 **collection** | `package:collection` — Provides utility functions for collections. |
+| Technology        | Description                                                               |
+| ----------------- | ------------------------------------------------------------------------- |
+| 🧠 **Dart**       | [dart.dev](https://dart.dev) — The core language for the library.         |
+| 📦 **args**       | `package:args` — Used for parsing command-line arguments in the CLI tool. |
+| 📄 **csv**        | `package:csv` — Provides robust CSV parsing capabilities for data input.  |
+| 📚 **collection** | `package:collection` — Provides utility functions for collections.        |
 
 ---
 

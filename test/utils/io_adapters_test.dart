@@ -1,4 +1,4 @@
-import 'package:fpgrowth_dart/src/utils/io_adapters.dart';
+import 'package:fp_growth/src/utils/io_adapters.dart';
 import 'package:test/test.dart';
 
 void main() {

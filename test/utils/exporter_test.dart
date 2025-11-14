@@ -1,5 +1,5 @@
-import 'package:fpgrowth_dart/fpgrowth_dart.dart';
-import 'package:fpgrowth_dart/src/utils/exporter.dart';
+import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/src/utils/exporter.dart';
 import 'package:test/test.dart';
 import 'dart:convert'; // For jsonDecode
 
@@ -11,7 +11,7 @@ void main() {
       ['a', 'b']: 2,
     };
 
-    final rules = [
+    final rules = <AssociationRule<String>>[
       AssociationRule<String>(
         antecedent: {'a'},
         consequent: {'b'},

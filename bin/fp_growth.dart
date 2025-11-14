@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:args/args.dart';
-import 'package:fpgrowth_dart/fpgrowth_dart.dart';
-import 'package:fpgrowth_dart/src/utils/logger.dart';
-import 'package:fpgrowth_dart/src/utils/exporter.dart';
+import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/src/utils/exporter.dart';
+import 'package:fp_growth/src/utils/logger.dart';
 
 Future<void> main(List<String> arguments) async {
   final parser = ArgParser()

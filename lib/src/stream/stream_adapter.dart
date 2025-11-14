@@ -1,21 +1,26 @@
-// : Implement stream-based transaction processing.
-// This class will allow adding transactions from a stream source,
-// making the FP-Growth algorithm more suitable for large datasets or
-// real-time data analysis.
+import 'dart:async';
+import '../core/fp_growth.dart';
 
-/// A placeholder for a class that will process transactions from a stream.
+/// A class that processes transactions from a stream and adds them to an
+/// [FPGrowth] instance.
+///
+/// This is useful for handling large datasets that may not fit into memory
+/// all at once, or for processing data from a real-time source.
 class StreamProcessor<T> {
   /// The FP-Growth instance to which transactions will be added.
-  final dynamic fpGrowth; // Replace with FPGrowth<T>
+  final FPGrowth<T> fpGrowth;
 
-  /// Creates a stream processor.
+  /// Creates a stream processor that pipes transactions into the given
+  /// [fpGrowth] instance.
   StreamProcessor(this.fpGrowth);
 
-  /// Processes a stream of transactions.
+  /// Consumes the given [transactionStream] and adds each transaction
+  /// to the [FPGrowth] instance.
+  ///
+  /// Returns a [Future] that completes when the stream has been fully consumed.
   Future<void> process(Stream<List<T>> transactionStream) async {
-    // await for (final transaction in transactionStream) {
-    //   fpGrowth.addTransactions([transaction]);
-    // }
-    print("Stream processing is not yet implemented.");
+    await for (final transaction in transactionStream) {
+      fpGrowth.addTransactions([transaction]);
+    }
   }
 }

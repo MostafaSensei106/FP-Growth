@@ -1,4 +1,4 @@
-import 'package:fpgrowth_dart/fpgrowth_dart.dart';
+import 'package:fp_growth/fp_growth.dart';
 
 Future<void> main() async {
   // 1. Define your transactions

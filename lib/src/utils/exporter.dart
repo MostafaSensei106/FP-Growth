@@ -1,9 +1,9 @@
 import 'dart:convert';
-import '../../fpgrowth_dart.dart';
+import '../../fp_growth.dart';
 
 /// Exports frequent itemsets to a JSON string.
 ///
-/// [itemsets] is a map where keys are frequent itemsets (List<T>) and values are their support counts.
+/// [itemsets] is a map where keys are frequent itemsets (List  < T > ) and values are their support counts.
 /// Returns a JSON string representing the itemsets.
 String exportFrequentItemsetsToJson<T>(Map<List<T>, int> itemsets) {
   final jsonList = itemsets.entries
@@ -18,7 +18,7 @@ String exportFrequentItemsetsToJson<T>(Map<List<T>, int> itemsets) {
 
 /// Exports frequent itemsets to a CSV string.
 ///
-/// [itemsets] is a map where keys are frequent itemsets (List<T>) and values are their support counts.
+/// [itemsets] is a map where keys are frequent itemsets (List< T >) and values are their support counts.
 /// [delimiter] is the delimiter used to separate items within an itemset. Defaults to ';'.
 /// Returns a CSV string representing the itemsets.
 String exportFrequentItemsetsToCsv<T>(
@@ -37,7 +37,7 @@ String exportFrequentItemsetsToCsv<T>(
 
 /// Exports association rules to a JSON string.
 ///
-/// [rules] is a list of AssociationRule<T> objects.
+/// [rules] is a list of AssociationRule< T > objects.
 /// Returns a JSON string representing the rules.
 String exportRulesToJson<T>(List<AssociationRule<T>> rules) {
   final jsonList = rules
@@ -57,7 +57,7 @@ String exportRulesToJson<T>(List<AssociationRule<T>> rules) {
 
 /// Exports association rules to a CSV string.
 ///
-/// [rules] is a list of AssociationRule<T> objects.
+/// [rules] is a list of AssociationRule< T > objects.
 /// [delimiter] is the delimiter used to separate items within sets. Defaults to ';'.
 /// Returns a CSV string representing the rules.
 String exportRulesToCsv<T>(
@@ -117,7 +117,7 @@ String exportFrequentItemsetsToText<T>(
 
 /// Exports association rules to a formatted text string.
 ///
-/// [rules] is a list of AssociationRule<T> objects.
+/// [rules] is a list of AssociationRule< T > objects.
 /// [sortBy] determines the sorting criteria: 'confidence', 'lift', or 'support'. Defaults to 'confidence'.
 /// Returns a formatted text string.
 String exportRulesToText<T>(
