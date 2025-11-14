@@ -1,3 +1,5 @@
+library;
+
 // Core FP-Growth algorithm interface.
 export 'src/core/fp_growth.dart';
 
