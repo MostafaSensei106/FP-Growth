@@ -24,8 +24,7 @@ Future<void> runStandardExample() async {
   fpGrowth.addTransactions(transactions);
   final frequentItemsets = await fpGrowth.mineFrequentItemsets();
 
-  print(
-      'Found ${frequentItemsets.length} frequent itemsets (minSupport: 3):');
+  print('Found ${frequentItemsets.length} frequent itemsets (minSupport: 3):');
   frequentItemsets.forEach((itemset, support) {
     final supportPercent =
         (support / totalTransactions * 100).toStringAsFixed(1);

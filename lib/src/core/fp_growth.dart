@@ -64,8 +64,9 @@ Future<void> _mineInIsolateEntrypoint<T>(_MineTaskArgs<T> args) async {
 
           for (final subset in allSubsets) {
             final itemset = subset.map((node) => node.item!).toList();
-            final support =
-                subset.map((node) => node.count).reduce((a, b) => a < b ? a : b);
+            final support = subset
+                .map((node) => node.count)
+                .reduce((a, b) => a < b ? a : b);
             frequentItemsets[List<int>.from(args.prefix)..addAll(itemset)] =
                 support;
           }

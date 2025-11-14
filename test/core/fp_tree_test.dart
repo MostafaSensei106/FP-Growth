@@ -104,9 +104,10 @@ void main() {
         [1, 2, 3, 5]: 2,
         [2, 4]: 1,
       };
-      
+
       // Debugging print statements
-      if (!MapEquality(keys: ListEquality(), values: Equality()).equals(pPaths, expectedPPaths)) {
+      if (!MapEquality(keys: ListEquality(), values: Equality())
+          .equals(pPaths, expectedPPaths)) {
         print('DEBUG: pPaths (actual): $pPaths');
         print('DEBUG: expectedPPaths: $expectedPPaths');
       }
@@ -124,7 +125,8 @@ void main() {
       };
 
       // Debugging print statements
-      if (!MapEquality(keys: ListEquality(), values: Equality()).equals(mPaths, expectedMPaths)) {
+      if (!MapEquality(keys: ListEquality(), values: Equality())
+          .equals(mPaths, expectedMPaths)) {
         print('DEBUG: mPaths (actual): $mPaths');
         print('DEBUG: expectedMPaths: $expectedMPaths');
       }
