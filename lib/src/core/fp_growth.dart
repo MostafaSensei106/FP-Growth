@@ -110,7 +110,13 @@ Map<List<int>, int> mineLogic<T>(
 
   // Sort items by frequency (ascending) to process from least to most frequent
   final sortedItems = frequency.keys.toList()
-    ..sort((a, b) => frequency[a]!.compareTo(frequency[b]!));
+    ..sort((a, b) {
+      final compare = frequency[a]!.compareTo(frequency[b]!);
+      if (compare == 0) {
+        return a.compareTo(b);
+      }
+      return compare;
+    });
 
   logger.debug(
     'Mining conditional tree for prefix: ${prefix.map(mapper.getItem).join(', ')}',
@@ -352,9 +358,15 @@ class FPGrowth<T> {
               transaction
                   .where((item) => frequentItems.containsKey(item))
                   .toList()
-                ..sort(
-                  (a, b) => frequentItems[b]!.compareTo(frequentItems[a]!),
-                );
+                ..sort((a, b) {
+                  final compare = frequentItems[b]!.compareTo(
+                    frequentItems[a]!,
+                  );
+                  if (compare == 0) {
+                    return a.compareTo(b); // Secondary sort for stability
+                  }
+                  return compare;
+                });
           return orderedItems;
         })
         .where((t) => t.isNotEmpty)

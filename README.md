@@ -209,8 +209,16 @@ The `fp_growth` library is designed for high performance. The following benchmar
 
 **Benchmark**: Mining frequent itemsets from a dataset of **1,000,000 transactions**. The result is the average of 10 consecutive runs with a minSupport of 0.05 (5%).
 
-- **Command**: `dart compile exe bin/fp_growth.dart -o fp_growth`
-- **Average Execution Time**: Executed in 2.73 seconds
+**Command**:
+
+```bash
+dart compile exe bin/fp_growth.dart -o fp_growth
+
+# Run benchmark
+./fp_growth -i large_dataset.csv
+```
+
+**Average Execution Time**: in **2.73 seconds**
 
 ---
 
@@ -239,3 +247,4 @@ See the [LICENSE](LICENSE) file for full details.
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
 </p>
+````
