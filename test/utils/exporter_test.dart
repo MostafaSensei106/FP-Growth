@@ -81,14 +81,16 @@ void main() {
 
       expect(lines.length, equals(3)); // Header + 2 rules
       expect(
-          lines[0],
-          equals(
-              'Antecedent,Consequent,Support,Confidence,Lift,Leverage,Conviction'));
+        lines[0],
+        equals(
+          'Antecedent,Consequent,Support,Confidence,Lift,Leverage,Conviction',
+        ),
+      );
       expect(lines[1], equals('"a","b",0.5,0.6,1.2,0.1,1.5'));
       expect(
-          lines[2],
-          equals(
-              '"b","a",0.5,0.7,1.4,0.2,INF')); // Infinity should be "INF" in CSV
+        lines[2],
+        equals('"b","a",0.5,0.7,1.4,0.2,INF'),
+      ); // Infinity should be "INF" in CSV
     });
   });
 }

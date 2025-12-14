@@ -59,8 +59,11 @@ class FPTree {
       if (header.tail != null) {
         // Append to the end of the node-link list.
         header.tail!.next = newNode;
-        headerTable[item] =
-            (count: header.count, head: header.head, tail: newNode);
+        headerTable[item] = (
+          count: header.count,
+          head: header.head,
+          tail: newNode,
+        );
       } else {
         // This is the first node for this item.
         headerTable[item] = (count: header.count, head: newNode, tail: newNode);

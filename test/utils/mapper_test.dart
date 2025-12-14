@@ -87,8 +87,11 @@ void main() {
       final idToItem = {0: 'a', 1: 'b'};
       final nextId = 2;
 
-      final reconstructedMapper =
-          ItemMapper.fromMaps(itemToId, idToItem, nextId);
+      final reconstructedMapper = ItemMapper.fromMaps(
+        itemToId,
+        idToItem,
+        nextId,
+      );
 
       expect(reconstructedMapper.itemCount, equals(2));
       expect(reconstructedMapper.nextId, equals(2));

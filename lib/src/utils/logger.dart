@@ -34,7 +34,7 @@ class Logger {
   /// [initialLevel] sets the minimum level for messages to be logged.
   /// Messages with a level lower than [initialLevel] will be ignored.
   Logger({LogLevel initialLevel = LogLevel.info})
-      : _currentLevel = initialLevel;
+    : _currentLevel = initialLevel;
 
   /// Gets the current minimum log level.
   LogLevel get currentLevel => _currentLevel;

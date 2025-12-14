@@ -26,8 +26,9 @@ Future<void> runStandardExample() async {
 
   print('Found ${frequentItemsets.length} frequent itemsets (minSupport: 3):');
   frequentItemsets.forEach((itemset, support) {
-    final supportPercent =
-        (support / totalTransactions * 100).toStringAsFixed(1);
+    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(
+      1,
+    );
     print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
   });
   print('-------------------------\n');
@@ -80,10 +81,12 @@ Future<void> runStreamExample() async {
   final totalTransactions = fpGrowth.transactionCount;
 
   print(
-      'Found ${frequentItemsets.length} frequent itemsets from stream (minSupport: 2):');
+    'Found ${frequentItemsets.length} frequent itemsets from stream (minSupport: 2):',
+  );
   frequentItemsets.forEach((itemset, support) {
-    final supportPercent =
-        (support / totalTransactions * 100).toStringAsFixed(1);
+    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(
+      1,
+    );
     print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
   });
   print('-------------------------\n');

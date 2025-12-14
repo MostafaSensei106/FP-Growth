@@ -72,8 +72,10 @@ class AssociationRule<T> {
     assert(antecedent.isNotEmpty, 'Antecedent cannot be empty');
     assert(consequent.isNotEmpty, 'Consequent cannot be empty');
     assert(support >= 0.0 && support <= 1.0, 'Support must be between 0 and 1');
-    assert(confidence >= 0.0 && confidence <= 1.0,
-        'Confidence must be between 0 and 1');
+    assert(
+      confidence >= 0.0 && confidence <= 1.0,
+      'Confidence must be between 0 and 1',
+    );
   }
 
   /// Returns the full itemset (antecedent and consequent combined).
@@ -113,16 +115,14 @@ class AssociationRule<T> {
 
   int _computeHashCode() {
     const setEq = SetEquality();
-    return Object.hash(
-      setEq.hash(antecedent),
-      setEq.hash(consequent),
-    );
+    return Object.hash(setEq.hash(antecedent), setEq.hash(consequent));
   }
 
   /// Compares rules by confidence (descending order).
   static int compareByConfidence<T>(
-          AssociationRule<T> a, AssociationRule<T> b) =>
-      b.confidence.compareTo(a.confidence);
+    AssociationRule<T> a,
+    AssociationRule<T> b,
+  ) => b.confidence.compareTo(a.confidence);
 
   /// Compares rules by lift (descending order).
   static int compareByLift<T>(AssociationRule<T> a, AssociationRule<T> b) =>

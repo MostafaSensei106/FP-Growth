@@ -57,13 +57,16 @@ Future<void> _mineInIsolateEntrypoint<T>(_MineTaskArgs<T> args) async {
       );
 
       if (unrolledTransactions.isNotEmpty) {
-        final conditionalTree =
-            FPTree(unrolledTransactions, args.conditionalFrequentItems);
+        final conditionalTree = FPTree(
+          unrolledTransactions,
+          args.conditionalFrequentItems,
+        );
 
         // Single-path optimization
         if (conditionalTree.isSinglePath()) {
           logger.debug(
-              '    Single-path optimization applied for prefix: ${args.prefix.map(mapper.getItem).join(', ')}');
+            '    Single-path optimization applied for prefix: ${args.prefix.map(mapper.getItem).join(', ')}',
+          );
           final pathNodes = conditionalTree.getSinglePathNodes();
           final allSubsets = generateSubsets(pathNodes);
 
@@ -92,8 +95,10 @@ Future<void> _mineInIsolateEntrypoint<T>(_MineTaskArgs<T> args) async {
 
     args.sendPort.send(frequentItemsets);
   } catch (e, stackTrace) {
-    args.sendPort
-        .send({'error': e.toString(), 'stackTrace': stackTrace.toString()});
+    args.sendPort.send({
+      'error': e.toString(),
+      'stackTrace': stackTrace.toString(),
+    });
   }
 }
 
@@ -169,18 +174,22 @@ Future<Map<List<int>, int>> runParallelMining<T>({
       }
     }
 
-    final conditionalFrequentItems =
-        filterFrequentItems(conditionalFrequency, absoluteMinSupport);
+    final conditionalFrequentItems = filterFrequentItems(
+      conditionalFrequency,
+      absoluteMinSupport,
+    );
 
     if (conditionalFrequentItems.isNotEmpty) {
-      futures.add(_spawnMiningIsolate(
-        conditionalPatternBases: conditionalPatternBases,
-        conditionalFrequentItems: conditionalFrequentItems,
-        prefix: [item],
-        absoluteMinSupport: absoluteMinSupport,
-        mapper: mapper,
-        logger: logger,
-      ));
+      futures.add(
+        _spawnMiningIsolate(
+          conditionalPatternBases: conditionalPatternBases,
+          conditionalFrequentItems: conditionalFrequentItems,
+          prefix: [item],
+          absoluteMinSupport: absoluteMinSupport,
+          mapper: mapper,
+          logger: logger,
+        ),
+      );
     }
   }
 

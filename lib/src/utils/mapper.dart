@@ -8,21 +8,15 @@ class ItemMapper<T> {
   int _nextId;
 
   /// Creates a new empty [ItemMapper].
-  ItemMapper()
-      : _itemToId = {},
-        _idToItem = {},
-        _nextId = 0;
+  ItemMapper() : _itemToId = {}, _idToItem = {}, _nextId = 0;
 
   /// Creates an [ItemMapper] from existing maps.
   ///
   /// This is useful for reconstructing the mapper in isolates.
-  ItemMapper.fromMaps(
-    Map<T, int> itemToId,
-    Map<int, T> idToItem,
-    int nextId,
-  )   : _itemToId = Map.from(itemToId),
-        _idToItem = Map.from(idToItem),
-        _nextId = nextId;
+  ItemMapper.fromMaps(Map<T, int> itemToId, Map<int, T> idToItem, int nextId)
+    : _itemToId = Map.from(itemToId),
+      _idToItem = Map.from(idToItem),
+      _nextId = nextId;
 
   /// Gets the integer ID for a given [item].
   ///

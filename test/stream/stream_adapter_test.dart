@@ -37,14 +37,19 @@ void main() {
 
       // Using a helper from another test file is not ideal, but for this case it's ok.
       // A better approach would be to have a shared test utility file.
-      final setMap1 =
-          frequentItemsets.map((key, value) => MapEntry(key.toSet(), value));
-      final setMap2 =
-          expected.map((key, value) => MapEntry(key.toSet(), value));
+      final setMap1 = frequentItemsets.map(
+        (key, value) => MapEntry(key.toSet(), value),
+      );
+      final setMap2 = expected.map(
+        (key, value) => MapEntry(key.toSet(), value),
+      );
       expect(
-          MapEquality(keys: SetEquality(), values: Equality())
-              .equals(setMap1, setMap2),
-          isTrue);
+        MapEquality(
+          keys: SetEquality(),
+          values: Equality(),
+        ).equals(setMap1, setMap2),
+        isTrue,
+      );
     });
 
     test('handles an empty stream', () async {
@@ -67,8 +72,10 @@ void main() {
 
       await streamProcessor.process(stream);
 
-      expect(fpGrowth.transactionCount,
-          equals(2)); // Empty transactions are ignored
+      expect(
+        fpGrowth.transactionCount,
+        equals(2),
+      ); // Empty transactions are ignored
     });
   });
 }

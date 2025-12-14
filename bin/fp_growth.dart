@@ -29,29 +29,48 @@ Future<void> main(List<String> arguments) async {
 
 ArgParser _createArgParser() {
   return ArgParser()
-    ..addOption('input',
-        abbr: 'i', help: 'Path to the input CSV file.', mandatory: true)
-    ..addOption('minSupport',
-        abbr: 's',
-        help:
-            'Minimum support threshold (e.g., 0.05 for 5% or 5 for an absolute count).',
-        defaultsTo: '0.05')
-    ..addOption('minConfidence',
-        abbr: 'c',
-        help: 'Minimum confidence threshold for association rules.',
-        defaultsTo: '0.7')
-    ..addOption('log-level',
-        help:
-            'Set the logging level (debug, info, warning, error, critical, none).',
-        defaultsTo: 'info')
-    ..addOption('output-file',
-        abbr: 'o', help: 'Path to an output file to save results.')
-    ..addOption('output-format',
-        abbr: 'f', help: 'Output format (json or csv).', defaultsTo: 'json');
+    ..addOption(
+      'input',
+      abbr: 'i',
+      help: 'Path to the input CSV file.',
+      mandatory: true,
+    )
+    ..addOption(
+      'minSupport',
+      abbr: 's',
+      help:
+          'Minimum support threshold (e.g., 0.05 for 5% or 5 for an absolute count).',
+      defaultsTo: '0.05',
+    )
+    ..addOption(
+      'minConfidence',
+      abbr: 'c',
+      help: 'Minimum confidence threshold for association rules.',
+      defaultsTo: '0.7',
+    )
+    ..addOption(
+      'log-level',
+      help:
+          'Set the logging level (debug, info, warning, error, critical, none).',
+      defaultsTo: 'info',
+    )
+    ..addOption(
+      'output-file',
+      abbr: 'o',
+      help: 'Path to an output file to save results.',
+    )
+    ..addOption(
+      'output-format',
+      abbr: 'f',
+      help: 'Output format (json or csv).',
+      defaultsTo: 'json',
+    );
 }
 
-LogLevel _parseLogLevel(String levelStr,
-    {LogLevel defaultLevel = LogLevel.info}) {
+LogLevel _parseLogLevel(
+  String levelStr, {
+  LogLevel defaultLevel = LogLevel.info,
+}) {
   const levelMap = {
     'debug': LogLevel.debug,
     'info': LogLevel.info,
@@ -63,7 +82,8 @@ LogLevel _parseLogLevel(String levelStr,
   final level = levelMap[levelStr.toLowerCase()];
   if (level == null) {
     print(
-        'Warning: Invalid log level "$levelStr". Defaulting to "${defaultLevel.name}".');
+      'Warning: Invalid log level "$levelStr". Defaulting to "${defaultLevel.name}".',
+    );
     return defaultLevel;
   }
   return level;
@@ -106,14 +126,16 @@ Future<void> _runFPGrowth(ArgResults argResults) async {
   logger.info('Found ${frequentItemsets.length} frequent itemsets.');
   print('-' * 20);
   frequentItemsets.forEach((itemset, support) {
-    final supportPercent =
-        (support / totalTransactions * 100).toStringAsFixed(2);
+    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(
+      2,
+    );
     print('{${itemset.join(', ')}} - Support: $support ($supportPercent%)');
   });
   print('-' * 20);
 
   logger.info(
-      'Generating association rules with minConfidence: $minConfidence...');
+    'Generating association rules with minConfidence: $minConfidence...',
+  );
   final ruleGenerator = RuleGenerator<String>(
     minConfidence: minConfidence,
     frequentItemsets: frequentItemsets,
@@ -129,8 +151,13 @@ Future<void> _runFPGrowth(ArgResults argResults) async {
 
   final outputFile = argResults['output-file'];
   if (outputFile != null) {
-    await _writeOutput(outputFile, argResults['output-format'],
-        frequentItemsets, rules, logger);
+    await _writeOutput(
+      outputFile,
+      argResults['output-format'],
+      frequentItemsets,
+      rules,
+      logger,
+    );
   }
 }
 
@@ -157,7 +184,8 @@ Future<void> _writeOutput(
         'Frequent Itemsets:\n$itemsetsCsv\n\nAssociation Rules:\n$rulesCsv';
   } else {
     logger.error(
-        'Unsupported output format: $format. Supported formats are "json" and "csv".');
+      'Unsupported output format: $format. Supported formats are "json" and "csv".',
+    );
     exit(1);
   }
 

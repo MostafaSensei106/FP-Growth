@@ -29,8 +29,9 @@ Map<List<int>, int> mineForItem<T>(
   final support = frequency[item]!;
   frequentItemsets[newPrefix] = support;
 
-  logger
-      .debug('  Processing item: ${mapper.getItem(item)} (support: $support)');
+  logger.debug(
+    '  Processing item: ${mapper.getItem(item)} (support: $support)',
+  );
 
   // Find conditional pattern bases
   final conditionalPatternBases = tree.findPaths(item);
@@ -44,8 +45,10 @@ Map<List<int>, int> mineForItem<T>(
     }
   }
 
-  final conditionalFrequentItems =
-      filterFrequentItems(conditionalFrequency, absoluteMinSupport);
+  final conditionalFrequentItems = filterFrequentItems(
+    conditionalFrequency,
+    absoluteMinSupport,
+  );
 
   if (conditionalFrequentItems.isNotEmpty) {
     // Reconstruct transactions for conditional tree
@@ -55,20 +58,24 @@ Map<List<int>, int> mineForItem<T>(
     );
 
     if (unrolledTransactions.isNotEmpty) {
-      final conditionalTree =
-          FPTree(unrolledTransactions, conditionalFrequentItems);
+      final conditionalTree = FPTree(
+        unrolledTransactions,
+        conditionalFrequentItems,
+      );
 
       // Single-path optimization
       if (conditionalTree.isSinglePath()) {
         logger.debug(
-            '    Single-path optimization applied for prefix: ${newPrefix.map(mapper.getItem).join(', ')}');
+          '    Single-path optimization applied for prefix: ${newPrefix.map(mapper.getItem).join(', ')}',
+        );
         final pathNodes = conditionalTree.getSinglePathNodes();
         final allSubsets = generateSubsets(pathNodes);
 
         for (final subset in allSubsets) {
           final itemset = subset.map((node) => node.item!).toList();
-          final support =
-              subset.map((node) => node.count).reduce((a, b) => a < b ? a : b);
+          final support = subset
+              .map((node) => node.count)
+              .reduce((a, b) => a < b ? a : b);
           frequentItemsets[List<int>.from(newPrefix)..addAll(itemset)] =
               support;
         }
@@ -106,7 +113,8 @@ Map<List<int>, int> mineLogic<T>(
     ..sort((a, b) => frequency[a]!.compareTo(frequency[b]!));
 
   logger.debug(
-      'Mining conditional tree for prefix: ${prefix.map(mapper.getItem).join(', ')}');
+    'Mining conditional tree for prefix: ${prefix.map(mapper.getItem).join(', ')}',
+  );
 
   for (final item in sortedItems) {
     final itemResult = mineForItem(
@@ -135,11 +143,15 @@ List<List<int>> buildConditionalTransactions(
     final path = entry.key;
     final count = entry.value;
 
-    final orderedPath = path
-        .where((item) => conditionalFrequentItems.containsKey(item))
-        .toList()
-      ..sort((a, b) =>
-          conditionalFrequentItems[b]!.compareTo(conditionalFrequentItems[a]!));
+    final orderedPath =
+        path
+            .where((item) => conditionalFrequentItems.containsKey(item))
+            .toList()
+          ..sort(
+            (a, b) => conditionalFrequentItems[b]!.compareTo(
+              conditionalFrequentItems[a]!,
+            ),
+          );
 
     if (orderedPath.isNotEmpty) {
       // Add the path 'count' times
@@ -154,7 +166,9 @@ List<List<int>> buildConditionalTransactions(
 
 /// Filters items that meet the minimum support threshold.
 Map<int, int> filterFrequentItems(
-    Map<int, int> frequency, int absoluteMinSupport) {
+  Map<int, int> frequency,
+  int absoluteMinSupport,
+) {
   return Map.fromEntries(
     frequency.entries.where((entry) => entry.value >= absoluteMinSupport),
   );
@@ -233,18 +247,21 @@ class FPGrowth<T> {
   /// [logger] an optional logger instance. If not provided, a default logger with info level is used.
   /// [parallelism] the number of isolates to use for parallel processing. Defaults to 1.
   /// This is ignored on the web platform.
-  FPGrowth({
-    required this.minSupport,
-    Logger? logger,
-    this.parallelism = 1,
-  }) : _logger = logger ?? Logger() {
+  FPGrowth({required this.minSupport, Logger? logger, this.parallelism = 1})
+    : _logger = logger ?? Logger() {
     if (minSupport <= 0) {
       throw ArgumentError.value(
-          minSupport, 'minSupport', 'Must be greater than 0');
+        minSupport,
+        'minSupport',
+        'Must be greater than 0',
+      );
     }
     if (parallelism < 1) {
       throw ArgumentError.value(
-          parallelism, 'parallelism', 'Must be at least 1');
+        parallelism,
+        'parallelism',
+        'Must be at least 1',
+      );
     }
   }
 
@@ -277,8 +294,9 @@ class FPGrowth<T> {
       return {};
     }
 
-    _logger
-        .info('Starting frequent itemset mining with minSupport: $minSupport');
+    _logger.info(
+      'Starting frequent itemset mining with minSupport: $minSupport',
+    );
 
     _logger.debug('Calculating initial item frequencies...');
     final frequency = _calculateFrequency(_mappedTransactions);
@@ -317,7 +335,8 @@ class FPGrowth<T> {
     }
 
     _logger.info(
-        'Finished mining. Found ${mappedItemsets.length} frequent itemsets.');
+      'Finished mining. Found ${mappedItemsets.length} frequent itemsets.',
+    );
 
     // Unmap the results before returning
     return mappedItemsets.map(
@@ -329,10 +348,13 @@ class FPGrowth<T> {
   List<List<int>> _prepareOrderedTransactions(Map<int, int> frequentItems) {
     return _mappedTransactions
         .map((transaction) {
-          final orderedItems = transaction
-              .where((item) => frequentItems.containsKey(item))
-              .toList()
-            ..sort((a, b) => frequentItems[b]!.compareTo(frequentItems[a]!));
+          final orderedItems =
+              transaction
+                  .where((item) => frequentItems.containsKey(item))
+                  .toList()
+                ..sort(
+                  (a, b) => frequentItems[b]!.compareTo(frequentItems[a]!),
+                );
           return orderedItems;
         })
         .where((t) => t.isNotEmpty)
@@ -341,7 +363,9 @@ class FPGrowth<T> {
 
   /// Mines frequent itemsets using a single thread.
   Map<List<int>, int> _mineSingleThreaded(
-      FPTree tree, Map<int, int> frequentItems) {
+    FPTree tree,
+    Map<int, int> frequentItems,
+  ) {
     return mineLogic(
       tree,
       [],

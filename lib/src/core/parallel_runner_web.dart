@@ -16,15 +16,9 @@ Future<Map<List<int>, int>> runParallelMining<T>({
   required int parallelism,
 }) async {
   logger.warning(
-      'Parallelism is not supported on the web. Running single-threaded.');
+    'Parallelism is not supported on the web. Running single-threaded.',
+  );
 
   // Fallback to the single-threaded mining logic.
-  return mineLogic(
-    tree,
-    [],
-    frequentItems,
-    absoluteMinSupport,
-    mapper,
-    logger,
-  );
+  return mineLogic(tree, [], frequentItems, absoluteMinSupport, mapper, logger);
 }

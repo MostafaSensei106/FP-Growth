@@ -44,7 +44,7 @@ void main() {
       ['a'],
       ['a', 'b', 'd'],
       ['a', 'b'],
-      ['c', 'e']
+      ['c', 'e'],
     ];
 
     test('correctly mines frequent itemsets with a simple dataset', () async {
@@ -75,8 +75,11 @@ void main() {
         ['c', 'd']: 3,
       };
 
-      expect(areItemsetMapsEqual(frequentItemsets, expected), isTrue,
-          reason: "Expected: $expected, but got: $frequentItemsets");
+      expect(
+        areItemsetMapsEqual(frequentItemsets, expected),
+        isTrue,
+        reason: "Expected: $expected, but got: $frequentItemsets",
+      );
     });
 
     test('matches original test case with corrected expectations', () async {
@@ -116,8 +119,11 @@ void main() {
         // The provided frequent itemsets are correct for minSupport=3.
       };
 
-      expect(areItemsetMapsEqual(frequentItemsets, expectedFiltered), isTrue,
-          reason: "Expected: $expectedFiltered, but got: $frequentItemsets");
+      expect(
+        areItemsetMapsEqual(frequentItemsets, expectedFiltered),
+        isTrue,
+        reason: "Expected: $expectedFiltered, but got: $frequentItemsets",
+      );
     });
 
     test('returns empty map when no transactions are provided', () async {
@@ -131,7 +137,7 @@ void main() {
         ['a', 'b'],
         [],
         ['b', 'c'],
-        []
+        [],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 2);
       fpGrowth.addTransactions(transactionsWithEmpty);
@@ -146,7 +152,7 @@ void main() {
     test('returns empty map when minSupport is too high', () async {
       final transactions = [
         ['a', 'b'],
-        ['b', 'c']
+        ['b', 'c'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 10);
       fpGrowth.addTransactions(transactions);
@@ -160,7 +166,7 @@ void main() {
         ['a'],
         ['b'],
         ['b'],
-        ['b']
+        ['b'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 2);
       fpGrowth.addTransactions(transactions);
@@ -193,8 +199,11 @@ void main() {
         ['a', 'b', 'c']: 1,
       };
 
-      expect(areItemsetMapsEqual(frequentItemsets, expected), isTrue,
-          reason: "Expected: $expected, but got: $frequentItemsets");
+      expect(
+        areItemsetMapsEqual(frequentItemsets, expected),
+        isTrue,
+        reason: "Expected: $expected, but got: $frequentItemsets",
+      );
     });
   });
 
@@ -209,7 +218,7 @@ void main() {
       ['a', 'b', 'd'],
       ['b', 'c', 'd'],
       ['a', 'e', 'f'],
-      ['b', 'c', 'e']
+      ['b', 'c', 'e'],
     ];
 
     test('produces identical results with parallelism = 2', () async {
@@ -221,8 +230,11 @@ void main() {
       multiThreaded.addTransactions(transactions);
       final multiResult = await multiThreaded.mineFrequentItemsets();
 
-      expect(areItemsetMapsEqual(multiResult, singleResult), isTrue,
-          reason: 'Parallel (2) results do not match single-threaded results.');
+      expect(
+        areItemsetMapsEqual(multiResult, singleResult),
+        isTrue,
+        reason: 'Parallel (2) results do not match single-threaded results.',
+      );
     });
 
     test('produces identical results with parallelism = 4', () async {
@@ -234,8 +246,11 @@ void main() {
       multiThreaded.addTransactions(transactions);
       final multiResult = await multiThreaded.mineFrequentItemsets();
 
-      expect(areItemsetMapsEqual(multiResult, singleResult), isTrue,
-          reason: 'Parallel (4) results do not match single-threaded results.');
+      expect(
+        areItemsetMapsEqual(multiResult, singleResult),
+        isTrue,
+        reason: 'Parallel (4) results do not match single-threaded results.',
+      );
     });
 
     test('handles case where parallelism > number of frequent items', () async {
@@ -248,9 +263,11 @@ void main() {
       multiThreaded.addTransactions(transactions);
       final multiResult = await multiThreaded.mineFrequentItemsets();
 
-      expect(areItemsetMapsEqual(multiResult, singleResult), isTrue,
-          reason:
-              'Parallel (20) results do not match single-threaded results.');
+      expect(
+        areItemsetMapsEqual(multiResult, singleResult),
+        isTrue,
+        reason: 'Parallel (20) results do not match single-threaded results.',
+      );
     });
   });
 }

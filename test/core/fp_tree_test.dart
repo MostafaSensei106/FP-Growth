@@ -45,8 +45,10 @@ void main() {
       // Check root
       expect(tree.root.item, isNull);
       expect(tree.root.count, equals(1)); // Root count is nominal
-      expect(tree.root.children.length,
-          equals(2)); // Starts with 'f' (1) or 'c' (2)
+      expect(
+        tree.root.children.length,
+        equals(2),
+      ); // Starts with 'f' (1) or 'c' (2)
 
       // Check header table initialization
       expect(tree.headerTable.length, equals(frequentItems.length));
@@ -64,10 +66,14 @@ void main() {
       expect(node.count, equals(3)); // a appears in 3 paths starting with f,c,a
       node = node.findChild(5)!;
       expect(
-          node.count, equals(3)); // m appears in 3 paths starting with f,c,a,m
+        node.count,
+        equals(3),
+      ); // m appears in 3 paths starting with f,c,a,m
       node = node.findChild(6)!;
-      expect(node.count,
-          equals(2)); // p appears in 2 paths starting with f,c,a,m,p
+      expect(
+        node.count,
+        equals(2),
+      ); // p appears in 2 paths starting with f,c,a,m,p
 
       // Check another path: c(2) -> b(4) -> p(6)
       node = tree.root.findChild(2)!;
@@ -106,15 +112,19 @@ void main() {
       };
 
       // Debugging print statements
-      if (!MapEquality(keys: ListEquality(), values: Equality())
-          .equals(pPaths, expectedPPaths)) {
+      if (!MapEquality(
+        keys: ListEquality(),
+        values: Equality(),
+      ).equals(pPaths, expectedPPaths)) {
         print('DEBUG: pPaths (actual): $pPaths');
         print('DEBUG: expectedPPaths: $expectedPPaths');
       }
 
       expect(
-        MapEquality(keys: ListEquality(), values: Equality())
-            .equals(pPaths, expectedPPaths),
+        MapEquality(
+          keys: ListEquality(),
+          values: Equality(),
+        ).equals(pPaths, expectedPPaths),
         isTrue,
       );
 
@@ -125,15 +135,19 @@ void main() {
       };
 
       // Debugging print statements
-      if (!MapEquality(keys: ListEquality(), values: Equality())
-          .equals(mPaths, expectedMPaths)) {
+      if (!MapEquality(
+        keys: ListEquality(),
+        values: Equality(),
+      ).equals(mPaths, expectedMPaths)) {
         print('DEBUG: mPaths (actual): $mPaths');
         print('DEBUG: expectedMPaths: $expectedMPaths');
       }
 
       expect(
-        MapEquality(keys: ListEquality(), values: Equality())
-            .equals(mPaths, expectedMPaths),
+        MapEquality(
+          keys: ListEquality(),
+          values: Equality(),
+        ).equals(mPaths, expectedMPaths),
         isTrue,
       );
     });

@@ -3,12 +3,15 @@ import '../../fp_growth.dart';
 
 /// Exports frequent itemsets to a JSON-encodable list of maps.
 List<Map<String, dynamic>> frequentItemsetsToJsonEncodable<T>(
-    Map<List<T>, int> itemsets) {
+  Map<List<T>, int> itemsets,
+) {
   return itemsets.entries
-      .map((entry) => {
-            'itemset': entry.key.map((e) => e.toString()).toList(),
-            'support': entry.value,
-          })
+      .map(
+        (entry) => {
+          'itemset': entry.key.map((e) => e.toString()).toList(),
+          'support': entry.value,
+        },
+      )
       .toList();
 }
 
@@ -41,17 +44,20 @@ String exportFrequentItemsetsToCsv<T>(
 
 /// Exports association rules to a JSON-encodable list of maps.
 List<Map<String, dynamic>> rulesToJsonEncodable<T>(
-    List<AssociationRule<T>> rules) {
+  List<AssociationRule<T>> rules,
+) {
   return rules
-      .map((rule) => {
-            'antecedent': rule.antecedent.map((e) => e.toString()).toList(),
-            'consequent': rule.consequent.map((e) => e.toString()).toList(),
-            'support': rule.support,
-            'confidence': rule.confidence,
-            'lift': rule.lift,
-            'leverage': rule.leverage,
-            'conviction': rule.conviction.isInfinite ? null : rule.conviction,
-          })
+      .map(
+        (rule) => {
+          'antecedent': rule.antecedent.map((e) => e.toString()).toList(),
+          'consequent': rule.consequent.map((e) => e.toString()).toList(),
+          'support': rule.support,
+          'confidence': rule.confidence,
+          'lift': rule.lift,
+          'leverage': rule.leverage,
+          'conviction': rule.conviction.isInfinite ? null : rule.conviction,
+        },
+      )
       .toList();
 }
 
@@ -77,12 +83,15 @@ String exportRulesToCsv<T>(
   );
 
   for (final rule in rules) {
-    final antecedentStr =
-        rule.antecedent.map((e) => e.toString()).join(delimiter);
-    final consequentStr =
-        rule.consequent.map((e) => e.toString()).join(delimiter);
-    final convictionStr =
-        rule.conviction.isInfinite ? 'INF' : rule.conviction.toString();
+    final antecedentStr = rule.antecedent
+        .map((e) => e.toString())
+        .join(delimiter);
+    final consequentStr = rule.consequent
+        .map((e) => e.toString())
+        .join(delimiter);
+    final convictionStr = rule.conviction.isInfinite
+        ? 'INF'
+        : rule.conviction.toString();
 
     buffer.writeln(
       '"$antecedentStr",'

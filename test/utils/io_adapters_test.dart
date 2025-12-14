@@ -4,7 +4,8 @@ import 'package:test/test.dart';
 void main() {
   group('IO Adapters', () {
     test('correctly parses a simple CSV string', () {
-      final csv = 'a,b,c\n'
+      final csv =
+          'a,b,c\n'
           'd,e\n'
           'f';
       final expected = [
