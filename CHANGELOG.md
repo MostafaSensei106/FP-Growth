@@ -1,3 +1,7 @@
+## 1.0.2
+
+- chore(changelog): Add 1.0.2 release notes
+
 ## 1.0.1
 
 - docs(readme): Update README with CLI usage and performance benchmarks
