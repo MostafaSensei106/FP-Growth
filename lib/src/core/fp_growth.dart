@@ -109,14 +109,17 @@ Map<List<int>, int> mineLogic<T>(
   final frequentItemsets = <List<int>, int>{};
 
   // Sort items by frequency (ascending) to process from least to most frequent
-  final sortedItems = frequency.keys.toList()
+
+  final entries = frequency.entries.toList()
     ..sort((a, b) {
-      final compare = frequency[a]!.compareTo(frequency[b]!);
+      final compare = a.value.compareTo(b.value);
       if (compare == 0) {
-        return a.compareTo(b);
+        return a.key.compareTo(b.key);
       }
       return compare;
     });
+
+  final sortedItems = entries.map((e) => e.key).toList();
 
   logger.debug(
     'Mining conditional tree for prefix: ${prefix.map(mapper.getItem).join(', ')}',
