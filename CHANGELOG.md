@@ -1,5 +1,7 @@
 ## 1.0.2
 
+- docs(benchmarks): Update performance figures using compiled executables instead of run with `dart` for more accuracy
+- docs(readme): Update README with CLI usage and performance benchmarks
 - chore(changelog): Add 1.0.2 release notes
 
 ## 1.0.1
