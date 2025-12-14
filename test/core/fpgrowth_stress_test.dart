@@ -74,7 +74,8 @@ void main() {
       stopwatch.stop();
 
       print(
-          'Stress Test (10k txs) completed in ${stopwatch.elapsedMilliseconds} ms.');
+        'Stress Test (10k txs) completed in ${stopwatch.elapsedMilliseconds} ms.',
+      );
       print('Found ${frequentItemsets.length} frequent itemsets.');
 
       // Basic sanity check
@@ -119,25 +120,31 @@ void main() {
     // This test is very slow and should be run manually.
     // To run it, remove the skip tag and run:
     // dart test --run-skipped
-    test('handles 100k transactions', () async {
-      final transactions = generateRandomTransactions(
-        numTransactions: 100000,
-        maxItemsPerTransaction: 20,
-        alphabetSize: 100,
-      );
-      final fpGrowth = FPGrowth<String>(minSupport: 1000.0); // 1% support
-      final stopwatch = Stopwatch()..start();
+    test(
+      'handles 100k transactions',
+      () async {
+        final transactions = generateRandomTransactions(
+          numTransactions: 100000,
+          maxItemsPerTransaction: 20,
+          alphabetSize: 100,
+        );
+        final fpGrowth = FPGrowth<String>(minSupport: 1000.0); // 1% support
+        final stopwatch = Stopwatch()..start();
 
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
-      stopwatch.stop();
+        fpGrowth.addTransactions(transactions);
+        final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+        stopwatch.stop();
 
-      print(
-          'Stress Test (100k txs) completed in ${stopwatch.elapsedMilliseconds} ms.');
-      print('Found ${frequentItemsets.length} frequent itemsets.');
+        print(
+          'Stress Test (100k txs) completed in ${stopwatch.elapsedMilliseconds} ms.',
+        );
+        print('Found ${frequentItemsets.length} frequent itemsets.');
 
-      expect(frequentItemsets, isNotNull);
-      expect(frequentItemsets, isNotEmpty);
-    }, timeout: Timeout(Duration(minutes: 5)), tags: ['slow']);
+        expect(frequentItemsets, isNotNull);
+        expect(frequentItemsets, isNotEmpty);
+      },
+      timeout: Timeout(Duration(minutes: 5)),
+      tags: ['slow'],
+    );
   });
 }

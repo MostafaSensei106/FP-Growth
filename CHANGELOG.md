@@ -1,6 +1,9 @@
 ## 1.0.2
 
-- docs(benchmarks): Update performance figures using compiled executables instead of run with `dart` for more accuracy
+- test(property): Add property-based tests for input order independence and support monotonicity
+- fix(core): Fix determinism issue by enforcing stable sorting for equal-frequency items
+- test(stress): Add stress and scale tests (10k, 100k, single large transaction)
+- docs(benchmarks): Update performance figures using compiled executables instead of dart run
 - docs(readme): Update README with CLI usage and performance benchmarks
 - chore(changelog): Add 1.0.2 release notes
 

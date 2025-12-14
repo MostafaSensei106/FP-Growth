@@ -78,8 +78,10 @@ Set<Set<T>> getProperSubsets<T>(Set<T> itemset) {
 void main() {
   group('FPGrowth Property-Based Tests', () {
     test('results are independent of input transaction order', () async {
-      final transactions =
-          generateRandomTransactions(numTransactions: 200, alphabetSize: 20);
+      final transactions = generateRandomTransactions(
+        numTransactions: 200,
+        alphabetSize: 20,
+      );
       const minSupport = 10;
 
       final fpGrowth1 = FPGrowth<String>(minSupport: minSupport.toDouble());
@@ -111,8 +113,9 @@ void main() {
       fpGrowth.addTransactions(transactions);
       final frequentItemsets = await fpGrowth.mineFrequentItemsets();
 
-      final frequentKeysAsSets =
-          frequentItemsets.keys.map((k) => k.toSet()).toSet();
+      final frequentKeysAsSets = frequentItemsets.keys
+          .map((k) => k.toSet())
+          .toSet();
 
       for (final itemset in frequentItemsets.keys) {
         if (itemset.length > 1) {
@@ -129,40 +132,44 @@ void main() {
       }
     });
 
-    test('all returned itemsets meet minSupport and have correct count',
-        () async {
-      final transactions =
-          generateRandomTransactions(numTransactions: 300, alphabetSize: 30);
-      const minSupport = 15;
+    test(
+      'all returned itemsets meet minSupport and have correct count',
+      () async {
+        final transactions = generateRandomTransactions(
+          numTransactions: 300,
+          alphabetSize: 30,
+        );
+        const minSupport = 15;
 
-      final fpGrowth = FPGrowth<String>(minSupport: minSupport.toDouble());
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+        final fpGrowth = FPGrowth<String>(minSupport: minSupport.toDouble());
+        fpGrowth.addTransactions(transactions);
+        final frequentItemsets = await fpGrowth.mineFrequentItemsets();
 
-      for (final entry in frequentItemsets.entries) {
-        final itemset = entry.key;
-        final reportedSupport = entry.value;
+        for (final entry in frequentItemsets.entries) {
+          final itemset = entry.key;
+          final reportedSupport = entry.value;
 
-        // Manually calculate support to verify
-        int actualSupport = 0;
-        for (final transaction in transactions) {
-          if (itemset.every((item) => transaction.contains(item))) {
-            actualSupport++;
+          // Manually calculate support to verify
+          int actualSupport = 0;
+          for (final transaction in transactions) {
+            if (itemset.every((item) => transaction.contains(item))) {
+              actualSupport++;
+            }
           }
-        }
 
-        expect(
-          reportedSupport,
-          equals(actualSupport),
-          reason: 'Reported support for $itemset is incorrect.',
-        );
-        expect(
-          actualSupport,
-          greaterThanOrEqualTo(minSupport),
-          reason:
-              'Itemset $itemset has support $actualSupport, which is below minSupport $minSupport.',
-        );
-      }
-    });
+          expect(
+            reportedSupport,
+            equals(actualSupport),
+            reason: 'Reported support for $itemset is incorrect.',
+          );
+          expect(
+            actualSupport,
+            greaterThanOrEqualTo(minSupport),
+            reason:
+                'Itemset $itemset has support $actualSupport, which is below minSupport $minSupport.',
+          );
+        }
+      },
+    );
   });
 }

@@ -1,0 +1,3 @@
+tags:
+  slow:
+    timeout: 6m
