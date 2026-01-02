@@ -63,9 +63,11 @@
       
 <section class="desc markdown">
   <p>The number of isolates to use for parallel processing.</p>
+<p>This has no effect on the web platform, where mining will always be
+single-threaded.</p>
 <p>A value of 1 means no parallelism (runs on the main isolate).
 A value greater than 1 will attempt to distribute the mining tasks
-across multiple isolates.</p>
+across multiple isolates on native platforms.</p>
 </section>
 
       
@@ -100,7 +102,7 @@ across multiple isolates.</p>
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.2
   </span>
   
 </footer>

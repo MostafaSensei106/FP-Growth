@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the transactions property from the FPGrowth class, for the Dart programming language.">
-  <title>transactions property - FPGrowth class - fp_growth library - Dart API</title>
+  <meta name="description" content="API docs for the mineFromList method from the FPGrowth class, for the Dart programming language.">
+  <title>mineFromList method - FPGrowth class - fp_growth library - Dart API</title>
 
 
   
@@ -27,9 +27,9 @@
     <li><a href="../../index.html">fp_growth</a></li>
     <li><a href="../../fp_growth/">fp_growth.dart</a></li>
     <li><a href="../../fp_growth/FPGrowth-class.html">FPGrowth<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
-    <li class="self-crumb">transactions property</li>
+    <li class="self-crumb">mineFromList method</li>
   </ol>
-  <div class="self-name">transactions</div>
+  <div class="self-name">mineFromList</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -49,40 +49,38 @@
     data-above-sidebar="fp_growth&#47;FPGrowth-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-property">transactions</span> property 
+<h1><span class="kind-method">mineFromList</span> method 
 </h1></div>
 
-    
-
-    
-        
-  <section id="getter">
     <section class="multi-line-signature">
       
-      <span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>&gt;</span></span>
-      get
-      <span class="name ">transactions</span>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">(<span class="field"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, </span><span class="field"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span></span>)</span>&gt;</span></span>
+<span class="name ">mineFromList</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="mineFromList-param-transactions"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">transactions</span></span></li>
+</ol>)
+
       
 
     </section>
     
 <section class="desc markdown">
-  <p>A list of all transactions that have been added.</p>
+  <p>A convenience method to mine frequent itemsets from an in-memory list.</p>
+<p>This is simpler to use than the standard <a href="../../fp_growth/FPGrowth/mine.html">mine</a> method if your dataset
+is already loaded into a list.</p>
 </section>
+
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">List&lt;List&lt;T&gt;&gt; get transactions =&gt;
-    _mappedTransactions.map((tx) =&gt; _mapper.unmapItemset(tx)).toList();</code></pre>
+  <pre class="language-dart"><code class="language-dart">Future&lt;(Map&lt;List&lt;T&gt;, int&gt;, int)&gt; mineFromList(List&lt;List&lt;T&gt;&gt; transactions) {
+  return mine(() =&gt; Stream.fromIterable(transactions));
+}</code></pre>
 </section>
 
-  </section>
 
-
-</div> <!-- /.main-content -->
-<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-  <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
 <header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
@@ -92,19 +90,19 @@
     <li><a href="../../index.html">fp_growth</a></li>
     <li><a href="../../fp_growth/">fp_growth</a></li>
     <li><a href="../../fp_growth/FPGrowth-class.html">FPGrowth<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
-    <li class="self-crumb">transactions property</li>
+    <li class="self-crumb">mineFromList method</li>
 </ol>
 
-  <h5>FPGrowth class</h5>
-  <div id="dartdoc-sidebar-left-content"></div>
-</div><!--/.sidebar-offcanvas-->
-<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>FPGrowth class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
 </div><!--/.sidebar-offcanvas-->
 </main>
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.2
   </span>
   
 </footer>

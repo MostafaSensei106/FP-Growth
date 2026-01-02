@@ -84,8 +84,10 @@
   assert(antecedent.isNotEmpty, &#39;Antecedent cannot be empty&#39;);
   assert(consequent.isNotEmpty, &#39;Consequent cannot be empty&#39;);
   assert(support &gt;= 0.0 &amp;&amp; support &lt;= 1.0, &#39;Support must be between 0 and 1&#39;);
-  assert(confidence &gt;= 0.0 &amp;&amp; confidence &lt;= 1.0,
-      &#39;Confidence must be between 0 and 1&#39;);
+  assert(
+    confidence &gt;= 0.0 &amp;&amp; confidence &lt;= 1.0,
+    &#39;Confidence must be between 0 and 1&#39;,
+  );
 }</code></pre>
 </section>
 
@@ -114,7 +116,7 @@
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.2
   </span>
   
 </footer>

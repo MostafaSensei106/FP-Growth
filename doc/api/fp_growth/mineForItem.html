@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the mineForItem function from the fp_growth library, for the Dart programming language.">
+  <title>mineForItem function - fp_growth library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">fp_growth</a></li>
+    <li><a href="../fp_growth/">fp_growth.dart</a></li>
+    <li class="self-crumb">mineForItem&lt;<wbr><span class="type-parameter">T</span>&gt; function</li>
+  </ol>
+  <div class="self-name">mineForItem</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="fp_growth&#47;fp_growth-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">mineForItem&lt;<wbr><span class="type-parameter">T</span>&gt;</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>
+<span class="name ">mineForItem</span>&lt;<wbr><span class="type-parameter">T</span>&gt;(<wbr><ol class="parameter-list"> <li><span class="parameter" id="mineForItem-param-tree"><span class="type-annotation">FPTree</span> <span class="parameter-name">tree</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-item"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">item</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-prefix"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">prefix</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-frequency"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">frequency</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-absoluteMinSupport"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">absoluteMinSupport</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-mapper"><span class="type-annotation">ItemMapper<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">mapper</span>, </span></li>
+<li><span class="parameter" id="mineForItem-param-logger"><span class="type-annotation">Logger</span> <span class="parameter-name">logger</span>, </span></li>
+</ol>)
+
+        
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Recursively mines frequent itemsets for a specific item and its conditional tree.</p>
+<p>This function explores the FP-Tree starting from a given <code>item</code>, builds its
+conditional FP-Tree, and recursively mines it to find all frequent itemsets
+that are extensions of the current <code>prefix</code> and the <code>item</code>.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Map&lt;List&lt;int&gt;, int&gt; mineForItem&lt;T&gt;(
+  FPTree tree,
+  int item,
+  List&lt;int&gt; prefix,
+  Map&lt;int, int&gt; frequency,
+  int absoluteMinSupport,
+  ItemMapper&lt;T&gt; mapper,
+  Logger logger,
+) {
+  final frequentItemsets = &lt;List&lt;int&gt;, int&gt;{};
+  final newPrefix = List&lt;int&gt;.from(prefix)..add(item);
+  final support = frequency[item]!;
+  frequentItemsets[newPrefix] = support;
+
+  logger.debug(
+    &#39;  Processing item: ${mapper.getItem(item)} (support: $support)&#39;,
+  );
+
+  &#47;&#47; Find conditional pattern bases
+  final conditionalPatternBases = tree.findPaths(item);
+
+  &#47;&#47; Calculate conditional frequency
+  final conditionalFrequency = &lt;int, int&gt;{};
+  for (final entry in conditionalPatternBases.entries) {
+    for (final itemInPath in entry.key) {
+      conditionalFrequency[itemInPath] =
+          (conditionalFrequency[itemInPath] ?? 0) + entry.value;
+    }
+  }
+
+  final conditionalFrequentItems = filterFrequentItems(
+    conditionalFrequency,
+    absoluteMinSupport,
+  );
+
+  if (conditionalFrequentItems.isNotEmpty) {
+    &#47;&#47; Reconstruct transactions for conditional tree
+    final weightedTransactions = buildConditionalTransactions(
+      conditionalPatternBases,
+      conditionalFrequentItems,
+    );
+
+    if (weightedTransactions.isNotEmpty) {
+      final conditionalTree = FPTree(conditionalFrequentItems)
+        ..addWeightedTransactions(weightedTransactions);
+
+      &#47;&#47; Single-path optimization
+      if (conditionalTree.isSinglePath()) {
+        logger.debug(
+          &#39;    Single-path optimization applied for prefix: ${newPrefix.map(mapper.getItem).join(&#39;, &#39;)}&#39;,
+        );
+        final pathNodes = conditionalTree.getSinglePathNodes();
+        final allSubsets = generateSubsets(pathNodes);
+
+        for (final subset in allSubsets) {
+          final itemset = subset.map((node) =&gt; node.item!).toList();
+          final support = subset
+              .map((node) =&gt; node.count)
+              .reduce((a, b) =&gt; a &lt; b ? a : b);
+          frequentItemsets[List&lt;int&gt;.from(newPrefix)..addAll(itemset)] =
+              support;
+        }
+      } else {
+        &#47;&#47; Recursively mine the conditional tree
+        final minedPatterns = mineLogic(
+          conditionalTree,
+          newPrefix,
+          conditionalFrequentItems,
+          absoluteMinSupport,
+          mapper,
+          logger,
+        );
+        frequentItemsets.addAll(minedPatterns);
+      }
+    }
+  }
+
+  return frequentItemsets;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">fp_growth</a></li>
+    <li><a href="../fp_growth/">fp_growth</a></li>
+    <li class="self-crumb">mineForItem&lt;<wbr><span class="type-parameter">T</span>&gt; function</li>
+</ol>
+
+    <h5>fp_growth library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fp_growth
+      1.0.2
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

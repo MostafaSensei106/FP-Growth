@@ -24,7 +24,7 @@
 <header id="title">
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
-    <li><a href="https://github.com/MostafaSensei106/fp_growth">fp_growth package</a></li>
+    <li><a href="https://github.com/MostafaSensei106/FP-Growth">fp_growth package</a></li>
   </ol>
   <div class="self-name">fp_growth</div>
   <form class="search navbar-right" role="search">
@@ -80,15 +80,15 @@
 </ul>
 <h3 id="-performance--scalability">🛠️ Performance &amp; Scalability</h3>
 <ul>
-<li><strong>Parallel Processing</strong>: Harnesses the power of multiple CPU cores by using <strong>Isolates</strong> to parallelize the mining process, significantly speeding up analysis on large datasets.</li>
-<li><strong>Stream Processing</strong>: Built to handle massive datasets that don't fit in memory. The <code>StreamProcessor</code> allows you to process transaction data as a stream, ensuring a low and constant memory footprint.</li>
-<li><strong>Memory Efficiency</strong>: Employs internal integer mapping for items to dramatically reduce memory usage and improve processing speed.</li>
+<li><strong>Parallel Processing</strong>: Harnesses the power of multiple CPU cores by using a <strong>fixed-size Isolate Pool</strong> to parallelize the mining process, efficiently speeding up analysis on large datasets without the overhead of spawning new isolates for every task.</li>
+<li><strong>Memory-Optimized Two-Pass Architecture</strong>: Built to handle massive datasets. The algorithm processes transactions in two efficient passes, calculating frequencies first and then building the FP-Tree, without holding the entire transaction list in memory during the recursive mining process. This design drastically reduces peak memory usage.</li>
+<li><strong>Efficient Data Structures</strong>: Employs internal integer mapping for items and uses weighted conditional FP-Trees to dramatically reduce memory usage and improve processing speed during recursive mining steps.</li>
 </ul>
 <h3 id="-utilities">⚙️ Utilities</h3>
 <ul>
-<li><strong>CSV Data Adapter</strong>: Easily load transactional data directly from CSV files.</li>
+<li><strong>CSV Data Adapter</strong>: Easily load transactional data directly from CSV files using modern stream-based parsers.</li>
 <li><strong>Data Exporters</strong>: Export frequent itemsets and association rules to <code>JSON</code>, <code>CSV</code>, or formatted <code>Text</code>.</li>
-<li><strong>Command-Line Interface (CLI)</strong>: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, now with support for streaming large files and multiple output formats.</li>
+<li><strong>Command-Line Interface (CLI)</strong>: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, with support for parallelism, large files, and multiple output formats.</li>
 </ul>
 <hr>
 <h2 id="-installation">📦 Installation</h2>
@@ -96,7 +96,7 @@
 <li>
 <p>Add this to your package's <code>pubspec.yaml</code> file:</p>
 <pre class="language-yaml"><code class="language-yaml">dependencies:
-  fp_growth: ^1.0.0 # Replace with the latest version
+  fp_growth: ^1.0.3 # Replace with the latest version
 </code></pre>
 </li>
 <li>
@@ -110,77 +110,93 @@
 </ol>
 <hr>
 <h2 id="-usage">🚀 Usage</h2>
-<h3 id="quick-start">Quick Start</h3>
-<p>Import the library and start mining patterns in just a few lines of code.</p>
+<p>This library provides a two-step process for market basket analysis:</p>
+<ol>
+<li><strong>Mine Frequent Itemsets</strong>: Discover which groups of items appear together frequently.</li>
+<li><strong>Generate Association Rules</strong>: Create rules (<code>{A} =&gt; {B}</code>) from those itemsets to uncover actionable insights.</li>
+</ol>
+<h3 id="1-mining-frequent-itemsets">1. Mining Frequent Itemsets</h3>
+<p>First, find frequent itemsets from your data source.</p>
+<blockquote>
+<p><strong>Which mining API should I use?</strong></p>
+<ul>
+<li><strong>In-memory <code>List</code>?</strong> ➡️ Use <code>fpGrowth.mineFromList()</code> (easiest).</li>
+<li><strong>CSV file?</strong> ➡️ Use <code>fpGrowth.mineFromCsv()</code> (recommended for large files).</li>
+<li><strong>Database or custom source?</strong> ➡️ Use <code>fpGrowth.mine()</code> with a stream provider (advanced).</li>
+</ul>
+</blockquote>
+<h4 id="example-from-an-in-memory-list">Example: From an In-Memory List</h4>
 <pre class="language-dart"><code class="language-dart">import 'package:fp_growth/fp_growth.dart';
 
-Future&lt;void&gt; main() async {
-  // 1. Define your transactions
-  final transactions = [
-    ['bread', 'milk'],
-    ['bread', 'diaper', 'beer', 'eggs'],
-    ['milk', 'diaper', 'beer', 'cola'],
-    ['bread', 'milk', 'diaper', 'beer'],
-    ['bread', 'milk', 'diaper', 'cola'],
-  ];
-  final totalTransactions = transactions.length;
+final transactions = [
+  ['bread', 'milk'],
+  ['bread', 'diaper', 'beer', 'eggs'],
+  ['milk', 'diaper', 'beer', 'cola'],
+];
 
-  // 2. Instantiate FPGrowth with a minimum support threshold
-  // minSupport can be a percentage (0.0-1.0) or an absolute count (e.g., 3).
-  final fpGrowth = FPGrowth&lt;String&gt;(minSupport: 3);
+// Instantiate FPGrowth and find itemsets with a minimum support of 2.
+final fpGrowth = FPGrowth&lt;String&gt;(minSupport: 2);
+final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromList(transactions);
 
-  // 3. Add transactions and mine for frequent itemsets
-  fpGrowth.addTransactions(transactions);
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+// frequentItemsets is a Map&lt;List&lt;String&gt;, int&gt;
+// totalTransactions is an int
+</code></pre>
+<h3 id="2-generating-association-rules">2. Generating Association Rules</h3>
+<p>Once you have the frequent itemsets, you can generate association rules. The <code>RuleGenerator</code> class takes the frequent itemsets and the total transaction count to calculate metrics like confidence and lift.</p>
+<pre class="language-dart"><code class="language-dart">import 'package:fp_growth/fp_growth.dart';
 
-  print('Frequent Itemsets:');
-  frequentItemsets.forEach((itemset, support) {
-    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(1);
-    print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
-  });
+// (Continuing from the previous example...)
 
-  // 4. Generate association rules with a minimum confidence threshold
-  final ruleGenerator = RuleGenerator&lt;String&gt;(
-    minConfidence: 0.7, // 70% minimum confidence
-    frequentItemsets: frequentItemsets,
-    totalTransactions: totalTransactions,
-  );
+// 1. Setup the RuleGenerator
+final generator = RuleGenerator&lt;String&gt;(
+  minConfidence: 0.7, // 70%
+  frequentItemsets: frequentItemsets,
+  totalTransactions: totalTransactions,
+);
 
-  final rules = ruleGenerator.generateRules();
+// 2. Generate the rules
+final rules = generator.generateRules();
 
-  print('\nAssociation Rules:');
-  for (final rule in rules) {
-    // formatWithMetrics() provides a readable output with all key metrics.
-    print('  ${rule.formatWithMetrics()}');
-  }
+// 3. Print the rules and their metrics
+for (final rule in rules) {
+  print(rule.formatWithMetrics());
+  // Example Output:
+  // {beer} =&gt; {diaper} [sup: 0.667, conf: 1.000, lift: 1.50, lev: 0.222, conv: ∞]
 }
 </code></pre>
-<h3 id="streaming-data">Streaming Data</h3>
-<p>For large datasets, use the <code>StreamProcessor</code> to avoid loading the entire file into memory.</p>
+<h3 id="other-data-sources">Other Data Sources</h3>
+<h4 id="from-a-csv-file">From a CSV File</h4>
+<p>For large files, <code>mineFromCsv</code> is the most memory-efficient option. It requires importing <code>package:fp_growth/fp_growth_io.dart</code> and is not available on the web.</p>
+<pre class="language-dart"><code class="language-dart">import 'dart:io';
+import 'package:fp_growth/fp_growth_io.dart'; // Note the IO-specific import!
+
+Future&lt;void&gt; processLargeFile(String filePath) async {
+  final fpGrowth = FPGrowth&lt;String&gt;(
+    minSupport: 500,
+    parallelism: Platform.numberOfProcessors,
+  );
+
+  final (itemsets, count) = await fpGrowth.mineFromCsv(filePath);
+
+  // Now you can generate rules with the `itemsets` and `count`.
+  print('Found ${itemsets.length} frequent itemsets in $count transactions.');
+}
+</code></pre>
+<h4 id="from-a-custom-stream">From a Custom Stream</h4>
+<p>For databases or other custom sources, use the core <code>mine</code> method with a <strong>stream provider function</strong> (<code>Stream&lt;List&lt;T&gt;&gt; Function()</code>). This function must return a <em>new stream</em> each time it's called.</p>
 <pre class="language-dart"><code class="language-dart">import 'dart:async';
 import 'package:fp_growth/fp_growth.dart';
 
-Future&lt;void&gt; runStreamExample() async {
-  // 1. Create a stream of transactions (e.g., from a file)
-  final transactionStream = Stream.fromIterable([
-    ['a', 'b'],
-    ['b', 'c', 'd'],
-    ['a', 'c', 'd', 'e'],
+Future&lt;void&gt; useCustomStream() async {
+  Stream&lt;List&lt;String&gt;&gt; streamProvider() =&gt; Stream.fromIterable([
+    ['a', 'b', 'c'], ['a', 'b'], ['b', 'c'], ['a', 'c'],
   ]);
 
-  // 2. Instantiate FPGrowth and the StreamProcessor
   final fpGrowth = FPGrowth&lt;String&gt;(minSupport: 2);
-  final streamProcessor = StreamProcessor(fpGrowth);
+  final (itemsets, count) = await fpGrowth.mine(streamProvider);
 
-  // 3. Process the stream
-  await streamProcessor.process(transactionStream);
-  print('Stream processing complete.');
-
-  // 4. Mine the frequent itemsets from the processed transactions
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
-
-  print('Found ${frequentItemsets.length} frequent itemsets from stream.');
-  // ...and generate rules as in the standard example.
+  // Generate rules with the `itemsets` and `count`.
+  print('Found ${itemsets.length} itemsets in $count transactions.');
 }
 </code></pre>
 <hr>
@@ -250,16 +266,54 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 <td>Set the logging level (<code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, <code>none</code>).</td>
 <td><code>info</code></td>
 </tr>
+<tr>
+<td><code>--parallelism</code></td>
+<td><code>-p</code></td>
+<td>Number of isolates to use for parallel processing.</td>
+<td><code>1</code></td>
+</tr>
 </tbody>
 </table>
 <hr>
 <h2 id="-performance">⚡ Performance</h2>
-<p>The <code>fp_growth</code> library is designed for high performance. The following benchmark was run on a standard machine <strong>AMD Ryzen™ 7 5800H</strong>. to demonstrate its capability in handling a large dataset.</p>
-<p><strong>Benchmark</strong>: Mining frequent itemsets from a dataset of <strong>1,000,000 transactions</strong>. The result is the average of 10 consecutive runs with a minSupport of 0.05 (5%).</p>
-<ul>
-<li><strong>Command</strong>: <code>dart run bin/fp_growth.dart -i &lt;large_dataset.csv&gt;</code></li>
-<li><strong>Average Execution Time</strong>: <strong>6.18 seconds</strong></li>
-</ul>
+<p>The <code>fp_growth</code> library is optimized for both speed and memory efficiency. The following benchmarks were run on an <strong>AMD Ryzen™ 7 5800H (16 Threads)</strong> with a dataset of <strong>1,000,000 transactions</strong> and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v1.0.3) compared to the older version (v1.0.2).</p>
+<p><strong>Old Benchmark (v1.0.2):</strong></p>
+<p><strong>Averaged Execution Time:</strong> ~2.73 seconds (single-threaded, file-based).</p>
+<h3 id="-new-benchmark-results-v103">🚀 New Benchmark Results (v1.0.3)</h3>
+<table>
+<thead>
+<tr>
+<th>API Method</th>
+<th>Execution Time</th>
+<th>Speed vs. v1.0.2</th>
+<th>Memory Usage (Delta)</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>In-Memory (<code>mineFromList</code>)</strong></td>
+<td><strong>1.46 s</strong></td>
+<td><strong>1.87× faster</strong></td>
+<td><strong>+28.4 MB</strong></td>
+<td>Fastest execution, requires full dataset in RAM.</td>
+</tr>
+<tr>
+<td><strong>CSV Streaming (<code>mineFromCsv</code>)</strong></td>
+<td><strong>2.32 s</strong></td>
+<td><strong>1.18× faster</strong></td>
+<td><strong>-0.70 MB</strong></td>
+<td>Minimal memory footprint, ideal for very large files.</td>
+</tr>
+<tr>
+<td><strong>Custom Stream (<code>mine</code>)</strong></td>
+<td><strong>1.82 s</strong></td>
+<td><strong>1.50× faster</strong></td>
+<td>Not measured</td>
+<td>Flexible streaming for custom data sources.</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="-contributing">🤝 Contributing</h2>
 <p>Contributions are welcome! Here’s how to get started:</p>
@@ -293,7 +347,16 @@ Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei1
   <span class="name"><a href="fp_growth/">fp_growth</a></span> 
 
 </dt>
-<dd>
+<dd>A comprehensive, memory-efficient implementation of the FP-Growth algorithm
+for frequent itemset mining and association rule generation.
+</dd>
+
+          <dt id="fp_growth_io">
+  <span class="name"><a href="fp_growth_io/">fp_growth_io</a></span> 
+
+</dt>
+<dd>A library that provides I/O-related functionality for the FP-Growth package,
+including support for processing CSV files.
 </dd>
 
         </dl>
@@ -307,13 +370,14 @@ Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei1
   </form>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-    <li><a href="https://github.com/MostafaSensei106/fp_growth">fp_growth package</a></li>
+    <li><a href="https://github.com/MostafaSensei106/FP-Growth">fp_growth package</a></li>
 </ol>
 
     <h5 class="hidden-xs"><span class="package-name">fp_growth</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
       <li><a href="fp_growth/">fp_growth</a></li>
+      <li><a href="fp_growth_io/">fp_growth_io</a></li>
 </ol>
 
   </div>
@@ -323,7 +387,7 @@ Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei1
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.2
   </span>
   
 </footer>

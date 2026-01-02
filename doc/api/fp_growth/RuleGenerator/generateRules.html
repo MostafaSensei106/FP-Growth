@@ -72,24 +72,11 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">List&lt;AssociationRule&lt;T&gt;&gt; generateRules() {
   final List&lt;AssociationRule&lt;T&gt;&gt; rules = [];
-
   for (final itemset in frequentItemsets.keys) {
     if (itemset.length &gt; 1) {
-      final subsets = _findSubsets(itemset);
-      for (final subset in subsets) {
-        final antecedent = subset.toSet();
-        final consequent = itemset.toSet()..removeAll(antecedent);
-
-        if (antecedent.isNotEmpty &amp;&amp; consequent.isNotEmpty) {
-          final rule = _createRule(antecedent, consequent);
-          if (rule != null &amp;&amp; rule.confidence &gt;= minConfidence) {
-            rules.add(rule);
-          }
-        }
-      }
+      _generateRulesForItemset(itemset.toSet(), rules);
     }
   }
-
   return rules;
 }</code></pre>
 </section>
@@ -119,7 +106,7 @@
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.2
   </span>
   
 </footer>
