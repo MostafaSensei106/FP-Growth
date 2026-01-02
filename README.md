@@ -78,7 +78,7 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
 ## 🚀 Usage
 
-This library provides a two-step process for market basket analysis:
+This library provides a two-step process for analysis:
 
 1.  **Mine Frequent Itemsets**: Discover which groups of items appear together frequently.
 2.  **Generate Association Rules**: Create rules (`{A} => {B}`) from those itemsets to uncover actionable insights.
@@ -89,9 +89,9 @@ First, find frequent itemsets from your data source.
 
 > **Which mining API should I use?**
 >
-> - **In-memory `List`?** ➡️ Use `fpGrowth.mineFromList()` (easiest).
-> - **CSV file?** ➡️ Use `fpGrowth.mineFromCsv()` (recommended for large files).
-> - **Database or custom source?** ➡️ Use `fpGrowth.mine()` with a stream provider (advanced).
+> - **In-memory `List`?** ==> Use `fpGrowth.mineFromList()` (easiest).
+> - **CSV file?** ==> Use `fpGrowth.mineFromCsv()` (recommended for large files).
+> - **Database or custom source?** ==> Use `fpGrowth.mine()` with a stream provider (advanced).
 
 #### Example: From an In-Memory List
 
@@ -151,7 +151,7 @@ import 'package:fp_growth/fp_growth_io.dart'; // Note the IO-specific import!
 
 Future<void> processLargeFile(String filePath) async {
   final fpGrowth = FPGrowth<String>(
-    minSupport: 500,
+    minSupport: 70,
     parallelism: Platform.numberOfProcessors,
   );
 
@@ -236,13 +236,13 @@ The `fp_growth` library is optimized for both speed and memory efficiency. The f
 
 **Averaged Execution Time:** ~2.73 seconds (single-threaded, file-based).
 
-### 🚀 New Benchmark Results (v1.0.3)
+### Benchmark Results (v1.0.3)
 
-| API Method                        | Execution Time | Speed vs. v1.0.2 | Memory Usage (Delta) | Notes                                                 |
-| --------------------------------- | -------------- | ---------------- | -------------------- | ----------------------------------------------------- |
-| **In-Memory (`mineFromList`)**    | **1.46 s**     | **1.87× faster** | **+28.4 MB**         | Fastest execution, requires full dataset in RAM.      |
-| **CSV Streaming (`mineFromCsv`)** | **2.32 s**     | **1.18× faster** | **-0.70 MB**         | Minimal memory footprint, ideal for very large files. |
-| **Custom Stream (`mine`)**        | **1.82 s**     | **1.50× faster** | Not measured         | Flexible streaming for custom data sources.           |
+| API Method                        | Averaged Execution Time | Speed vs. v1.0.2 | Memory Usage (Delta) | Notes                                                 |
+| --------------------------------- | ----------------------- | ---------------- | -------------------- | ----------------------------------------------------- |
+| **In-Memory (`mineFromList`)**    | **1.46 s**              | **1.87× faster** | **+28.4 MB**         | Fastest execution, requires full dataset in RAM.      |
+| **CSV Streaming (`mineFromCsv`)** | **2.32 s**              | **1.18× faster** | **-0.70 MB**         | Minimal memory footprint, ideal for very large files. |
+| **Custom Stream (`mine`)**        | **1.82 s**              | **1.50× faster** | Not measured         | Flexible streaming for custom data sources.           |
 
 ---
 
