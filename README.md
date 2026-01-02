@@ -178,7 +178,7 @@ Future<void> useCustomStream() async {
   final fpGrowth = FPGrowth<String>(minSupport: 2);
   final (itemsets, count) = await fpGrowth.mine(streamProvider);
 
-  // Generate rules with the `itemsets` and `count`.
+  // Now you can generate rules with the `itemsets` and `count`.
   print('Found ${itemsets.length} itemsets in $count transactions.');
 }
 ```
