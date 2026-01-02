@@ -66,25 +66,29 @@
 it's treated as a percentage of the total transactions. Otherwise, it's
 treated as an absolute count.
 <code>logger</code> an optional logger instance. If not provided, a default logger with info level is used.
-<code>parallelism</code> the number of isolates to use for parallel processing. Defaults to 1.</p>
+<code>parallelism</code> the number of isolates to use for parallel processing. Defaults to 1.
+This is ignored on the web platform.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">FPGrowth({
-  required this.minSupport,
-  Logger? logger,
-  this.parallelism = 1,
-}) : _logger = logger ?? Logger() {
+  <pre class="language-dart"><code class="language-dart">FPGrowth({required this.minSupport, Logger? logger, this.parallelism = 1})
+  : _logger = logger ?? Logger() {
   if (minSupport &lt;= 0) {
     throw ArgumentError.value(
-        minSupport, &#39;minSupport&#39;, &#39;Must be greater than 0&#39;);
+      minSupport,
+      &#39;minSupport&#39;,
+      &#39;Must be greater than 0&#39;,
+    );
   }
   if (parallelism &lt; 1) {
     throw ArgumentError.value(
-        parallelism, &#39;parallelism&#39;, &#39;Must be at least 1&#39;);
+      parallelism,
+      &#39;parallelism&#39;,
+      &#39;Must be at least 1&#39;,
+    );
   }
 }</code></pre>
 </section>
@@ -114,7 +118,7 @@ treated as an absolute count.
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.3
   </span>
   
 </footer>

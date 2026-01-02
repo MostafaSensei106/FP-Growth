@@ -14,9 +14,9 @@ void main() {
       expect(node.next, isNull);
     });
 
-    test('default count is 1', () {
+    test('default count is 0', () {
       final node = FPNode(1);
-      expect(node.count, equals(1));
+      expect(node.count, equals(0));
     });
 
     test('incrementCount increases the count', () {

@@ -59,6 +59,10 @@
     </div>
 
     
+<section class="desc markdown">
+  <p>A comprehensive, memory-efficient implementation of the FP-Growth algorithm
+for frequent itemset mining and association rule generation.</p>
+</section>
 
 
     <section class="summary offset-anchor" id="classes">
@@ -88,15 +92,6 @@
   Generates association rules from a set of frequent itemsets.
 </dd>
 
-          <dt id="StreamProcessor">
-  <span class="name "><a href="../fp_growth/StreamProcessor-class.html">StreamProcessor</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
-
-</dt>
-<dd>
-  A class that processes transactions from a stream and adds them to an
-<a href="../fp_growth/FPGrowth-class.html">FPGrowth</a> instance.
-</dd>
-
       </dl>
     </section>
 
@@ -109,15 +104,93 @@
     <section class="summary offset-anchor" id="functions">
       <h2>Functions</h2>
       <dl class="callables">
-          <dt id="transactionsFromCsv" class="callable">
-  <span class="name"><a href="../fp_growth/transactionsFromCsv.html">transactionsFromCsv</a></span><span class="signature">(<wbr><span class="parameter" id="transactionsFromCsv-param-csvContent"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">csvContent</span></span>)
-    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>&gt;</span></span>
+          <dt id="buildConditionalTransactions" class="callable">
+  <span class="name"><a href="../fp_growth/buildConditionalTransactions.html">buildConditionalTransactions</a></span><span class="signature">(<wbr><span class="parameter" id="buildConditionalTransactions-param-conditionalPatternBases"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">conditionalPatternBases</span>, </span><span class="parameter" id="buildConditionalTransactions-param-conditionalFrequentItems"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">conditionalFrequentItems</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd>
-  Parses a CSV string into a list of transactions.
+  Builds weighted conditional transactions from conditional pattern bases.
+  
+
+</dd>
+
+          <dt id="calculateAbsoluteMinSupport" class="callable">
+  <span class="name"><a href="../fp_growth/calculateAbsoluteMinSupport.html">calculateAbsoluteMinSupport</a></span><span class="signature">(<wbr><span class="parameter" id="calculateAbsoluteMinSupport-param-minSupport"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span> <span class="parameter-name">minSupport</span>, </span><span class="parameter" id="calculateAbsoluteMinSupport-param-transactionCount"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">transactionCount</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Calculates the absolute minimum support count from a relative or absolute value.
+  
+
+</dd>
+
+          <dt id="filterFrequentItems" class="callable">
+  <span class="name"><a href="../fp_growth/filterFrequentItems.html">filterFrequentItems</a></span><span class="signature">(<wbr><span class="parameter" id="filterFrequentItems-param-frequency"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">frequency</span>, </span><span class="parameter" id="filterFrequentItems-param-absoluteMinSupport"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">absoluteMinSupport</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Filters a frequency map to include only items that meet the <code>absoluteMinSupport</code>.
+  
+
+</dd>
+
+          <dt id="generateSubsets" class="callable">
+  <span class="name"><a href="../fp_growth/generateSubsets.html">generateSubsets</a></span><span class="signature">(<wbr><span class="parameter" id="generateSubsets-param-nodes"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">FPNode</span>&gt;</span></span> <span class="parameter-name">nodes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">FPNode</span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Generates all non-empty subsets for a given list of <code>FPNode</code>s.
+  
+
+</dd>
+
+          <dt id="mineForItem" class="callable">
+  <span class="name"><a href="../fp_growth/mineForItem.html">mineForItem</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="mineForItem-param-tree"><span class="type-annotation">FPTree</span> <span class="parameter-name">tree</span>, </span><span class="parameter" id="mineForItem-param-item"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">item</span>, </span><span class="parameter" id="mineForItem-param-prefix"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">prefix</span>, </span><span class="parameter" id="mineForItem-param-frequency"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">frequency</span>, </span><span class="parameter" id="mineForItem-param-absoluteMinSupport"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">absoluteMinSupport</span>, </span><span class="parameter" id="mineForItem-param-mapper"><span class="type-annotation">ItemMapper<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">mapper</span>, </span><span class="parameter" id="mineForItem-param-logger"><span class="type-annotation">Logger</span> <span class="parameter-name">logger</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Recursively mines frequent itemsets for a specific item and its conditional tree.
+  
+
+</dd>
+
+          <dt id="mineLogic" class="callable">
+  <span class="name"><a href="../fp_growth/mineLogic.html">mineLogic</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="mineLogic-param-tree"><span class="type-annotation">FPTree</span> <span class="parameter-name">tree</span>, </span><span class="parameter" id="mineLogic-param-prefix"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">prefix</span>, </span><span class="parameter" id="mineLogic-param-frequency"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">frequency</span>, </span><span class="parameter" id="mineLogic-param-absoluteMinSupport"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">absoluteMinSupport</span>, </span><span class="parameter" id="mineLogic-param-mapper"><span class="type-annotation">ItemMapper<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">mapper</span>, </span><span class="parameter" id="mineLogic-param-logger"><span class="type-annotation">Logger</span> <span class="parameter-name">logger</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  The core recursive mining logic of the FP-Growth algorithm.
+  
+
+</dd>
+
+          <dt id="transactionsFromCsv" class="callable">
+  <span class="name"><a href="../fp_growth/transactionsFromCsv.html">transactionsFromCsv</a></span><span class="signature">(<wbr><span class="parameter" id="transactionsFromCsv-param-csvStream"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">csvStream</span>, {</span><span class="parameter" id="transactionsFromCsv-param-fieldDelimiter"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">fieldDelimiter</span> = <span class="default-value">&#39;,&#39;</span>, </span><span class="parameter" id="transactionsFromCsv-param-eol"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">eol</span> = <span class="default-value">&#39;\n&#39;</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parses a CSV byte stream efficiently.
   
 
 </dd>
@@ -143,6 +216,7 @@
     <ol>
       <li class="section-title">Libraries</li>
       <li><a href="../fp_growth/">fp_growth</a></li>
+      <li><a href="../fp_growth_io/">fp_growth_io</a></li>
 </ol>
 
   </div>
@@ -153,7 +227,7 @@
 <footer>
   <span class="no-break">
     fp_growth
-      1.0.0
+      1.0.3
   </span>
   
 </footer>

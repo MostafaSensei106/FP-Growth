@@ -40,11 +40,11 @@ void main() {
     });
 
     test('constructor builds the tree correctly', () {
-      final tree = FPTree(orderedTransactions, frequentItems);
+      final tree = FPTree(frequentItems)..addTransactions(orderedTransactions);
 
       // Check root
       expect(tree.root.item, isNull);
-      expect(tree.root.count, equals(1)); // Root count is nominal
+      expect(tree.root.count, equals(0)); // Root count is 0
       expect(
         tree.root.children.length,
         equals(2),
@@ -85,7 +85,7 @@ void main() {
     });
 
     test('header table links are established correctly', () {
-      final tree = FPTree(orderedTransactions, frequentItems);
+      final tree = FPTree(frequentItems)..addTransactions(orderedTransactions);
 
       // Check links for item 'p' (6)
       var pNode = tree.headerTable[6]!.head;
@@ -102,7 +102,7 @@ void main() {
     });
 
     test('findPaths returns correct conditional pattern bases', () {
-      final tree = FPTree(orderedTransactions, frequentItems);
+      final tree = FPTree(frequentItems)..addTransactions(orderedTransactions);
 
       // Find conditional pattern base for 'p' (6)
       final pPaths = tree.findPaths(6);
@@ -159,13 +159,14 @@ void main() {
         [1],
       ];
       final singlePathFrequents = {1: 3, 2: 2, 3: 1};
-      final tree = FPTree(singlePathTransactions, singlePathFrequents);
+      final tree = FPTree(singlePathFrequents)
+        ..addTransactions(singlePathTransactions);
 
       expect(tree.isSinglePath(), isTrue);
     });
 
     test('isSinglePath returns false for a multi-path tree', () {
-      final tree = FPTree(orderedTransactions, frequentItems);
+      final tree = FPTree(frequentItems)..addTransactions(orderedTransactions);
       expect(tree.isSinglePath(), isFalse);
     });
 
@@ -175,7 +176,8 @@ void main() {
         [1, 2],
       ];
       final singlePathFrequents = {1: 2, 2: 2, 3: 1};
-      final tree = FPTree(singlePathTransactions, singlePathFrequents);
+      final tree = FPTree(singlePathFrequents)
+        ..addTransactions(singlePathTransactions);
 
       final pathNodes = tree.getSinglePathNodes();
       expect(pathNodes.length, equals(3));

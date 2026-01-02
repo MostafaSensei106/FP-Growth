@@ -23,8 +23,8 @@ class FPNode {
   /// Creates a new [FPNode] for a given [item].
   ///
   /// The [parent] is optional and can be set later.
-  /// [count] defaults to 1 but can be initialized with a different value.
-  FPNode(this.item, {this.parent, this.count = 1}) : children = {};
+  /// [count] defaults to 0.
+  FPNode(this.item, {this.parent, this.count = 0}) : children = {};
 
   /// Finds a child node with the given [item].
   ///
@@ -47,7 +47,8 @@ class FPNode {
   }
 
   @override
-  String toString() => 'FPNode(item: $item, count: $count)';
+  String toString() =>
+      'FPNode(item: $item, count: $count, children: ${children.length})';
 
   @override
   bool operator ==(Object other) =>

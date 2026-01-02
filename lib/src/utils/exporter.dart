@@ -1,7 +1,10 @@
 import 'dart:convert';
 import '../../fp_growth.dart';
 
-/// Exports frequent itemsets to a JSON-encodable list of maps.
+/// Converts a map of frequent itemsets into a JSON-encodable list of maps.
+///
+/// Each map in the list represents an itemset and contains an 'itemset' key
+/// (a list of strings) and a 'support' key (an integer).
 List<Map<String, dynamic>> frequentItemsetsToJsonEncodable<T>(
   Map<List<T>, int> itemsets,
 ) {
@@ -42,7 +45,10 @@ String exportFrequentItemsetsToCsv<T>(
   return buffer.toString();
 }
 
-/// Exports association rules to a JSON-encodable list of maps.
+/// Converts a list of association rules into a JSON-encodable list of maps.
+///
+// Each map contains keys for 'antecedent', 'consequent', and the rule's
+/// metrics ('support', 'confidence', 'lift', 'leverage', 'conviction').
 List<Map<String, dynamic>> rulesToJsonEncodable<T>(
   List<AssociationRule<T>> rules,
 ) {

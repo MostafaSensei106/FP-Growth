@@ -85,14 +85,16 @@ void main() {
       const minSupport = 10;
 
       final fpGrowth1 = FPGrowth<String>(minSupport: minSupport.toDouble());
-      fpGrowth1.addTransactions(transactions);
-      final result1 = await fpGrowth1.mineFrequentItemsets();
+      final (result1, _) = await fpGrowth1.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       transactions.shuffle(); // Shuffle the order
 
       final fpGrowth2 = FPGrowth<String>(minSupport: minSupport.toDouble());
-      fpGrowth2.addTransactions(transactions);
-      final result2 = await fpGrowth2.mineFrequentItemsets();
+      final (result2, _) = await fpGrowth2.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       expect(
         areItemsetMapsEqual(result1, result2),
@@ -110,8 +112,9 @@ void main() {
       );
       const minSupport = 20;
       final fpGrowth = FPGrowth<String>(minSupport: minSupport.toDouble());
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final frequentKeysAsSets = frequentItemsets.keys
           .map((k) => k.toSet())
@@ -142,8 +145,9 @@ void main() {
         const minSupport = 15;
 
         final fpGrowth = FPGrowth<String>(minSupport: minSupport.toDouble());
-        fpGrowth.addTransactions(transactions);
-        final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+        final (frequentItemsets, _) = await fpGrowth.mine(
+          () => Stream.fromIterable(transactions),
+        );
 
         for (final entry in frequentItemsets.entries) {
           final itemset = entry.key;

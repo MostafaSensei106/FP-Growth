@@ -1,31 +1,55 @@
-import 'package:csv/csv.dart';
+import 'dart:async';
+import 'dart:convert';
 
-/// Parses a CSV string into a list of transactions.
+/// Parses a CSV byte stream efficiently.
 ///
-/// Each row in the CSV is treated as a transaction, and each cell in the row
-/// is an item in the transaction.
+/// This implementation uses a **Hybrid Strategy**:
+/// 1. **Fast Path**: If a line contains no quotes, it uses Dart's native `split`, which is extremely fast.
+/// 2. **Robust Path**: If quotes are detected, it switches to a manual character parser for that line to handle escaped commas correctly.
 ///
-/// Example:
-/// a,b,c
-/// a,d
-///
-/// becomes:
-/// [
-///   ['a', 'b', 'c'],
-///   ['a', 'd']
-/// ]
-List<List<String>> transactionsFromCsv(String csvContent) {
-  final converter = CsvToListConverter(
-    eol: '\n',
-    shouldParseNumbers: false, // Treat all values as strings
-  );
-  final List<List<dynamic>> csvRows = converter.convert(csvContent);
+/// This ensures maximum performance for standard datasets while maintaining correctness for complex ones,
+/// without requiring user configuration.
+Stream<List<String>> transactionsFromCsv(
+  Stream<List<int>> csvStream, {
+  String fieldDelimiter = ',',
+  String eol = '\n',
+}) {
+  return csvStream
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .map((line) {
+        if (line.isEmpty) return const <String>[];
 
-  // Post-process to handle empty lines correctly
-  return csvRows.map((row) {
-    if (row.length == 1 && row.first == '') {
-      return <String>[];
+        // Check for quotes once.
+        // If no quotes, use the native split.
+        if (!line.contains('"')) {
+          return line.split(fieldDelimiter).map((e) => e.trim()).toList();
+        }
+
+        return _parseComplexCsvLine(line, fieldDelimiter);
+      })
+      .where((row) => row.isNotEmpty);
+}
+
+/// A manual parser that handles quoted fields correctly.
+/// Used only when necessary to avoid the overhead of generic libraries.
+List<String> _parseComplexCsvLine(String line, String delimiter) {
+  final result = <String>[];
+  final buffer = StringBuffer();
+  bool inQuote = false;
+
+  for (int i = 0; i < line.length; i++) {
+    final char = line[i];
+
+    if (char == '"') {
+      inQuote = !inQuote;
+    } else if (char == delimiter && !inQuote) {
+      result.add(buffer.toString().trim());
+      buffer.clear();
+    } else {
+      buffer.write(char);
     }
-    return row.map((item) => item.toString()).toList();
-  }).toList();
+  }
+  result.add(buffer.toString().trim());
+  return result;
 }

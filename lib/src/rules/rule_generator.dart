@@ -48,25 +48,94 @@ class RuleGenerator<T> {
   /// Returns a list of [AssociationRule] objects.
   List<AssociationRule<T>> generateRules() {
     final List<AssociationRule<T>> rules = [];
-
     for (final itemset in frequentItemsets.keys) {
       if (itemset.length > 1) {
-        final subsets = _findSubsets(itemset);
-        for (final subset in subsets) {
-          final antecedent = subset.toSet();
-          final consequent = itemset.toSet()..removeAll(antecedent);
+        _generateRulesForItemset(itemset.toSet(), rules);
+      }
+    }
+    return rules;
+  }
 
-          if (antecedent.isNotEmpty && consequent.isNotEmpty) {
-            final rule = _createRule(antecedent, consequent);
-            if (rule != null && rule.confidence >= minConfidence) {
-              rules.add(rule);
-            }
-          }
-        }
+  /// Generates rules for a single frequent itemset using an Apriori-style approach.
+  void _generateRulesForItemset(
+    Set<T> itemset,
+    List<AssociationRule<T>> rules,
+  ) {
+    if (itemset.length < 2) return;
+
+    // Start with consequents of size 1
+    var levelOneConsequents = itemset
+        .map((item) => {item})
+        .toList(growable: false);
+
+    // This list will hold confident consequents from the current level (k)
+    // to generate candidates for the next level (k+1).
+    var confidentConsequents = <Set<T>>[];
+
+    for (final consequent in levelOneConsequents) {
+      final antecedent = itemset.difference(consequent);
+      final rule = _createRule(antecedent, consequent);
+      if (rule != null && rule.confidence >= minConfidence) {
+        rules.add(rule);
+        confidentConsequents.add(consequent);
       }
     }
 
-    return rules;
+    // Iteratively generate larger consequents
+    for (int k = 1; k < itemset.length - 1; k++) {
+      if (confidentConsequents.isEmpty) break;
+
+      final nextLevelCandidates = _generateNextLevelConsequents(
+        confidentConsequents,
+      );
+      final nextConfidentConsequents = <Set<T>>[];
+
+      for (final consequent in nextLevelCandidates) {
+        // Anti-monotonicity pruning: if a (k)-consequent was not confident,
+        // any (k+1)-super-consequent will also not be confident.
+        // We ensure all subsets of the new candidate were in the previous confident list.
+        final allSubsetsWereConfident =
+            k == 1 ||
+            consequent.every(
+              (item) => confidentConsequents.any(
+                (c) => c.containsAll(consequent.difference({item})),
+              ),
+            );
+
+        if (allSubsetsWereConfident) {
+          final antecedent = itemset.difference(consequent);
+          final rule = _createRule(antecedent, consequent);
+
+          if (rule != null && rule.confidence >= minConfidence) {
+            rules.add(rule);
+            nextConfidentConsequents.add(consequent);
+          }
+        }
+      }
+      confidentConsequents = nextConfidentConsequents;
+    }
+  }
+
+  /// Generates (k+1)-itemset candidates from confident k-itemsets.
+  List<Set<T>> _generateNextLevelConsequents(List<Set<T>> consequents) {
+    final candidates = HashSet<Set<T>>(
+      equals: const SetEquality().equals,
+      hashCode: const SetEquality().hash,
+    );
+
+    for (int i = 0; i < consequents.length; i++) {
+      for (int j = i + 1; j < consequents.length; j++) {
+        final c1 = consequents[i];
+        final c2 = consequents[j];
+
+        // Join step: if two sets share all but one item, their union is a candidate.
+        final union = c1.union(c2);
+        if (union.length == c1.length + 1) {
+          candidates.add(union);
+        }
+      }
+    }
+    return candidates.toList(growable: false);
   }
 
   /// Creates a single association rule from an antecedent and consequent.
@@ -83,6 +152,9 @@ class RuleGenerator<T> {
     if (itemsetSupportCount == null ||
         antecedentSupportCount == null ||
         consequentSupportCount == null) {
+      // This can happen if a subset of a frequent itemset is not frequent,
+      // which should not occur with a correct FP-Growth implementation.
+      // However, we check for safety.
       return null;
     }
 
@@ -90,8 +162,16 @@ class RuleGenerator<T> {
     final antecedentSupport = antecedentSupportCount / totalTransactions;
     final consequentSupport = consequentSupportCount / totalTransactions;
 
+    // Confidence must be calculated carefully to avoid division by zero.
+    if (antecedentSupport == 0) return null;
     final confidence = itemsetSupport / antecedentSupport;
-    final lift = confidence / consequentSupport;
+
+    // If confidence is below the threshold, we could stop early, but the
+    // calling function handles this.
+
+    final lift = (consequentSupport == 0)
+        ? 0.0
+        : confidence / consequentSupport;
     final leverage = itemsetSupport - (antecedentSupport * consequentSupport);
 
     // Conviction is undefined if confidence is 1.
@@ -108,24 +188,5 @@ class RuleGenerator<T> {
       leverage: leverage,
       conviction: conviction,
     );
-  }
-
-  /// Finds all non-empty, proper subsets of a given itemset.
-  List<List<T>> _findSubsets(List<T> itemset) {
-    final List<List<T>> subsets = [];
-    final int n = itemset.length;
-
-    // Iterate from 1 to 2^n - 2 to get all non-empty proper subsets.
-    for (int i = 1; i < (1 << n) - 1; i++) {
-      final List<T> subset = [];
-      for (int j = 0; j < n; j++) {
-        if ((i >> j) & 1 == 1) {
-          subset.add(itemset[j]);
-        }
-      }
-      subsets.add(subset);
-    }
-
-    return subsets;
   }
 }

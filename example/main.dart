@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:fp_growth/fp_growth.dart';
-import 'package:fp_growth/src/utils/exporter.dart';
+import 'dart:io';
+import 'package:fp_growth/fp_growth_io.dart';
 
-// A standard example demonstrating the basic usage of FPGrowth.
-Future<void> runStandardExample() async {
-  print('--- Running Standard FP-Growth Example ---');
+/// Example 1: Processing a simple, in-memory list of transactions.
+/// This is the easiest way to get started if your data is already in a List.
+Future<void> runInMemoryExample() async {
+  print('--- Example 1: Running on an In-Memory List ---');
 
   // 1. Define your transactions
   final transactions = [
@@ -14,26 +15,24 @@ Future<void> runStandardExample() async {
     ['bread', 'milk', 'diaper', 'beer'],
     ['bread', 'milk', 'diaper', 'cola'],
   ];
-  final totalTransactions = transactions.length;
-  print('Total transactions: $totalTransactions\n');
 
-  // 2. Instantiate FPGrowth with minimum support
+  // 2. Instantiate FPGrowth
   final fpGrowth = FPGrowth<String>(minSupport: 3);
 
-  // 3. Add transactions and mine for frequent itemsets
-  fpGrowth.addTransactions(transactions);
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+  // 3. Use the `mineFromList` convenience method
+  final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromList(
+    transactions,
+  );
 
-  print('Found ${frequentItemsets.length} frequent itemsets (minSupport: 3):');
+  print(
+    'Found ${frequentItemsets.length} frequent itemsets in $totalTransactions transactions (minSupport: 3):',
+  );
   frequentItemsets.forEach((itemset, support) {
-    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(
-      1,
-    );
-    print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
+    print('  {${itemset.join(', ')}} - Support: $support');
   });
-  print('-------------------------\n');
+  print('--------------------------------------------------\n');
 
-  // 4. Generate association rules with minimum confidence
+  // 4. Generate and display association rules
   final ruleGenerator = RuleGenerator<String>(
     minConfidence: 0.7, // 70%
     frequentItemsets: frequentItemsets,
@@ -45,54 +44,94 @@ Future<void> runStandardExample() async {
   for (var rule in rules) {
     print('  ${rule.formatWithMetrics()}');
   }
-  print('-------------------------\n');
-
-  // 5. Export results to different formats
-  print('--- Result Exporting Examples ---');
-  final itemsetsAsText = exportFrequentItemsetsToText(frequentItemsets);
-  final rulesAsJson = exportRulesToJson(rules);
-
-  print('Frequent Itemsets (Formatted Text):\n$itemsetsAsText');
-  print('Association Rules (JSON):\n$rulesAsJson');
-  print('-------------------------\n');
+  print('--------------------------------------------------\n');
 }
 
-// An example showing how to process a stream of transactions.
-Future<void> runStreamExample() async {
-  print('--- Running Stream Processing Example ---');
+/// Example 2: Processing a large CSV file using the recommended API.
+/// This is the best approach for large files as it streams data with low memory usage.
+Future<void> runFileStreamExample() async {
+  print('--- Example 2: Running on a Large CSV File ---');
 
-  // 1. Create a stream of transactions
-  final transactionStream = Stream.fromIterable([
-    ['a', 'b'],
-    ['b', 'c', 'd'],
-    ['a', 'c', 'd', 'e'],
+  // 1. Create a dummy CSV file for the example
+  final filePath = 'transactions.csv';
+  final file = File(filePath);
+  await file.writeAsString('a,b,c\na,b\nb,c\na,c\nd,e,f');
+
+  print('Created dummy file: $filePath');
+  print('Mining frequent itemsets with minSupport: 2...');
+
+  // 2. Instantiate FPGrowth with your desired settings.
+  final fpGrowth = FPGrowth<String>(minSupport: 2);
+
+  // 3. Use the `mineFromCsv` extension method from the `fp_growth_io` library.
+  // It handles file reading, stream management, and mining in one call.
+  final (itemsets, count) = await fpGrowth.mineFromCsv(filePath);
+
+  print('Found ${itemsets.length} frequent itemsets in $count transactions.');
+  itemsets.forEach((itemset, support) {
+    print('  {${itemset.join(', ')}} - Support: $support');
+  });
+
+  // 4. Generate and display association rules
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: 0.7,
+    frequentItemsets: itemsets,
+    totalTransactions: count,
+  );
+  final rules = ruleGenerator.generateRules();
+  print('\nFound ${rules.length} association rules (minConfidence: 70%):');
+  for (final rule in rules) {
+    print('  ${rule.formatWithMetrics()}');
+  }
+
+  // Clean up the dummy file
+  await file.delete();
+  print('--------------------------------------------------\n');
+}
+
+/// Example 3: Using a custom stream provider for advanced use cases.
+/// This gives you maximum flexibility for custom data sources.
+Future<void> runCustomStreamExample() async {
+  print('--- Example 3: Using a Custom Stream Provider ---');
+
+  // 1. Define a function that provides a new stream on each call.
+  // This is essential for the two-pass algorithm.
+  Stream<List<String>> streamProvider() => Stream.fromIterable([
+    ['x', 'y', 'z'],
+    ['x', 'y'],
+    ['y', 'z'],
+    ['x', 'z', 'w'],
   ]);
 
-  // 2. Instantiate FPGrowth and the StreamProcessor
+  // 2. Instantiate FPGrowth and pass the stream provider to the core `mine` method.
   final fpGrowth = FPGrowth<String>(minSupport: 2);
-  final streamProcessor = StreamProcessor(fpGrowth);
-
-  // 3. Process the stream
-  await streamProcessor.process(transactionStream);
-  print('Stream processing complete.');
-
-  // 4. Mine the frequent itemsets from the processed transactions
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
-  final totalTransactions = fpGrowth.transactionCount;
+  final (frequentItemsets, totalTransactions) = await fpGrowth.mine(
+    streamProvider,
+  );
 
   print(
-    'Found ${frequentItemsets.length} frequent itemsets from stream (minSupport: 2):',
+    'Found ${frequentItemsets.length} frequent itemsets in $totalTransactions transactions (minSupport: 2):',
   );
   frequentItemsets.forEach((itemset, support) {
-    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(
-      1,
-    );
-    print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
+    print('  {${itemset.join(', ')}} - Support: $support');
   });
-  print('-------------------------\n');
+
+  // 3. Generate and display association rules
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: 0.7,
+    frequentItemsets: frequentItemsets,
+    totalTransactions: totalTransactions,
+  );
+  final rules = ruleGenerator.generateRules();
+  print('\nFound ${rules.length} association rules (minConfidence: 70%):');
+  for (final rule in rules) {
+    print('  ${rule.formatWithMetrics()}');
+  }
+  print('--------------------------------------------------\n');
 }
 
 Future<void> main() async {
-  await runStandardExample();
-  await runStreamExample();
+  await runInMemoryExample();
+  await runFileStreamExample();
+  await runCustomStreamExample();
 }

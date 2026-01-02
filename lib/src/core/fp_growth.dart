@@ -6,7 +6,10 @@ import 'fp_node.dart';
 import 'fp_tree.dart';
 import 'parallel_runner.dart' if (dart.library.html) 'parallel_runner_web.dart';
 
-/// Calculates absolute minimum support from relative or absolute value.
+/// Calculates the absolute minimum support count from a relative or absolute value.
+///
+/// If [minSupport] is >= 1.0, it is treated as an absolute count.
+/// Otherwise, it is treated as a relative value (percentage) of [transactionCount].
 int calculateAbsoluteMinSupport(double minSupport, int transactionCount) {
   if (minSupport >= 1.0) {
     return minSupport.toInt();
@@ -14,7 +17,11 @@ int calculateAbsoluteMinSupport(double minSupport, int transactionCount) {
   return (transactionCount * minSupport).ceil();
 }
 
-/// Mines frequent itemsets for a specific item.
+/// Recursively mines frequent itemsets for a specific item and its conditional tree.
+///
+/// This function explores the FP-Tree starting from a given [item], builds its
+/// conditional FP-Tree, and recursively mines it to find all frequent itemsets
+/// that are extensions of the current [prefix] and the [item].
 Map<List<int>, int> mineForItem<T>(
   FPTree tree,
   int item,
@@ -52,16 +59,14 @@ Map<List<int>, int> mineForItem<T>(
 
   if (conditionalFrequentItems.isNotEmpty) {
     // Reconstruct transactions for conditional tree
-    final unrolledTransactions = buildConditionalTransactions(
+    final weightedTransactions = buildConditionalTransactions(
       conditionalPatternBases,
       conditionalFrequentItems,
     );
 
-    if (unrolledTransactions.isNotEmpty) {
-      final conditionalTree = FPTree(
-        unrolledTransactions,
-        conditionalFrequentItems,
-      );
+    if (weightedTransactions.isNotEmpty) {
+      final conditionalTree = FPTree(conditionalFrequentItems)
+        ..addWeightedTransactions(weightedTransactions);
 
       // Single-path optimization
       if (conditionalTree.isSinglePath()) {
@@ -98,6 +103,10 @@ Map<List<int>, int> mineForItem<T>(
 }
 
 /// The core recursive mining logic of the FP-Growth algorithm.
+///
+/// It iterates through the frequent items in a conditional tree (sorted by
+/// frequency), and for each item, it initiates a recursive mining step via
+/// [mineForItem].
 Map<List<int>, int> mineLogic<T>(
   FPTree tree,
   List<int> prefix,
@@ -141,12 +150,16 @@ Map<List<int>, int> mineLogic<T>(
   return frequentItemsets;
 }
 
-/// Builds conditional transactions from pattern bases.
-List<List<int>> buildConditionalTransactions(
+/// Builds weighted conditional transactions from conditional pattern bases.
+///
+/// This function takes the raw paths found in the tree (the pattern bases) and
+/// filters and sorts them according to the frequent items found in the
+/// conditional context. This prepares the data needed to build a conditional FP-Tree.
+Map<List<int>, int> buildConditionalTransactions(
   Map<List<int>, int> conditionalPatternBases,
   Map<int, int> conditionalFrequentItems,
 ) {
-  final unrolledTransactions = <List<int>>[];
+  final weightedTransactions = <List<int>, int>{};
 
   for (final entry in conditionalPatternBases.entries) {
     final path = entry.key;
@@ -156,24 +169,26 @@ List<List<int>> buildConditionalTransactions(
         path
             .where((item) => conditionalFrequentItems.containsKey(item))
             .toList()
-          ..sort(
-            (a, b) => conditionalFrequentItems[b]!.compareTo(
+          ..sort((a, b) {
+            final compare = conditionalFrequentItems[b]!.compareTo(
               conditionalFrequentItems[a]!,
-            ),
-          );
+            );
+            if (compare == 0) {
+              // Stable sort based on item ID
+              return a.compareTo(b);
+            }
+            return compare;
+          });
 
     if (orderedPath.isNotEmpty) {
-      // Add the path 'count' times
-      for (var i = 0; i < count; i++) {
-        unrolledTransactions.add(orderedPath);
-      }
+      weightedTransactions[orderedPath] = count;
     }
   }
 
-  return unrolledTransactions;
+  return weightedTransactions;
 }
 
-/// Filters items that meet the minimum support threshold.
+/// Filters a frequency map to include only items that meet the [absoluteMinSupport].
 Map<int, int> filterFrequentItems(
   Map<int, int> frequency,
   int absoluteMinSupport,
@@ -183,7 +198,10 @@ Map<int, int> filterFrequentItems(
   );
 }
 
-/// Generates all non-empty subsets for a given list of nodes.
+/// Generates all non-empty subsets for a given list of [FPNode]s.
+///
+/// This is used in the single-path optimization to efficiently generate all
+/// frequent itemsets from a linear tree structure.
 List<List<FPNode>> generateSubsets(List<FPNode> nodes) {
   final subsets = <List<FPNode>>[];
   final n = nodes.length;
@@ -200,19 +218,6 @@ List<List<FPNode>> generateSubsets(List<FPNode> nodes) {
   }
 
   return subsets;
-}
-
-/// Calculates the frequency of each item in the transactions.
-Map<int, int> _calculateFrequency(List<List<int>> transactions) {
-  final frequency = <int, int>{};
-
-  for (final transaction in transactions) {
-    for (final item in transaction) {
-      frequency[item] = (frequency[item] ?? 0) + 1;
-    }
-  }
-
-  return frequency;
 }
 
 /// Implements the FP-Growth algorithm for mining frequent itemsets.
@@ -238,15 +243,7 @@ class FPGrowth<T> {
   final int parallelism;
 
   final ItemMapper<T> _mapper = ItemMapper<T>();
-  final List<List<int>> _mappedTransactions = [];
   final Logger _logger;
-
-  /// A list of all transactions that have been added.
-  List<List<T>> get transactions =>
-      _mappedTransactions.map((tx) => _mapper.unmapItemset(tx)).toList();
-
-  /// The total number of transactions.
-  int get transactionCount => _mappedTransactions.length;
 
   /// Creates an instance of the FP-Growth algorithm runner.
   ///
@@ -274,69 +271,86 @@ class FPGrowth<T> {
     }
   }
 
-  /// Adds a single transaction to the miner.
-  void addTransaction(List<T> transaction) {
-    if (transaction.isNotEmpty) {
-      _mappedTransactions.add(_mapper.mapTransaction(transaction));
-    }
-  }
-
-  /// Adds a list of transactions to the miner.
-  void addTransactions(List<List<T>> transactions) {
-    // This is intentionally not logged to avoid verbose output when streaming.
-    // The caller is responsible for entry/exit logging if needed.
-    for (final transaction in transactions) {
-      addTransaction(transaction);
-    }
-  }
-
-  /// Calculates the absolute minimum support count from the relative [minSupport].
-  int get _absoluteMinSupport =>
-      calculateAbsoluteMinSupport(minSupport, _mappedTransactions.length);
-
-  /// Mines the frequent itemsets from the transactions.
+  /// Mines the frequent itemsets from the given transaction stream.
   ///
-  /// Returns a map of frequent itemsets to their support counts.
-  Future<Map<List<T>, int>> mineFrequentItemsets() async {
-    if (_mappedTransactions.isEmpty) {
-      _logger.warning('No transactions to mine');
-      return {};
-    }
-
+  /// [streamProvider] is a function that returns a new stream of transactions
+  /// for each pass of the algorithm. This is crucial for handling large
+  /// datasets from sources like files, as it allows the data to be processed
+  //  without being fully loaded into memory.
+  ///
+  /// Returns a record containing a map of frequent itemsets to their support
+  /// counts, and the total number of non-empty transactions processed.
+  Future<(Map<List<T>, int>, int)> mine(
+    Stream<List<T>> Function() streamProvider,
+  ) async {
     _logger.info(
       'Starting frequent itemset mining with minSupport: $minSupport',
     );
 
-    _logger.debug('Calculating initial item frequencies...');
-    final frequency = _calculateFrequency(_mappedTransactions);
+    // Pass 1: Calculate frequencies and count transactions
+    _logger.debug('Pass 1: Calculating initial item frequencies...');
+    final frequency = <int, int>{};
+    int transactionCount = 0;
+
+    await for (final transaction in streamProvider()) {
+      if (transaction.isNotEmpty) {
+        transactionCount++;
+        for (final item in transaction) {
+          final id = _mapper.getId(item);
+          frequency[id] = (frequency[id] ?? 0) + 1;
+        }
+      }
+    }
+
+    if (transactionCount == 0) {
+      _logger.warning('No non-empty transactions to mine');
+      return (<List<T>, int>{}, 0);
+    }
+    _logger.debug('Found $transactionCount non-empty transactions.');
+
+    final absoluteMinSupport = calculateAbsoluteMinSupport(
+      minSupport,
+      transactionCount,
+    );
 
     _logger.debug('Filtering frequent items...');
-    final frequentItems = filterFrequentItems(frequency, _absoluteMinSupport);
+    final frequentItems = filterFrequentItems(frequency, absoluteMinSupport);
 
     if (frequentItems.isEmpty) {
       _logger.warning('No frequent items found with minSupport: $minSupport');
-      return {};
+      return (<List<T>, int>{}, transactionCount);
     }
 
     _logger.debug('Found ${frequentItems.length} frequent items.');
 
-    _logger.debug('Preparing transactions for FP-Tree construction...');
-    final orderedTransactions = _prepareOrderedTransactions(frequentItems);
-
-    _logger.debug('Building FP-Tree...');
-    final tree = FPTree(orderedTransactions, frequentItems);
+    _logger.debug('Pass 2: Building FP-Tree...');
+    // Pass 2: Build the FP-Tree
+    final tree = FPTree(frequentItems);
+    await for (final transaction in streamProvider()) {
+      final orderedItems = _prepareOrderedTransaction(
+        transaction.map((t) => _mapper.getId(t)).toList(),
+        frequentItems,
+      );
+      if (orderedItems.isNotEmpty) {
+        tree.addTransaction(orderedItems, 1);
+      }
+    }
     _logger.debug('FP-Tree built.');
 
     _logger.info('Starting recursive mining...');
     final Map<List<int>, int> mappedItemsets;
 
     if (parallelism == 1) {
-      mappedItemsets = _mineSingleThreaded(tree, frequentItems);
+      mappedItemsets = _mineSingleThreaded(
+        tree,
+        frequentItems,
+        absoluteMinSupport,
+      );
     } else {
       mappedItemsets = await runParallelMining(
         tree: tree,
         frequentItems: frequentItems,
-        absoluteMinSupport: _absoluteMinSupport,
+        absoluteMinSupport: absoluteMinSupport,
         mapper: _mapper,
         logger: _logger,
         parallelism: parallelism,
@@ -348,52 +362,51 @@ class FPGrowth<T> {
     );
 
     // Unmap the results before returning
-    return mappedItemsets.map(
+    final unmappedItemsets = mappedItemsets.map(
       (itemset, support) => MapEntry(_mapper.unmapItemset(itemset), support),
     );
+
+    return (unmappedItemsets, transactionCount);
   }
 
-  /// Prepares ordered transactions for FP-Tree construction.
-  List<List<int>> _prepareOrderedTransactions(Map<int, int> frequentItems) {
-    return _mappedTransactions
-        .map((transaction) {
-          final orderedItems =
-              transaction
-                  .where((item) => frequentItems.containsKey(item))
-                  .toList()
-                ..sort((a, b) {
-                  final compare = frequentItems[b]!.compareTo(
-                    frequentItems[a]!,
-                  );
-                  if (compare == 0) {
-                    return a.compareTo(b); // Secondary sort for stability
-                  }
-                  return compare;
-                });
-          return orderedItems;
-        })
-        .where((t) => t.isNotEmpty)
-        .toList();
+  /// A convenience method to mine frequent itemsets from an in-memory list.
+  ///
+  /// This is simpler to use than the standard [mine] method if your dataset
+  /// is already loaded into a list.
+  Future<(Map<List<T>, int>, int)> mineFromList(List<List<T>> transactions) {
+    return mine(() => Stream.fromIterable(transactions));
+  }
+
+  /// Prepares a single ordered transaction for FP-Tree construction.
+  List<int> _prepareOrderedTransaction(
+    List<int> transaction,
+    Map<int, int> frequentItems,
+  ) {
+    final orderedItems =
+        transaction.where((item) => frequentItems.containsKey(item)).toList()
+          ..sort((a, b) {
+            final compare = frequentItems[b]!.compareTo(frequentItems[a]!);
+            if (compare == 0) {
+              return a.compareTo(b);
+            }
+            return compare;
+          });
+    return orderedItems;
   }
 
   /// Mines frequent itemsets using a single thread.
   Map<List<int>, int> _mineSingleThreaded(
     FPTree tree,
     Map<int, int> frequentItems,
+    int absoluteMinSupport,
   ) {
     return mineLogic(
       tree,
       [],
       frequentItems,
-      _absoluteMinSupport,
+      absoluteMinSupport,
       _mapper,
       _logger,
     );
-  }
-
-  /// Clears all transactions from the miner.
-  void clear() {
-    _mappedTransactions.clear();
-    _logger.debug('Cleared all transactions');
   }
 }

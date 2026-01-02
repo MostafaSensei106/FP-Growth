@@ -41,15 +41,15 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
 ### 🛠️ Performance & Scalability
 
-- **Parallel Processing**: Harnesses the power of multiple CPU cores by using **Isolates** to parallelize the mining process, significantly speeding up analysis on large datasets.
-- **Stream Processing**: Built to handle massive datasets that don't fit in memory. The `StreamProcessor` allows you to process transaction data as a stream, ensuring a low and constant memory footprint.
-- **Memory Efficiency**: Employs internal integer mapping for items to dramatically reduce memory usage and improve processing speed.
+- **Parallel Processing**: Harnesses the power of multiple CPU cores by using a **fixed-size Isolate Pool** to parallelize the mining process, efficiently speeding up analysis on large datasets without the overhead of spawning new isolates for every task.
+- **Memory-Optimized Two-Pass Architecture**: Built to handle massive datasets. The algorithm processes transactions in two efficient passes, calculating frequencies first and then building the FP-Tree, without holding the entire transaction list in memory during the recursive mining process. This design drastically reduces peak memory usage.
+- **Efficient Data Structures**: Employs internal integer mapping for items and uses weighted conditional FP-Trees to dramatically reduce memory usage and improve processing speed during recursive mining steps.
 
 ### ⚙️ Utilities
 
-- **CSV Data Adapter**: Easily load transactional data directly from CSV files.
+- **CSV Data Adapter**: Easily load transactional data directly from CSV files using modern stream-based parsers.
 - **Data Exporters**: Export frequent itemsets and association rules to `JSON`, `CSV`, or formatted `Text`.
-- **Command-Line Interface (CLI)**: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, now with support for streaming large files and multiple output formats.
+- **Command-Line Interface (CLI)**: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, with support for parallelism, large files, and multiple output formats.
 
 ---
 
@@ -59,7 +59,7 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
     ```yaml
     dependencies:
-      fp_growth: ^1.0.0 # Replace with the latest version
+      fp_growth: ^1.0.3 # Replace with the latest version
     ```
 
 2.  Install it from your terminal:
@@ -78,84 +78,108 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
 ## 🚀 Usage
 
-### Quick Start
+This library provides a two-step process for analysis:
 
-Import the library and start mining patterns in just a few lines of code.
+1.  **Mine Frequent Itemsets**: Discover which groups of items appear together frequently.
+2.  **Generate Association Rules**: Create rules (`{A} => {B}`) from those itemsets to uncover actionable insights.
+
+### 1. Mining Frequent Itemsets
+
+First, find frequent itemsets from your data source.
+
+> **Which mining API should I use?**
+>
+> - **In-memory `List`?** ==> Use `fpGrowth.mineFromList()` (easiest).
+> - **CSV file?** ==> Use `fpGrowth.mineFromCsv()` (recommended for large files).
+> - **Database or custom source?** ==> Use `fpGrowth.mine()` with a stream provider (advanced).
+
+#### Example: From an In-Memory List
 
 ```dart
 import 'package:fp_growth/fp_growth.dart';
 
-Future<void> main() async {
-  // 1. Define your transactions
-  final transactions = [
-    ['bread', 'milk'],
-    ['bread', 'diaper', 'beer', 'eggs'],
-    ['milk', 'diaper', 'beer', 'cola'],
-    ['bread', 'milk', 'diaper', 'beer'],
-    ['bread', 'milk', 'diaper', 'cola'],
-  ];
-  final totalTransactions = transactions.length;
+final transactions = [
+  ['bread', 'milk'],
+  ['bread', 'diaper', 'beer', 'eggs'],
+  ['milk', 'diaper', 'beer', 'cola'],
+];
 
-  // 2. Instantiate FPGrowth with a minimum support threshold
-  // minSupport can be a percentage (0.0-1.0) or an absolute count (e.g., 3).
-  final fpGrowth = FPGrowth<String>(minSupport: 3);
+// Instantiate FPGrowth and find itemsets with a minimum support of 2.
+final fpGrowth = FPGrowth<String>(minSupport: 2);
+final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromList(transactions);
 
-  // 3. Add transactions and mine for frequent itemsets
-  fpGrowth.addTransactions(transactions);
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+// frequentItemsets is a Map<List<String>, int>
+// totalTransactions is an int
+```
 
-  print('Frequent Itemsets:');
-  frequentItemsets.forEach((itemset, support) {
-    final supportPercent = (support / totalTransactions * 100).toStringAsFixed(1);
-    print('  {${itemset.join(', ')}} - Support: $support ($supportPercent%)');
-  });
+### 2. Generating Association Rules
 
-  // 4. Generate association rules with a minimum confidence threshold
-  final ruleGenerator = RuleGenerator<String>(
-    minConfidence: 0.7, // 70% minimum confidence
-    frequentItemsets: frequentItemsets,
-    totalTransactions: totalTransactions,
-  );
+Once you have the frequent itemsets, you can generate association rules. The `RuleGenerator` class takes the frequent itemsets and the total transaction count to calculate metrics like confidence and lift.
 
-  final rules = ruleGenerator.generateRules();
+```dart
+import 'package:fp_growth/fp_growth.dart';
 
-  print('\nAssociation Rules:');
-  for (final rule in rules) {
-    // formatWithMetrics() provides a readable output with all key metrics.
-    print('  ${rule.formatWithMetrics()}');
-  }
+// (Continuing from the previous example...)
+
+// 1. Setup the RuleGenerator
+final generator = RuleGenerator<String>(
+  minConfidence: 0.7, // 70%
+  frequentItemsets: frequentItemsets,
+  totalTransactions: totalTransactions,
+);
+
+// 2. Generate the rules
+final rules = generator.generateRules();
+
+// 3. Print the rules and their metrics
+for (final rule in rules) {
+  print(rule.formatWithMetrics());
+  // Example Output:
+  // {beer} => {diaper} [sup: 0.667, conf: 1.000, lift: 1.50, lev: 0.222, conv: ∞]
 }
 ```
 
-### Streaming Data
+### Other Data Sources
 
-For large datasets, use the `StreamProcessor` to avoid loading the entire file into memory.
+#### From a CSV File
+
+For large files, `mineFromCsv` is the most memory-efficient option. It requires importing `package:fp_growth/fp_growth_io.dart` and is not available on the web.
+
+```dart
+import 'dart:io';
+import 'package:fp_growth/fp_growth_io.dart'; // Note the IO-specific import!
+
+Future<void> processLargeFile(String filePath) async {
+  final fpGrowth = FPGrowth<String>(
+    minSupport: 70,
+    parallelism: Platform.numberOfProcessors,
+  );
+
+  final (itemsets, count) = await fpGrowth.mineFromCsv(filePath);
+
+  // Now you can generate rules with the `itemsets` and `count`.
+  print('Found ${itemsets.length} frequent itemsets in $count transactions.');
+}
+```
+
+#### From a Custom Stream
+
+For databases or other custom sources, use the core `mine` method with a **stream provider function** (`Stream<List<T>> Function()`). This function must return a _new stream_ each time it's called.
 
 ```dart
 import 'dart:async';
 import 'package:fp_growth/fp_growth.dart';
 
-Future<void> runStreamExample() async {
-  // 1. Create a stream of transactions (e.g., from a file)
-  final transactionStream = Stream.fromIterable([
-    ['a', 'b'],
-    ['b', 'c', 'd'],
-    ['a', 'c', 'd', 'e'],
+Future<void> useCustomStream() async {
+  Stream<List<String>> streamProvider() => Stream.fromIterable([
+    ['a', 'b', 'c'], ['a', 'b'], ['b', 'c'], ['a', 'c'],
   ]);
 
-  // 2. Instantiate FPGrowth and the StreamProcessor
   final fpGrowth = FPGrowth<String>(minSupport: 2);
-  final streamProcessor = StreamProcessor(fpGrowth);
+  final (itemsets, count) = await fpGrowth.mine(streamProvider);
 
-  // 3. Process the stream
-  await streamProcessor.process(transactionStream);
-  print('Stream processing complete.');
-
-  // 4. Mine the frequent itemsets from the processed transactions
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
-
-  print('Found ${frequentItemsets.length} frequent itemsets from stream.');
-  // ...and generate rules as in the standard example.
+  // Now you can generate rules with the `itemsets` and `count`.
+  print('Found ${itemsets.length} itemsets in $count transactions.');
 }
 ```
 
@@ -200,25 +224,25 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 | `--output-file`   | `-o`         | Path to an output file to save results.                                   | `null`  |
 | `--output-format` | `-f`         | Output format (`json` or `csv`). Only used if `output-file` is specified. | `json`  |
 | `--log-level`     |              | Set the logging level (`debug`, `info`, `warning`, `error`, `none`).      | `info`  |
+| `--parallelism`   | `-p`         | Number of isolates to use for parallel processing.                        | `1`     |
 
 ---
 
 ## ⚡ Performance
 
-The `fp_growth` library is designed for high performance. The following benchmark was run on a standard machine **AMD Ryzen™ 7 5800H**. to demonstrate its capability in handling a large dataset.
+The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v1.0.3) compared to the older version (v1.0.2).
 
-**Benchmark**: Mining frequent itemsets from a dataset of **1,000,000 transactions**. The result is the average of 10 consecutive runs with a minSupport of 0.05 (5%).
+**Old Benchmark (v1.0.2):**
 
-**Command**:
+**Averaged Execution Time:** ~2.73 seconds (single-threaded, file-based).
 
-```bash
-dart compile exe bin/fp_growth.dart -o fp_growth
+### Benchmark Results (v1.0.3)
 
-# Run benchmark
-./fp_growth -i large_dataset.csv
-```
-
-**Average Execution Time**: in **2.73 seconds**
+| API Method                        | Averaged Execution Time | Speed vs. v1.0.2 | Memory Usage (Delta) | Notes                                                 |
+| --------------------------------- | ----------------------- | ---------------- | -------------------- | ----------------------------------------------------- |
+| **In-Memory (`mineFromList`)**    | **1.46 s**              | **1.87× faster** | **+28.4 MB**         | Fastest execution, requires full dataset in RAM.      |
+| **CSV Streaming (`mineFromCsv`)** | **2.32 s**              | **1.18× faster** | **-0.70 MB**         | Minimal memory footprint, ideal for very large files. |
+| **Custom Stream (`mine`)**        | **1.82 s**              | **1.50× faster** | Not measured         | Flexible streaming for custom data sources.           |
 
 ---
 

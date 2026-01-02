@@ -49,8 +49,9 @@ void main() {
 
     test('correctly mines frequent itemsets with a simple dataset', () async {
       final fpGrowth = FPGrowth<String>(minSupport: 3);
-      fpGrowth.addTransactions(simpleTransactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(simpleTransactions),
+      );
 
       // The original test case had an incomplete expected result.
       // After manual verification, the following are the correct frequent itemsets
@@ -91,8 +92,9 @@ void main() {
         ['bread', 'milk', 'diaper', 'cola'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 3);
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final expectedFiltered = {
         ['bread']: 4,
@@ -128,7 +130,9 @@ void main() {
 
     test('returns empty map when no transactions are provided', () async {
       final fpGrowth = FPGrowth<String>(minSupport: 2);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable([]),
+      );
       expect(frequentItemsets, isEmpty);
     });
 
@@ -140,13 +144,13 @@ void main() {
         [],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 2);
-      fpGrowth.addTransactions(transactionsWithEmpty);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactionsWithEmpty),
+      );
       final expected = {
         ['b']: 2,
       };
       expect(areItemsetMapsEqual(frequentItemsets, expected), isTrue);
-      expect(fpGrowth.transactionCount, equals(2)); // Should ignore empty txs
     });
 
     test('returns empty map when minSupport is too high', () async {
@@ -155,8 +159,9 @@ void main() {
         ['b', 'c'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 10);
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
       expect(frequentItemsets, isEmpty);
     });
 
@@ -169,8 +174,9 @@ void main() {
         ['b'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 2);
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
       final expected = {
         ['a']: 2,
         ['b']: 3,
@@ -186,8 +192,9 @@ void main() {
         ['a'],
       ];
       final fpGrowth = FPGrowth<String>(minSupport: 1);
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final expected = {
         ['a']: 3,
@@ -223,12 +230,14 @@ void main() {
 
     test('produces identical results with parallelism = 2', () async {
       final singleThreaded = FPGrowth<String>(minSupport: 3, parallelism: 1);
-      singleThreaded.addTransactions(transactions);
-      final singleResult = await singleThreaded.mineFrequentItemsets();
+      final (singleResult, _) = await singleThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final multiThreaded = FPGrowth<String>(minSupport: 3, parallelism: 2);
-      multiThreaded.addTransactions(transactions);
-      final multiResult = await multiThreaded.mineFrequentItemsets();
+      final (multiResult, _) = await multiThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       expect(
         areItemsetMapsEqual(multiResult, singleResult),
@@ -239,12 +248,14 @@ void main() {
 
     test('produces identical results with parallelism = 4', () async {
       final singleThreaded = FPGrowth<String>(minSupport: 3, parallelism: 1);
-      singleThreaded.addTransactions(transactions);
-      final singleResult = await singleThreaded.mineFrequentItemsets();
+      final (singleResult, _) = await singleThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final multiThreaded = FPGrowth<String>(minSupport: 3, parallelism: 4);
-      multiThreaded.addTransactions(transactions);
-      final multiResult = await multiThreaded.mineFrequentItemsets();
+      final (multiResult, _) = await multiThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       expect(
         areItemsetMapsEqual(multiResult, singleResult),
@@ -255,13 +266,15 @@ void main() {
 
     test('handles case where parallelism > number of frequent items', () async {
       final singleThreaded = FPGrowth<String>(minSupport: 3, parallelism: 1);
-      singleThreaded.addTransactions(transactions);
-      final singleResult = await singleThreaded.mineFrequentItemsets();
+      final (singleResult, _) = await singleThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       // There are fewer than 20 frequent items, so this tests the logic
       final multiThreaded = FPGrowth<String>(minSupport: 3, parallelism: 20);
-      multiThreaded.addTransactions(transactions);
-      final multiResult = await multiThreaded.mineFrequentItemsets();
+      final (multiResult, _) = await multiThreaded.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       expect(
         areItemsetMapsEqual(multiResult, singleResult),
