@@ -110,7 +110,7 @@
 </ol>
 <hr>
 <h2 id="-usage">🚀 Usage</h2>
-<p>This library provides a two-step process for market basket analysis:</p>
+<p>This library provides a two-step process for analysis:</p>
 <ol>
 <li><strong>Mine Frequent Itemsets</strong>: Discover which groups of items appear together frequently.</li>
 <li><strong>Generate Association Rules</strong>: Create rules (<code>{A} =&gt; {B}</code>) from those itemsets to uncover actionable insights.</li>
@@ -120,9 +120,9 @@
 <blockquote>
 <p><strong>Which mining API should I use?</strong></p>
 <ul>
-<li><strong>In-memory <code>List</code>?</strong> ➡️ Use <code>fpGrowth.mineFromList()</code> (easiest).</li>
-<li><strong>CSV file?</strong> ➡️ Use <code>fpGrowth.mineFromCsv()</code> (recommended for large files).</li>
-<li><strong>Database or custom source?</strong> ➡️ Use <code>fpGrowth.mine()</code> with a stream provider (advanced).</li>
+<li><strong>In-memory <code>List</code>?</strong> ==&gt; Use <code>fpGrowth.mineFromList()</code> (easiest).</li>
+<li><strong>CSV file?</strong> ==&gt; Use <code>fpGrowth.mineFromCsv()</code> (recommended for large files).</li>
+<li><strong>Database or custom source?</strong> ==&gt; Use <code>fpGrowth.mine()</code> with a stream provider (advanced).</li>
 </ul>
 </blockquote>
 <h4 id="example-from-an-in-memory-list">Example: From an In-Memory List</h4>
@@ -172,7 +172,7 @@ import 'package:fp_growth/fp_growth_io.dart'; // Note the IO-specific import!
 
 Future&lt;void&gt; processLargeFile(String filePath) async {
   final fpGrowth = FPGrowth&lt;String&gt;(
-    minSupport: 500,
+    minSupport: 70,
     parallelism: Platform.numberOfProcessors,
   );
 
@@ -195,7 +195,7 @@ Future&lt;void&gt; useCustomStream() async {
   final fpGrowth = FPGrowth&lt;String&gt;(minSupport: 2);
   final (itemsets, count) = await fpGrowth.mine(streamProvider);
 
-  // Generate rules with the `itemsets` and `count`.
+  // Now you can generate rules with the `itemsets` and `count`.
   print('Found ${itemsets.length} itemsets in $count transactions.');
 }
 </code></pre>
@@ -279,12 +279,12 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 <p>The <code>fp_growth</code> library is optimized for both speed and memory efficiency. The following benchmarks were run on an <strong>AMD Ryzen™ 7 5800H (16 Threads)</strong> with a dataset of <strong>1,000,000 transactions</strong> and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v1.0.3) compared to the older version (v1.0.2).</p>
 <p><strong>Old Benchmark (v1.0.2):</strong></p>
 <p><strong>Averaged Execution Time:</strong> ~2.73 seconds (single-threaded, file-based).</p>
-<h3 id="-new-benchmark-results-v103">🚀 New Benchmark Results (v1.0.3)</h3>
+<h3 id="benchmark-results-v103">Benchmark Results (v1.0.3)</h3>
 <table>
 <thead>
 <tr>
 <th>API Method</th>
-<th>Execution Time</th>
+<th>Averaged Execution Time</th>
 <th>Speed vs. v1.0.2</th>
 <th>Memory Usage (Delta)</th>
 <th>Notes</th>
