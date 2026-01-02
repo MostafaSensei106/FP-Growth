@@ -167,6 +167,10 @@ Map<List<int>, int> _performMining<T>(
 }
 
 /// Mines frequent itemsets using a parallel pool of isolates.
+///
+/// This function distributes the mining of conditional sub-trees across a
+/// pool of [parallelism] isolates. It manages the setup, task distribution,
+/// result collection, and teardown of the isolate pool.
 Future<Map<List<int>, int>> runParallelMining<T>({
   required FPTree tree,
   required Map<int, int> frequentItems,

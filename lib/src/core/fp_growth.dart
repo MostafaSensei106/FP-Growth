@@ -6,7 +6,10 @@ import 'fp_node.dart';
 import 'fp_tree.dart';
 import 'parallel_runner.dart' if (dart.library.html) 'parallel_runner_web.dart';
 
-/// Calculates absolute minimum support from relative or absolute value.
+/// Calculates the absolute minimum support count from a relative or absolute value.
+///
+/// If [minSupport] is >= 1.0, it is treated as an absolute count.
+/// Otherwise, it is treated as a relative value (percentage) of [transactionCount].
 int calculateAbsoluteMinSupport(double minSupport, int transactionCount) {
   if (minSupport >= 1.0) {
     return minSupport.toInt();
@@ -14,7 +17,11 @@ int calculateAbsoluteMinSupport(double minSupport, int transactionCount) {
   return (transactionCount * minSupport).ceil();
 }
 
-/// Mines frequent itemsets for a specific item.
+/// Recursively mines frequent itemsets for a specific item and its conditional tree.
+///
+/// This function explores the FP-Tree starting from a given [item], builds its
+/// conditional FP-Tree, and recursively mines it to find all frequent itemsets
+/// that are extensions of the current [prefix] and the [item].
 Map<List<int>, int> mineForItem<T>(
   FPTree tree,
   int item,
@@ -96,6 +103,10 @@ Map<List<int>, int> mineForItem<T>(
 }
 
 /// The core recursive mining logic of the FP-Growth algorithm.
+///
+/// It iterates through the frequent items in a conditional tree (sorted by
+/// frequency), and for each item, it initiates a recursive mining step via
+/// [mineForItem].
 Map<List<int>, int> mineLogic<T>(
   FPTree tree,
   List<int> prefix,
@@ -139,7 +150,11 @@ Map<List<int>, int> mineLogic<T>(
   return frequentItemsets;
 }
 
-/// Builds conditional transactions from pattern bases without unrolling them.
+/// Builds weighted conditional transactions from conditional pattern bases.
+///
+/// This function takes the raw paths found in the tree (the pattern bases) and
+/// filters and sorts them according to the frequent items found in the
+/// conditional context. This prepares the data needed to build a conditional FP-Tree.
 Map<List<int>, int> buildConditionalTransactions(
   Map<List<int>, int> conditionalPatternBases,
   Map<int, int> conditionalFrequentItems,
@@ -173,7 +188,7 @@ Map<List<int>, int> buildConditionalTransactions(
   return weightedTransactions;
 }
 
-/// Filters items that meet the minimum support threshold.
+/// Filters a frequency map to include only items that meet the [absoluteMinSupport].
 Map<int, int> filterFrequentItems(
   Map<int, int> frequency,
   int absoluteMinSupport,
@@ -183,7 +198,10 @@ Map<int, int> filterFrequentItems(
   );
 }
 
-/// Generates all non-empty subsets for a given list of nodes.
+/// Generates all non-empty subsets for a given list of [FPNode]s.
+///
+/// This is used in the single-path optimization to efficiently generate all
+/// frequent itemsets from a linear tree structure.
 List<List<FPNode>> generateSubsets(List<FPNode> nodes) {
   final subsets = <List<FPNode>>[];
   final n = nodes.length;

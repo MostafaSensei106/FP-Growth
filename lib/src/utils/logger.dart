@@ -18,7 +18,7 @@ enum LogLevel {
   /// No logging output.
   none;
 
-  /// Returns true if this level should be logged given the minimum level.
+  /// Checks if a message with this level should be logged, given a [minLevel].
   bool shouldLog(LogLevel minLevel) =>
       index >= minLevel.index && minLevel != LogLevel.none;
 }
@@ -68,7 +68,7 @@ class Logger {
     }
   }
 
-  /// Logs a message with custom formatting.
+  /// Logs a message at a specific [level] with a custom [prefix].
   void logWithPrefix(LogLevel level, String prefix, String message) {
     if (level.shouldLog(_currentLevel)) {
       final timestamp = DateTime.now().toIso8601String();
@@ -77,12 +77,12 @@ class Logger {
     }
   }
 
-  /// Enables all logging levels.
+  /// Enables all logging levels down to [LogLevel.debug].
   void enableAll() => _currentLevel = LogLevel.debug;
 
-  /// Disables all logging.
+  /// Disables all logging output.
   void disableAll() => _currentLevel = LogLevel.none;
 
-  /// Returns true if the given level would be logged.
+  /// Returns true if the given [level] is currently enabled for logging.
   bool isEnabled(LogLevel level) => level.shouldLog(_currentLevel);
 }

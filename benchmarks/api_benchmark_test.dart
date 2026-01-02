@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/fp_growth_io.dart';
 
 // Helper for formatting Output
 String formatSize(int bytes) =>
@@ -45,7 +45,7 @@ void main(List<String> args) async {
   final memStart1 = ProcessInfo.currentRss;
 
   final fp1 = FPGrowth<String>(
-    minSupport: 50,
+    minSupport: 0.05,
     parallelism: Platform.numberOfProcessors,
   );
   final (res1, count1) = await fp1.mineFromList(transactions);
@@ -61,19 +61,19 @@ void main(List<String> args) async {
   print('--------------------------------------------------\n');
 
   // ---------------------------------------------------------
-  // SCENARIO 2: runFPGrowthOnCsv (Low Memory / Streaming)
+  // SCENARIO 2: mineFromCsv (Low Memory / Streaming)
   // ---------------------------------------------------------
-  print('--- [Test 2] CSV Streaming (runFPGrowthOnCsv) ---');
+  print('--- [Test 2] CSV Streaming (mineFromCsv) ---');
   // Trigger GC logic is hard in Dart, so just assume steady state or restart process ideally.
 
   final sw2 = Stopwatch()..start();
   final memStart2 = ProcessInfo.currentRss;
 
-  final (res2, count2) = await runFPGrowthOnCsv(
-    filePath,
-    minSupport: 50,
+  final fp2 = FPGrowth<String>(
+    minSupport: 0.05,
     parallelism: Platform.numberOfProcessors,
   );
+  final (res2, count2) = await fp2.mineFromCsv(filePath);
 
   sw2.stop();
   final memEnd2 = ProcessInfo.currentRss;
@@ -102,7 +102,7 @@ void main(List<String> args) async {
   final sw3 = Stopwatch()..start();
 
   final fp3 = FPGrowth<String>(
-    minSupport: 50,
+    minSupport: 0.05,
     parallelism: Platform.numberOfProcessors,
   );
   final (res3, count3) = await fp3.mine(streamProvider); // Passing the function

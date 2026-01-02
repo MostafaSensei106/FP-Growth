@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/fp_growth_io.dart';
 import 'package:fp_growth/src/utils/exporter.dart';
 import 'package:fp_growth/src/utils/logger.dart';
 
@@ -46,7 +46,7 @@ ArgParser _createArgParser() {
       'minConfidence',
       abbr: 'c',
       help: 'Minimum confidence threshold for association rules.',
-      defaultsTo: '0.7',
+      defaultsTo: '0.05',
     )
     ..addOption(
       'log-level',
@@ -104,12 +104,16 @@ Future<void> _runFPGrowth(ArgResults argResults) async {
 
   logger.info('Mining frequent itemsets from $inputFile...');
 
-  // Use the high-level convenience function for processing CSV files.
-  final (frequentItemsets, totalTransactions) = await runFPGrowthOnCsv(
-    inputFile,
+  // Instantiate FPGrowth with the provided settings.
+  final fpGrowth = FPGrowth<String>(
     minSupport: minSupport,
     parallelism: parallelism,
     logger: logger,
+  );
+
+  // Use the new extension method to process the CSV file.
+  final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromCsv(
+    inputFile,
   );
 
   logger.info('Found ${frequentItemsets.length} frequent itemsets.');

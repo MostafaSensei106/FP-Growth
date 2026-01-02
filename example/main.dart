@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/fp_growth_io.dart';
 
 /// Example 1: Processing a simple, in-memory list of transactions.
 /// This is the easiest way to get started if your data is already in a List.
@@ -47,7 +47,7 @@ Future<void> runInMemoryExample() async {
   print('--------------------------------------------------\n');
 }
 
-/// Example 2: Processing a large CSV file using the recommended helper.
+/// Example 2: Processing a large CSV file using the recommended API.
 /// This is the best approach for large files as it streams data with low memory usage.
 Future<void> runFileStreamExample() async {
   print('--- Example 2: Running on a Large CSV File ---');
@@ -60,14 +60,29 @@ Future<void> runFileStreamExample() async {
   print('Created dummy file: $filePath');
   print('Mining frequent itemsets with minSupport: 2...');
 
-  // 2. Use the `runFPGrowthOnCsv` top-level function
+  // 2. Instantiate FPGrowth with your desired settings.
+  final fpGrowth = FPGrowth<String>(minSupport: 2);
+
+  // 3. Use the `mineFromCsv` extension method from the `fp_growth_io` library.
   // It handles file reading, stream management, and mining in one call.
-  final (itemsets, count) = await runFPGrowthOnCsv(filePath, minSupport: 2);
+  final (itemsets, count) = await fpGrowth.mineFromCsv(filePath);
 
   print('Found ${itemsets.length} frequent itemsets in $count transactions.');
   itemsets.forEach((itemset, support) {
     print('  {${itemset.join(', ')}} - Support: $support');
   });
+
+  // 4. Generate and display association rules
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: 0.7,
+    frequentItemsets: itemsets,
+    totalTransactions: count,
+  );
+  final rules = ruleGenerator.generateRules();
+  print('\nFound ${rules.length} association rules (minConfidence: 70%):');
+  for (final rule in rules) {
+    print('  ${rule.formatWithMetrics()}');
+  }
 
   // Clean up the dummy file
   await file.delete();
@@ -82,11 +97,11 @@ Future<void> runCustomStreamExample() async {
   // 1. Define a function that provides a new stream on each call.
   // This is essential for the two-pass algorithm.
   Stream<List<String>> streamProvider() => Stream.fromIterable([
-    ['x', 'y', 'z'],
-    ['x', 'y'],
-    ['y', 'z'],
-    ['x', 'z', 'w'],
-  ]);
+        ['x', 'y', 'z'],
+        ['x', 'y'],
+        ['y', 'z'],
+        ['x', 'z', 'w'],
+      ]);
 
   // 2. Instantiate FPGrowth and pass the stream provider to the core `mine` method.
   final fpGrowth = FPGrowth<String>(minSupport: 2);
@@ -100,6 +115,18 @@ Future<void> runCustomStreamExample() async {
   frequentItemsets.forEach((itemset, support) {
     print('  {${itemset.join(', ')}} - Support: $support');
   });
+
+  // 3. Generate and display association rules
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: 0.7,
+    frequentItemsets: frequentItemsets,
+    totalTransactions: totalTransactions,
+  );
+  final rules = ruleGenerator.generateRules();
+  print('\nFound ${rules.length} association rules (minConfidence: 70%):');
+  for (final rule in rules) {
+    print('  ${rule.formatWithMetrics()}');
+  }
   print('--------------------------------------------------\n');
 }
 
