@@ -64,6 +64,12 @@ ArgParser _createArgParser() {
       abbr: 'f',
       help: 'Output format (json or csv).',
       defaultsTo: 'json',
+    )
+    ..addOption(
+      'parallelism',
+      abbr: 'p',
+      help: 'Number of isolates to use for parallel processing.',
+      defaultsTo: '1',
     );
 }
 
@@ -90,40 +96,29 @@ LogLevel _parseLogLevel(
 }
 
 Future<void> _runFPGrowth(ArgResults argResults) async {
-  final inputFile = File(argResults['input']);
-  if (!inputFile.existsSync()) {
-    print('Error: Input file not found at ${inputFile.path}');
-    exit(1);
-  }
-
+  final inputFile = argResults['input'];
   final minSupport = double.parse(argResults['minSupport']);
   final minConfidence = double.parse(argResults['minConfidence']);
+  final parallelism = int.parse(argResults['parallelism']);
   final logger = Logger(initialLevel: _parseLogLevel(argResults['log-level']));
 
-  logger.info('Initializing FP-Growth with minSupport: $minSupport...');
-  final fpGrowth = FPGrowth<String>(minSupport: minSupport, logger: logger);
+  logger.info('Mining frequent itemsets from $inputFile...');
 
-  logger.info('Reading and processing transactions from ${inputFile.path}...');
-  final lines = inputFile
-      .openRead()
-      .transform(utf8.decoder)
-      .transform(const LineSplitter());
+  // Use the high-level convenience function for processing CSV files.
+  final (frequentItemsets, totalTransactions) = await runFPGrowthOnCsv(
+    inputFile,
+    minSupport: minSupport,
+    parallelism: parallelism,
+    logger: logger,
+  );
 
-  int transactionCount = 0;
-  await for (final line in lines) {
-    if (line.trim().isEmpty) continue;
-    final transactionsInLine = transactionsFromCsv(line);
-    if (transactionsInLine.isNotEmpty) {
-      fpGrowth.addTransactions(transactionsInLine);
-      transactionCount += transactionsInLine.length;
-    }
-  }
-  final totalTransactions = transactionCount;
-  logger.info('Finished processing $totalTransactions transactions.');
-
-  logger.info('Mining frequent itemsets...');
-  final frequentItemsets = await fpGrowth.mineFrequentItemsets();
   logger.info('Found ${frequentItemsets.length} frequent itemsets.');
+
+  if (totalTransactions == 0) {
+    print('No transactions found to process.');
+    return;
+  }
+
   print('-' * 20);
   frequentItemsets.forEach((itemset, support) {
     final supportPercent = (support / totalTransactions * 100).toStringAsFixed(

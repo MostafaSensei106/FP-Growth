@@ -69,8 +69,9 @@ void main() {
       final fpGrowth = FPGrowth<String>(minSupport: 100.0); // 1% support
       final stopwatch = Stopwatch()..start();
 
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
       stopwatch.stop();
 
       print(
@@ -93,8 +94,9 @@ void main() {
       ];
 
       final fpGrowth = FPGrowth<String>(minSupport: 2.0);
-      fpGrowth.addTransactions(transactions);
-      final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+      final (frequentItemsets, _) = await fpGrowth.mine(
+        () => Stream.fromIterable(transactions),
+      );
 
       final expected = {
         ['item_1']: 3,
@@ -131,8 +133,9 @@ void main() {
         final fpGrowth = FPGrowth<String>(minSupport: 1000.0); // 1% support
         final stopwatch = Stopwatch()..start();
 
-        fpGrowth.addTransactions(transactions);
-        final frequentItemsets = await fpGrowth.mineFrequentItemsets();
+        final (frequentItemsets, _) = await fpGrowth.mine(
+          () => Stream.fromIterable(transactions),
+        );
         stopwatch.stop();
 
         print(

@@ -1,3 +1,16 @@
+## 1.0.3
+
+- **BREAKING CHANGE**: The core mining API has been redesigned to support true memory-efficient streaming. The `FPGrowth.mine` method signature has changed from `mine(Iterable<List<T>>)` to `mine(Stream<List<T>> Function() streamProvider)`. This requires users to pass a function that provides a new transaction stream for each of the algorithm's two passes. The `StreamProcessor` class has been removed. See the README for updated usage.
+- **Major Performance & Memory Refactoring**: Overhauled the core architecture to handle massive datasets efficiently.
+- feat(api): Added `FPGrowth.mineFromList()` convenience method for easy processing of in-memory transaction lists.
+- feat(api): Added `runFPGrowthOnCsv()` top-level function for directly mining CSV files with low memory usage (not available on web).
+- refactor(core): Replaced in-memory processing with a **two-pass streaming model**, drastically reducing memory consumption by accepting a stream provider.
+- refactor(core): Implemented a **weighted FP-Tree** for conditional tree generation, avoiding the costly duplication of transaction paths in memory.
+- refactor(rules): Replaced the brute-force subset generation with an efficient **Apriori-style algorithm** for creating association rules, significantly speeding up the process for large itemsets.
+- refactor(core): Implemented a fixed-size **Isolate Pool** for parallel mining, eliminating the overhead of spawning new isolates for each task and enabling true, efficient parallelism.
+- chore(tests): Updated the entire test suite to align with the new stream-provider API and ensure correctness after the major refactoring.
+- chore(docs): Updated documentation to reflect the new architectural changes and convenience APIs.
+
 ## 1.0.2
 
 - test(property): Add property-based tests for input order independence and support monotonicity

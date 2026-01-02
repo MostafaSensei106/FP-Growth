@@ -7,8 +7,7 @@ export 'src/core/fp_growth.dart';
 export 'src/rules/association_rule.dart';
 export 'src/rules/rule_generator.dart';
 
-// Data adapters for loading transactions.
+// Data adapters and helpers.
 export 'src/utils/io_adapters.dart';
-
-// Stream processing.
-export 'src/stream/stream_adapter.dart';
+export 'src/utils/file_runner.dart'
+    if (dart.library.html) 'src/utils/file_runner_noop.dart';

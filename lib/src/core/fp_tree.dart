@@ -10,41 +10,50 @@ typedef Header = ({int count, FPNode? head, FPNode? tail});
 /// item IDs in a compact structure that is used for mining frequent itemsets.
 class FPTree {
   /// The root of the tree. It does not represent any item.
-  final FPNode root = FPNode(null);
+  final FPNode root = FPNode(null, count: 0);
 
   /// The header table for the tree.
   /// Maps each frequent item ID to its frequency count and the head of the node-link list.
   final Map<int, Header> headerTable = {};
 
-  /// Builds the FP-Tree from a set of transactions and a frequency map.
+  /// Builds the FP-Tree's header table from a frequency map.
   ///
-  /// [transactions] is an iterable of transactions, where each transaction is a
-  /// list of item IDs. These transactions must be pre-filtered to contain only
-  /// frequent items and sorted by frequency in descending order.
   /// [frequency] is a map of frequent item IDs to their frequency counts.
-  FPTree(Iterable<List<int>> transactions, Map<int, int> frequency) {
+  FPTree(Map<int, int> frequency) {
     // Initialize header table with frequent items and their counts.
     for (final item in frequency.keys) {
       headerTable[item] = (count: frequency[item]!, head: null, tail: null);
     }
+  }
 
+  /// Adds a set of unweighted transactions to the tree.
+  void addTransactions(Iterable<List<int>> transactions) {
     for (final transaction in transactions) {
       if (transaction.isNotEmpty) {
-        _addTransaction(transaction);
+        addTransaction(transaction, 1);
       }
     }
   }
 
-  /// Adds a single, pre-processed transaction to the tree.
-  void _addTransaction(List<int> transaction) {
+  /// Adds a set of weighted transactions to the tree.
+  void addWeightedTransactions(Map<List<int>, int> weightedTransactions) {
+    for (final entry in weightedTransactions.entries) {
+      if (entry.key.isNotEmpty) {
+        addTransaction(entry.key, entry.value);
+      }
+    }
+  }
+
+  /// Adds a single, pre-processed transaction to the tree with a given weight (count).
+  void addTransaction(List<int> transaction, int count) {
     var currentNode = root;
     for (final item in transaction) {
       var childNode = currentNode.findChild(item);
       if (childNode != null) {
-        childNode.count++;
+        childNode.incrementCount(count);
         currentNode = childNode;
       } else {
-        final newNode = FPNode(item, parent: currentNode);
+        final newNode = FPNode(item, parent: currentNode, count: count);
         currentNode.addChild(newNode);
         currentNode = newNode;
         _updateHeaderTable(item, newNode);
@@ -84,11 +93,8 @@ class FPTree {
       final path = <int>[];
       var currentNode = startNode.parent;
       // Traverse up to the root.
-      while (currentNode != null) {
-        final item = currentNode.item;
-        if (item != null) {
-          path.add(item);
-        }
+      while (currentNode != null && currentNode.item != null) {
+        path.add(currentNode.item!);
         currentNode = currentNode.parent;
       }
       if (path.isNotEmpty) {
