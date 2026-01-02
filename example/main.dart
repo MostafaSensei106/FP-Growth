@@ -97,11 +97,11 @@ Future<void> runCustomStreamExample() async {
   // 1. Define a function that provides a new stream on each call.
   // This is essential for the two-pass algorithm.
   Stream<List<String>> streamProvider() => Stream.fromIterable([
-        ['x', 'y', 'z'],
-        ['x', 'y'],
-        ['y', 'z'],
-        ['x', 'z', 'w'],
-      ]);
+    ['x', 'y', 'z'],
+    ['x', 'y'],
+    ['y', 'z'],
+    ['x', 'z', 'w'],
+  ]);
 
   // 2. Instantiate FPGrowth and pass the stream provider to the core `mine` method.
   final fpGrowth = FPGrowth<String>(minSupport: 2);
