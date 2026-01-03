@@ -16,7 +16,7 @@ void main() {
       expect(result, [
         ['a', 'b', 'c'],
         ['d', 'e'],
-        ['f']
+        ['f'],
       ]);
     });
 
@@ -27,7 +27,7 @@ void main() {
 
       expect(result, [
         ['a,b', 'c'],
-        ['d', 'e,f']
+        ['d', 'e,f'],
       ]);
     });
 
@@ -38,7 +38,7 @@ void main() {
 
       expect(result, [
         ['a', 'b', 'c'],
-        ['d', 'e']
+        ['d', 'e'],
       ]);
     });
 
@@ -49,19 +49,21 @@ void main() {
 
       expect(result, [
         ['a', 'b'],
-        ['c', 'd']
+        ['c', 'd'],
       ]);
     });
 
     test('handles different delimiters', () async {
       final csv = 'a;b;c\nd;e';
       final stream = stringToStream(csv);
-      final result =
-          await transactionsFromCsv(stream, fieldDelimiter: ';').toList();
+      final result = await transactionsFromCsv(
+        stream,
+        fieldDelimiter: ';',
+      ).toList();
 
       expect(result, [
         ['a', 'b', 'c'],
-        ['d', 'e']
+        ['d', 'e'],
       ]);
     });
 
@@ -72,7 +74,7 @@ void main() {
 
       expect(result, [
         ['a', 'b'],
-        ['c', 'd']
+        ['c', 'd'],
       ]);
     });
 
@@ -84,7 +86,7 @@ void main() {
       expect(result, [
         ['a', 'b', 'c'],
         ['x,y', 'z'],
-        ['1', '2', '3']
+        ['1', '2', '3'],
       ]);
     });
 

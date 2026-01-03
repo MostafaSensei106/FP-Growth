@@ -62,48 +62,56 @@ void main() {
       test('throws assertion error for invalid inputs', () {
         // Empty antecedent
         expect(
-            () => AssociationRule<String>(
-                antecedent: {},
-                consequent: {'a'},
-                support: 0,
-                confidence: 0,
-                lift: 0,
-                leverage: 0,
-                conviction: 0),
-            throwsA(isA<AssertionError>()));
+          () => AssociationRule<String>(
+            antecedent: {},
+            consequent: {'a'},
+            support: 0,
+            confidence: 0,
+            lift: 0,
+            leverage: 0,
+            conviction: 0,
+          ),
+          throwsA(isA<AssertionError>()),
+        );
         // Empty consequent
         expect(
-            () => AssociationRule<String>(
-                antecedent: {'a'},
-                consequent: {},
-                support: 0,
-                confidence: 0,
-                lift: 0,
-                leverage: 0,
-                conviction: 0),
-            throwsA(isA<AssertionError>()));
+          () => AssociationRule<String>(
+            antecedent: {'a'},
+            consequent: {},
+            support: 0,
+            confidence: 0,
+            lift: 0,
+            leverage: 0,
+            conviction: 0,
+          ),
+          throwsA(isA<AssertionError>()),
+        );
         // Invalid support
         expect(
-            () => AssociationRule<String>(
-                antecedent: {'a'},
-                consequent: {'b'},
-                support: -0.1,
-                confidence: 0,
-                lift: 0,
-                leverage: 0,
-                conviction: 0),
-            throwsA(isA<AssertionError>()));
+          () => AssociationRule<String>(
+            antecedent: {'a'},
+            consequent: {'b'},
+            support: -0.1,
+            confidence: 0,
+            lift: 0,
+            leverage: 0,
+            conviction: 0,
+          ),
+          throwsA(isA<AssertionError>()),
+        );
         // Invalid confidence
         expect(
-            () => AssociationRule<String>(
-                antecedent: {'a'},
-                consequent: {'b'},
-                support: 0,
-                confidence: 1.1,
-                lift: 0,
-                leverage: 0,
-                conviction: 0),
-            throwsA(isA<AssertionError>()));
+          () => AssociationRule<String>(
+            antecedent: {'a'},
+            consequent: {'b'},
+            support: 0,
+            confidence: 1.1,
+            lift: 0,
+            leverage: 0,
+            conviction: 0,
+          ),
+          throwsA(isA<AssertionError>()),
+        );
       });
     });
 
@@ -136,29 +144,60 @@ void main() {
       });
 
       test('formatWithMetrics() produces correct format', () {
-        expect(ruleA.formatWithMetrics(),
-            equals('{bread} => {milk} [sup: 0.600, conf: 0.750, lift: 1.25, lev: 0.120, conv: 2.000]'));
+        expect(
+          ruleA.formatWithMetrics(),
+          equals(
+            '{bread} => {milk} [sup: 0.600, conf: 0.750, lift: 1.25, lev: 0.120, conv: 2.000]',
+          ),
+        );
       });
 
       test('formatWithMetrics() handles infinite conviction', () {
         final ruleWithInf = AssociationRule<String>(
-            antecedent: {'a'},
-            consequent: {'b'},
-            support: 0.5,
-            confidence: 1.0,
-            lift: 1.0,
-            leverage: 0.0,
-            conviction: double.infinity);
-        expect(ruleWithInf.formatWithMetrics(),
-            contains('conv: \u221e')); // infinity symbol
+          antecedent: {'a'},
+          consequent: {'b'},
+          support: 0.5,
+          confidence: 1.0,
+          lift: 1.0,
+          leverage: 0.0,
+          conviction: double.infinity,
+        );
+        expect(
+          ruleWithInf.formatWithMetrics(),
+          contains('conv: \u221e'),
+        ); // infinity symbol
       });
     });
 
     group('Static Comparators', () {
-      final r1 = AssociationRule(antecedent: {'a'}, consequent: {'b'}, support: 0.5, confidence: 0.8, lift: 1.2, leverage: 0, conviction: 0);
-      final r2 = AssociationRule(antecedent: {'c'}, consequent: {'d'}, support: 0.6, confidence: 0.7, lift: 1.5, leverage: 0, conviction: 0);
-      final r3 = AssociationRule(antecedent: {'e'}, consequent: {'f'}, support: 0.5, confidence: 0.8, lift: 1.1, leverage: 0, conviction: 0);
-      
+      final r1 = AssociationRule(
+        antecedent: {'a'},
+        consequent: {'b'},
+        support: 0.5,
+        confidence: 0.8,
+        lift: 1.2,
+        leverage: 0,
+        conviction: 0,
+      );
+      final r2 = AssociationRule(
+        antecedent: {'c'},
+        consequent: {'d'},
+        support: 0.6,
+        confidence: 0.7,
+        lift: 1.5,
+        leverage: 0,
+        conviction: 0,
+      );
+      final r3 = AssociationRule(
+        antecedent: {'e'},
+        consequent: {'f'},
+        support: 0.5,
+        confidence: 0.8,
+        lift: 1.1,
+        leverage: 0,
+        conviction: 0,
+      );
+
       test('compareByConfidence sorts correctly (desc)', () {
         final rules = [r2, r1, r3];
         rules.sort(AssociationRule.compareByConfidence);

@@ -48,21 +48,26 @@ void main() {
 
     group('Logging Output', () {
       Future<List<String>> captureOutput(
-          Logger logger, void Function(Logger) logAction) {
+        Logger logger,
+        void Function(Logger) logAction,
+      ) {
         final completer = Completer<List<String>>();
         final captured = <String>[];
 
-        runZoned(() {
-          logAction(logger);
-          // A small delay to ensure all async prints are captured.
-          Future.delayed(Duration(milliseconds: 10), () {
-            completer.complete(captured);
-          });
-        }, zoneSpecification: ZoneSpecification(
-          print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
-            captured.add(line);
+        runZoned(
+          () {
+            logAction(logger);
+            // A small delay to ensure all async prints are captured.
+            Future.delayed(Duration(milliseconds: 10), () {
+              completer.complete(captured);
+            });
           },
-        ));
+          zoneSpecification: ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+              captured.add(line);
+            },
+          ),
+        );
 
         return completer.future;
       }

@@ -53,8 +53,10 @@ void main() {
       });
 
       test('exports without sorting', () {
-        final text =
-            exportFrequentItemsetsToText(frequentItemsets, sortBySupport: false);
+        final text = exportFrequentItemsetsToText(
+          frequentItemsets,
+          sortBySupport: false,
+        );
         final lines = text.trim().split('\n');
 
         // Order is determined by the original map's iteration order

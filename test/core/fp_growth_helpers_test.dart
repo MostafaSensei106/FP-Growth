@@ -19,7 +19,10 @@ void main() {
       });
 
       test('ceil()s the result for relative support', () {
-        expect(calculateAbsoluteMinSupport(0.095, 100), equals(10)); // 9.5 -> 10
+        expect(
+          calculateAbsoluteMinSupport(0.095, 100),
+          equals(10),
+        ); // 9.5 -> 10
         expect(calculateAbsoluteMinSupport(0.991, 1000), equals(991));
       });
     });
@@ -52,8 +55,9 @@ void main() {
         ];
 
         final subsets = generateSubsets(nodes);
-        final subsetItems =
-            subsets.map((s) => s.map((n) => n.item).toSet()).toSet();
+        final subsetItems = subsets
+            .map((s) => s.map((n) => n.item).toSet())
+            .toSet();
 
         expect(subsets.length, equals(7)); // 2^3 - 1
         expect(
@@ -110,8 +114,10 @@ void main() {
         };
 
         expect(
-          MapEquality(keys: ListEquality(), values: Equality())
-              .equals(weightedTransactions, expected),
+          MapEquality(
+            keys: ListEquality(),
+            values: Equality(),
+          ).equals(weightedTransactions, expected),
           isTrue,
         );
       });
@@ -125,8 +131,10 @@ void main() {
         final conditionalPatternBases = {
           [1, 2]: 1,
         };
-        final weightedTransactions =
-            buildConditionalTransactions(conditionalPatternBases, {});
+        final weightedTransactions = buildConditionalTransactions(
+          conditionalPatternBases,
+          {},
+        );
         expect(weightedTransactions, isEmpty);
       });
 
@@ -134,10 +142,7 @@ void main() {
         final conditionalPatternBases = {
           [1, 2]: 1,
         };
-        final conditionalFrequentItems = {
-          1: 5,
-          2: 5,
-        };
+        final conditionalFrequentItems = {1: 5, 2: 5};
         final weightedTransactions = buildConditionalTransactions(
           conditionalPatternBases,
           conditionalFrequentItems,

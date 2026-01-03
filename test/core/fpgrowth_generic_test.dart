@@ -81,9 +81,12 @@ void main() {
       final expectedFiltered = Map<List<int>, int>.from(expected)
         ..removeWhere((k, v) => v < 3);
 
-      expect(areItemsetMapsEqual(frequentItemsets, expectedFiltered), isTrue,
-          reason:
-              "Expected integer itemsets: $expectedFiltered, but got: $frequentItemsets");
+      expect(
+        areItemsetMapsEqual(frequentItemsets, expectedFiltered),
+        isTrue,
+        reason:
+            "Expected integer itemsets: $expectedFiltered, but got: $frequentItemsets",
+      );
     });
 
     test('correctly mines with a custom object type', () async {
@@ -116,9 +119,12 @@ void main() {
       final expectedFiltered = Map<List<_TestItem>, int>.from(expected)
         ..removeWhere((k, v) => v < 3);
 
-      expect(areItemsetMapsEqual(frequentItemsets, expectedFiltered), isTrue,
-          reason:
-              "Expected custom object itemsets: $expectedFiltered, but got: $frequentItemsets");
+      expect(
+        areItemsetMapsEqual(frequentItemsets, expectedFiltered),
+        isTrue,
+        reason:
+            "Expected custom object itemsets: $expectedFiltered, but got: $frequentItemsets",
+      );
     });
   });
 }
