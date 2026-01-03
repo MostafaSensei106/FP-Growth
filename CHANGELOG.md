@@ -1,5 +1,6 @@
 ## 2.0.1
 
+- chore(release): Bump version to 2.0.1
 - docs(Contributing): Add Contributor Guidelines.
 - docs(CLA): ADD CLA.md Contributor License Agreement
 - docs(readme): Update benchmark version to v2.0.1
