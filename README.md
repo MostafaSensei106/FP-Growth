@@ -230,13 +230,13 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 
 ## ⚡ Performance
 
-The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v1.0.3) compared to the older version (v1.0.2).
+The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v2.0.0) compared to the older version (v1.0.2).
 
 **Old Benchmark (v1.0.2):**
 
-**Averaged Execution Time:** ~2.73 seconds (single-threaded, file-based).
+**Averaged Execution Time:** ~2.73 seconds.
 
-### Benchmark Results (v1.0.3)
+### Benchmark Results (v2.0.0)
 
 | API Method                        | Averaged Execution Time | Speed vs. v1.0.2 | Memory Usage (Delta) | Notes                                                 |
 | --------------------------------- | ----------------------- | ---------------- | -------------------- | ----------------------------------------------------- |
@@ -259,7 +259,7 @@ Contributions are welcome! Here’s how to get started:
     `git push origin feature/YourFeature`
 5.  Open a pull request.
 
-> 💡 Please read our (soon-to-be-added) **Contributing Guidelines** and open an issue first for major feature ideas or changes.
+> 💡 Please read our **[Contributing Guidelines](CONTRIBUTING.md)** and open an issue first for major feature ideas or changes.
 
 ---
 
@@ -271,4 +271,3 @@ See the [LICENSE](LICENSE) file for full details.
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
 </p>
-

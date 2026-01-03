@@ -1,30 +1,121 @@
 # Contributing to FP-Growth
 
-First off, thank you for considering contributing to Radix Pulse! It's people like you that make the open source community such a great place.
+Thank you for your interest in contributing to FP-Growth.
 
-## How Can I Contribute?
+FP-Growth is an open-source project built for the community. This document
+explains how to contribute and clearly describes the licensing and ownership
+model so everyone understands how the project is used and sustained.
+
+Please read this document carefully before contributing.
+
+---
+
+## Project Philosophy (Please Read First)
+
+FP-Growth is:
+
+- Fully open-source
+- Free for individuals, researchers, students, and the community
+- Publicly available with no hidden or restricted features
+
+The goal of this project is **not** to take community work and sell it.
+The goal is to keep the project open while allowing companies to support
+its development through commercial licensing when needed.
+
+---
+
+## License Overview
+
+FP-Growth is released under the **GNU General Public License (GPL)**.
+
+This means:
+
+- Anyone can use the project for free
+- Anyone can study, modify, and redistribute it
+- Any public redistribution must follow GPL terms
+
+The open-source version is the **complete project**, not a limited edition.
+
+---
+
+## Commercial Use (Companies Only)
+
+Companies or enterprises may need a **commercial license** in cases such as:
+
+- Using FP-Growth inside proprietary or closed-source products
+- Using FP-Growth in paid SaaS platforms without GPL compliance
+- Internal corporate usage where GPL obligations are legally incompatible
+
+In these cases:
+
+- The company pays for a commercial license
+- The community version remains free and open
+- No features are removed from the open-source project
+
+Individuals and non-commercial users **do not need to pay**.
+
+---
+
+## Contributor License Agreement (CLA)
+
+This project uses a **Contributor License Agreement (CLA)**.
+
+By submitting a contribution, you confirm that:
+
+- Your work will remain part of the open-source project under GPL
+- The Project Owner may also offer commercial licenses to companies
+- You are not giving up community access to your work
+- You are not entitled to payment or revenue sharing
+
+The CLA exists only to:
+
+- Protect the project legally
+- Allow sustainable development
+- Avoid future licensing conflicts
+
+for more information, see [Contributor License Agreement (CLA)](CLA.md).
+
+---
+
+## How to Contribute
 
 ### Reporting Bugs
 
-- **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/MostafaSensei106/FP-Growth/issues).
-- If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/MostafaSensei106/FP-Growth/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+Before opening a new issue, please check existing issues:
+https://github.com/MostafaSensei106/FP-Growth/issues
+
+When reporting a bug, include:
+
+- A clear title
+- Steps to reproduce
+- Expected and actual behavior
+- Logs or minimal examples if possible
+
+---
 
 ### Suggesting Enhancements
 
-- Open a new issue and provide a clear description of the enhancement you are suggesting.
-- Explain why this enhancement would be useful to other users.
+Enhancements are welcome.
+
+Please open an issue explaining:
+
+- What you want to improve
+- Why it is useful
+- How it aligns with the project goals
+
+---
 
 ### Pull Requests
 
-1.  Fork the repo and create your branch from `main`.
-2.  Add tests for any new code you write.
-3.  Ensure the test suite passes (`dart test`).
-4.  Make sure your code lints (`dart analyze`).
-5.  Format your code (`dart format .`).
-6.  Issue that pull request!
+To submit a pull request:
 
-## Styleguides
-
-We use the standard `effective_dart` style guide. Please ensure your code is formatted and analyzed before submitting a pull request.
-
-We look forward to your contributions!
+1. Fork the repository
+2. Create a branch from `main`
+3. Write clean and readable code
+4. Add or update tests if needed
+5. Run the following before submitting:
+   ```bash
+   dart test
+   dart analyze
+   dart format .
+   ```
