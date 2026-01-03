@@ -1,5 +1,7 @@
 ## 2.0.1
 
+- docs(Contributing): Add Contributor Guidelines.
+- docs(CLA): ADD CLA.md Contributor License Agreement
 - docs(readme): Update benchmark version to v2.0.0
 - docs(readme): Trim benchmark description
 - chore(changelog): Add 2.0.1 release notes

@@ -16,7 +16,7 @@ By submitting any contribution to this project, you agree to the terms below.
 - "Project" refers to FP-Growth.
 - "Contribution" refers to any code, documentation, tests, examples, or other
   material submitted by You.
-- "Project Owner" refers to Mostafa Sensei.
+- "Project Owner" refers to Mostafa Mahmoud [@MostafaSensei106](https://github.com/MostafaSensei106).
 
 ---
 
