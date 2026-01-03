@@ -73,6 +73,8 @@ The CLA exists only to:
 - Allow sustainable development
 - Avoid future licensing conflicts
 
+for more information, see [Contributor License Agreement (CLA)](CLA.md).
+
 ---
 
 ## How to Contribute
