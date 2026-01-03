@@ -1,3 +1,8 @@
+## 2.0.0
+
+- test: Add unit tests for core, rules, I/O, and utilities
+  Add extensive unit tests for core FP-Growth helpers, generic type handling, I/O operations (CSV), association rules, exporter, and logger. Relocate the API benchmark to bin/
+
 ## 1.0.3
 
 - **BREAKING CHANGE**: The core mining API has been redesigned to support true memory-efficient streaming. The `FPGrowth.mine` method signature has changed from `mine(Iterable<List<T>>)` to `mine(Stream<List<T>> Function() streamProvider)`. This requires users to pass a function that provides a function that provides a new transaction stream for each of the algorithm's two passes. The `StreamProcessor` class has been removed. See the README for updated usage.
