@@ -1,7 +1,14 @@
+## 2.0.1
+
+- docs(readme): Update benchmark version to v2.0.0
+- docs(readme): Trim benchmark description
+- chore(changelog): Add 2.0.1 release notes
+
 ## 2.0.0
 
 - test: Add unit tests for core, rules, I/O, and utilities
   Add extensive unit tests for core FP-Growth helpers, generic type handling, I/O operations (CSV), association rules, exporter, and logger. Relocate the API benchmark to bin/
+- chore(changelog): Add 2.0.0 release notes
 
 ## 1.0.3
 
@@ -18,6 +25,7 @@
 - chore(tests): Updated the entire test suite to align with the new stream-provider API and ensure correctness after the major refactoring.
 - chore(docs): Updated the `README.md`, examples, and CLI tool to reflect the new `mineFromCsv()` API.
 - chore(docs): Updated documentation to reflect the new architectural changes and convenience APIs.
+- chore(changelog): Add 1.0.3 release notes
 
 ## 1.0.2
 
@@ -27,6 +35,7 @@
 - docs(benchmarks): Update performance figures using compiled executables instead of dart run
 - docs(readme): Update README with CLI usage and performance benchmarks
 - chore(changelog): Add 1.0.2 release notes
+-
 
 ## 1.0.1
 
