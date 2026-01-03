@@ -234,7 +234,7 @@ The `fp_growth` library is optimized for both speed and memory efficiency. The f
 
 **Old Benchmark (v1.0.2):**
 
-**Averaged Execution Time:** ~2.73 seconds (single-threaded, file-based).
+**Averaged Execution Time:** ~2.73 seconds.
 
 ### Benchmark Results (v1.0.3)
 
@@ -271,4 +271,3 @@ See the [LICENSE](LICENSE) file for full details.
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
 </p>
-
