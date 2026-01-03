@@ -230,13 +230,13 @@ dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-fo
 
 ## ⚡ Performance
 
-The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v2.0.0) compared to the older version (v1.0.2).
+The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v2.0.1) compared to the older version (v1.0.2).
 
 **Old Benchmark (v1.0.2):**
 
 **Averaged Execution Time:** ~2.73 seconds.
 
-### Benchmark Results (v2.0.0)
+### Benchmark Results (v2.0.1)
 
 | API Method                        | Averaged Execution Time | Speed vs. v1.0.2 | Memory Usage (Delta) | Notes                                                 |
 | --------------------------------- | ----------------------- | ---------------- | -------------------- | ----------------------------------------------------- |
