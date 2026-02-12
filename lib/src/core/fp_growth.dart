@@ -78,9 +78,8 @@ Map<List<int>, int> mineForItem<T>(
 
         for (final subset in allSubsets) {
           final itemset = subset.map((node) => node.item!).toList();
-          final support = subset
-              .map((node) => node.count)
-              .reduce((a, b) => a < b ? a : b);
+          final support =
+              subset.map((node) => node.count).reduce((a, b) => a < b ? a : b);
           frequentItemsets[List<int>.from(newPrefix)..addAll(itemset)] =
               support;
         }
@@ -165,20 +164,19 @@ Map<List<int>, int> buildConditionalTransactions(
     final path = entry.key;
     final count = entry.value;
 
-    final orderedPath =
-        path
-            .where((item) => conditionalFrequentItems.containsKey(item))
-            .toList()
-          ..sort((a, b) {
-            final compare = conditionalFrequentItems[b]!.compareTo(
-              conditionalFrequentItems[a]!,
-            );
-            if (compare == 0) {
-              // Stable sort based on item ID
-              return a.compareTo(b);
-            }
-            return compare;
-          });
+    final orderedPath = path
+        .where((item) => conditionalFrequentItems.containsKey(item))
+        .toList()
+      ..sort((a, b) {
+        final compare = conditionalFrequentItems[b]!.compareTo(
+          conditionalFrequentItems[a]!,
+        );
+        if (compare == 0) {
+          // Stable sort based on item ID
+          return a.compareTo(b);
+        }
+        return compare;
+      });
 
     if (orderedPath.isNotEmpty) {
       weightedTransactions[orderedPath] = count;
@@ -254,7 +252,7 @@ class FPGrowth<T> {
   /// [parallelism] the number of isolates to use for parallel processing. Defaults to 1.
   /// This is ignored on the web platform.
   FPGrowth({required this.minSupport, Logger? logger, this.parallelism = 1})
-    : _logger = logger ?? Logger() {
+      : _logger = logger ?? Logger() {
     if (minSupport <= 0) {
       throw ArgumentError.value(
         minSupport,

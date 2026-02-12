@@ -89,15 +89,12 @@ String exportRulesToCsv<T>(
   );
 
   for (final rule in rules) {
-    final antecedentStr = rule.antecedent
-        .map((e) => e.toString())
-        .join(delimiter);
-    final consequentStr = rule.consequent
-        .map((e) => e.toString())
-        .join(delimiter);
-    final convictionStr = rule.conviction.isInfinite
-        ? 'INF'
-        : rule.conviction.toString();
+    final antecedentStr =
+        rule.antecedent.map((e) => e.toString()).join(delimiter);
+    final consequentStr =
+        rule.consequent.map((e) => e.toString()).join(delimiter);
+    final convictionStr =
+        rule.conviction.isInfinite ? 'INF' : rule.conviction.toString();
 
     buffer.writeln(
       '"$antecedentStr",'

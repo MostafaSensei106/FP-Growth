@@ -1,6 +1,7 @@
 name: fp_growth
 description: A high-performance Dart FP-Growth algorithm for frequent pattern mining and association rule learning, with CLI and CSV support.
-version: 2.0.1
+version: 2.0.2
+publish_to: https://pub.dev
 repository: https://github.com/MostafaSensei106/FP-Growth
 homepage: https://github.com/MostafaSensei106/FP-Growth
 
@@ -15,11 +16,11 @@ topics:
   ]
 
 environment:
-  sdk: ">=3.10.1 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   collection: ^1.18.0
-  csv: ^6.0.0
+  csv: ^7.1.0
   args: ^2.3.1
 
 dev_dependencies:

@@ -144,9 +144,8 @@ Map<List<int>, int> _performMining<T>(
 
         for (final subset in allSubsets) {
           final itemset = subset.map((node) => node.item!).toList();
-          final support = subset
-              .map((node) => node.count)
-              .reduce((a, b) => a < b ? a : b);
+          final support =
+              subset.map((node) => node.count).reduce((a, b) => a < b ? a : b);
           frequentItemsets[List<int>.from(newPrefix)..addAll(itemset)] =
               support;
         }

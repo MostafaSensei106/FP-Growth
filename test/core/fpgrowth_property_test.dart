@@ -116,9 +116,8 @@ void main() {
         () => Stream.fromIterable(transactions),
       );
 
-      final frequentKeysAsSets = frequentItemsets.keys
-          .map((k) => k.toSet())
-          .toSet();
+      final frequentKeysAsSets =
+          frequentItemsets.keys.map((k) => k.toSet()).toSet();
 
       for (final itemset in frequentItemsets.keys) {
         if (itemset.length > 1) {

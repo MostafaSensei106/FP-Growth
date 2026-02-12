@@ -86,5 +86,4 @@ You confirm that:
 ## 8. Acceptance
 
 Submitting a Contribution to FP-Growth means you accept this Agreement.
-
 If you do not agree with these terms, please do not contribute.
