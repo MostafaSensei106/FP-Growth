@@ -18,17 +18,16 @@ Stream<List<String>> transactionsFromCsv(
       .transform(utf8.decoder)
       .transform(const LineSplitter())
       .map((line) {
-        if (line.isEmpty) return const <String>[];
+    if (line.isEmpty) return const <String>[];
 
-        // Check for quotes once.
-        // If no quotes, use the native split.
-        if (!line.contains('"')) {
-          return line.split(fieldDelimiter).map((e) => e.trim()).toList();
-        }
+    // Check for quotes once.
+    // If no quotes, use the native split.
+    if (!line.contains('"')) {
+      return line.split(fieldDelimiter).map((e) => e.trim()).toList();
+    }
 
-        return _parseComplexCsvLine(line, fieldDelimiter);
-      })
-      .where((row) => row.isNotEmpty);
+    return _parseComplexCsvLine(line, fieldDelimiter);
+  }).where((row) => row.isNotEmpty);
 }
 
 /// A manual parser that handles quoted fields correctly.

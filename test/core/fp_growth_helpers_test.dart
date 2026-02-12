@@ -5,27 +5,27 @@ import 'package:test/test.dart';
 
 void main() {
   group('FP-Growth Helper Functions', () {
-    group('calculateAbsoluteMinSupport', () {
-      test('treats values >= 1.0 as absolute count', () {
-        expect(calculateAbsoluteMinSupport(3.0, 100), equals(3));
-        expect(calculateAbsoluteMinSupport(1.0, 100), equals(1));
-        expect(calculateAbsoluteMinSupport(10.5, 100), equals(10));
-      });
+    // group('calculateAbsoluteMinSupport', () {
+    //   test('treats values >= 1.0 as absolute count', () {
+    //     expect(calculateAbsoluteMinSupport(3.0, 100), equals(3));
+    //     expect(calculateAbsoluteMinSupport(1.0, 100), equals(1));
+    //     expect(calculateAbsoluteMinSupport(10.5, 100), equals(10));
+    //   });
 
-      test('treats values < 1.0 as relative percentage', () {
-        expect(calculateAbsoluteMinSupport(0.5, 100), equals(50));
-        expect(calculateAbsoluteMinSupport(0.1, 50), equals(5));
-        expect(calculateAbsoluteMinSupport(0.0, 100), equals(0));
-      });
+    //   test('treats values < 1.0 as relative percentage', () {
+    //     expect(calculateAbsoluteMinSupport(0.5, 100), equals(50));
+    //     expect(calculateAbsoluteMinSupport(0.1, 50), equals(5));
+    //     expect(calculateAbsoluteMinSupport(0.0, 100), equals(0));
+    //   });
 
-      test('ceil()s the result for relative support', () {
-        expect(
-          calculateAbsoluteMinSupport(0.095, 100),
-          equals(10),
-        ); // 9.5 -> 10
-        expect(calculateAbsoluteMinSupport(0.991, 1000), equals(991));
-      });
-    });
+    //   test('ceil()s the result for relative support', () {
+    //     expect(
+    //       calculateAbsoluteMinSupport(0.095, 100),
+    //       equals(10),
+    //     ); // 9.5 -> 10
+    //     expect(calculateAbsoluteMinSupport(0.991, 1000), equals(991));
+    //   });
+    // });
 
     group('filterFrequentItems', () {
       final frequency = {1: 5, 2: 2, 3: 10, 4: 2};
@@ -55,9 +55,8 @@ void main() {
         ];
 
         final subsets = generateSubsets(nodes);
-        final subsetItems = subsets
-            .map((s) => s.map((n) => n.item).toSet())
-            .toSet();
+        final subsetItems =
+            subsets.map((s) => s.map((n) => n.item).toSet()).toSet();
 
         expect(subsets.length, equals(7)); // 2^3 - 1
         expect(

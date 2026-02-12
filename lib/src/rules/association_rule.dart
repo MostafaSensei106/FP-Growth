@@ -122,7 +122,8 @@ class AssociationRule<T> {
   static int compareByConfidence<T>(
     AssociationRule<T> a,
     AssociationRule<T> b,
-  ) => b.confidence.compareTo(a.confidence);
+  ) =>
+      b.confidence.compareTo(a.confidence);
 
   /// Compares rules by lift (descending order).
   static int compareByLift<T>(AssociationRule<T> a, AssociationRule<T> b) =>

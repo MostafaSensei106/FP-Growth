@@ -64,9 +64,8 @@ class RuleGenerator<T> {
     if (itemset.length < 2) return;
 
     // Start with consequents of size 1
-    var levelOneConsequents = itemset
-        .map((item) => {item})
-        .toList(growable: false);
+    var levelOneConsequents =
+        itemset.map((item) => {item}).toList(growable: false);
 
     // This list will hold confident consequents from the current level (k)
     // to generate candidates for the next level (k+1).
@@ -94,8 +93,7 @@ class RuleGenerator<T> {
         // Anti-monotonicity pruning: if a (k)-consequent was not confident,
         // any (k+1)-super-consequent will also not be confident.
         // We ensure all subsets of the new candidate were in the previous confident list.
-        final allSubsetsWereConfident =
-            k == 1 ||
+        final allSubsetsWereConfident = k == 1 ||
             consequent.every(
               (item) => confidentConsequents.any(
                 (c) => c.containsAll(consequent.difference({item})),
@@ -169,9 +167,8 @@ class RuleGenerator<T> {
     // If confidence is below the threshold, we could stop early, but the
     // calling function handles this.
 
-    final lift = (consequentSupport == 0)
-        ? 0.0
-        : confidence / consequentSupport;
+    final lift =
+        (consequentSupport == 0) ? 0.0 : confidence / consequentSupport;
     final leverage = itemsetSupport - (antecedentSupport * consequentSupport);
 
     // Conviction is undefined if confidence is 1.
