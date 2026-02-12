@@ -1,3 +1,9 @@
+## 2.0.2
+
+- chore(release): Update `csv` dependency to `^7.1.0` and relax Dart SDK constraint to `>=3.0.0`.
+  Disable the `calculateAbsoluteMinSupport` test group.
+  Increment package version to `2.0.2` and configure
+
 ## 2.0.1
 
 - chore(release): Bump version to 2.0.1
