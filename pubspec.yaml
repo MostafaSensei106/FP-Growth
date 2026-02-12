@@ -4,6 +4,8 @@ version: 2.0.2
 repository: https://github.com/MostafaSensei106/FP-Growth
 homepage: https://github.com/MostafaSensei106/FP-Growth
 
+issue_tracker: https://github.com/MostafaSensei106/FP-Growth/issues
+
 license: GPL-3.0-or-later
 topics:
   [
