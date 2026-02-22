@@ -1,3 +1,12 @@
+## 2.1.3
+
+- refactor(parallel-runner): Split isolate logic for web,wasm compatibility
+
+
+## 2.0.3
+
+- chore(release): Bump version to 2.0.3
+
 ## 2.0.2
 
 - chore(release): Update `csv` dependency to `^7.1.0` and relax Dart SDK constraint to `>=3.0.0`.
