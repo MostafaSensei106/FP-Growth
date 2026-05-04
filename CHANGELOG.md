@@ -1,3 +1,11 @@
+## 2.1.4
+
+- chore(release): Bump version to 2.1.4
+- Bump version to 2.1.4 in `pubspec.yaml`
+- Update `csv` dependency to `^8.0.0`
+- Minor formatting in `example/main.dart`
+- Initialize 2.1.4 section in `CHANGELOG.md`
+
 ## 2.1.3
 
 - refactor(parallel-runner): Split isolate logic for web,wasm compatibility
