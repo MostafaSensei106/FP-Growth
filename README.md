@@ -59,7 +59,7 @@ Built with performance and ease of use in mind, `fp_growth` provides a comprehen
 
     ```yaml
     dependencies:
-      fp_growth: ^1.0.3 # Replace with the latest version
+      fp_growth: ^latest
     ```
 
 2.  Install it from your terminal:
