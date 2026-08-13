@@ -43,20 +43,33 @@ the public.
 
 ## 4. License Granted to the Project Owner
 
-You grant the Project Owner a **perpetual, worldwide, irrevocable, royalty-free
-license** to:
+You grant the Project Owner a **perpetual, worldwide, non-exclusive, irrevocable, royalty-free, fully paid-up, transferable, and sublicensable license** to:
 
-- use, modify, and distribute your Contributions
+- use, copy, modify, distribute, and publicly perform your Contributions
 - include them as part of FP-Growth
 - relicense the project, including your Contributions, when required for
   **commercial or enterprise use**
+- sell **commercial** and **exclusive** versions of the software incorporating your Contributions
+- sub-license your Contributions to third parties under terms that do not conflict with the GPL, including distributing under the **GPL-3.0 (GNU General Public License v3.0)**.
 
-This right exists **only to allow commercial licensing for companies**, and
+This right exists **to allow commercial licensing, exclusive distributions, and GPL-3.0 compatibility**, and
 **does not remove the open-source availability of the project**.
 
 ---
 
-## 5. Public Licensing (GPL)
+## 5. Patent Grant
+
+For patent claims you own or license that are infringed by your Contribution, you grant to the Project Owner and to recipients of the Project a **perpetual, worldwide, non-exclusive, irrevocable, royalty-free, fully paid-up patent license** to make, have made, use, offer to sell, sell, import, and otherwise transfer the Project and your Contributions.
+
+---
+
+## 6. Moral Rights Waiver
+
+To the fullest extent permitted by applicable law, you hereby waive and agree not to assert any **"Moral Rights"** (such as the right to be named as author, or the right to object to derogatory treatment) that you may have in your Contributions.
+
+---
+
+## 7. Public Licensing (GPL)
 
 - All Contributions will be made publicly available under the
   **GNU General Public License (GPL)** as part of FP-Growth.
@@ -64,22 +77,24 @@ This right exists **only to allow commercial licensing for companies**, and
 
 ---
 
-## 6. No Compensation
+## 8. No Compensation & No Obligation
 
 You understand and agree that:
 
-- Contributions are voluntary
-- No payment, royalties, or revenue sharing is owed for Contributions
-- This Agreement does not create employment, partnership, or joint ownership
+- Contributions are voluntary and provided free of charge.
+- No payment, royalties, or revenue sharing is owed for Contributions.
+- This Agreement does not create an employment, partnership, or joint venture relationship.
+- The Project Owner is under **no obligation** to accept or include your Contributions in the Project.
 
 ---
 
-## 7. Contributor Representations
+## 9. Contributor Representations and Warranties
 
-You confirm that:
+You legally confirm and warrant that:
 
-- Your Contribution is your own work, or you have the legal right to submit it
-- Your Contribution does not violate third-party rights
+1. **Original Work:** Your Contribution is your original creation, and you have the full legal right to grant the licenses described in this Agreement.
+2. **Third-Party Rights:** Your Contribution does not violate any third-party copyrights, patents, or intellectual property rights.
+3. **Employer Consent:** If your employer has rights to intellectual property that you create, you confirm that you have received **explicit permission** to make this Contribution, or that your employer has waived such rights for this Contribution.
 
 ---
 
