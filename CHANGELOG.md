@@ -1,3 +1,13 @@
+## 2.1.5
+
+- perf(core): Optimize core FP-Growth algorithm performance and isolate parallel runner:
+  - Replaced mutable record-based `Header` typedef with a class to avoid unnecessary allocations and double map lookups in `FPTree`.
+  - Implemented dynamic work-stealing/load-balanced worker pool scheduling in `runParallelMining` using isolates to prevent worker starvation and avoid round-robin bottlenecks.
+  - Eliminated closure allocation overhead in `getId` and `addChild` by avoiding `putIfAbsent` and using conditional checks.
+  - Replaced map entry conversion with direct key list sorting to avoid `MapEntry` object allocations in recursive steps.
+  - Avoided iterator overhead in `buildConditionalTransactions` and `_prepareOrderedTransaction` by converting `where(...).toList()` into simple loops.
+  - Achieved ~25% speedup on the 100k transactions stress test (reduced execution time from ~13.2s to ~9.7s).
+
 ## 2.1.4
 
 - chore(release): Bump version to 2.1.4

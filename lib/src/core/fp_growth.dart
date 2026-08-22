@@ -117,23 +117,21 @@ Map<List<int>, int> mineLogic<T>(
   final frequentItemsets = <List<int>, int>{};
 
   // Sort items by frequency (ascending) to process from least to most frequent
-
-  final entries = frequency.entries.toList()
+  final sortedItems = frequency.keys.toList()
     ..sort((a, b) {
-      final compare = a.value.compareTo(b.value);
+      final compare = frequency[a]!.compareTo(frequency[b]!);
       if (compare == 0) {
-        return a.key.compareTo(b.key);
+        return a.compareTo(b);
       }
       return compare;
     });
-
-  final sortedItems = entries.map((e) => e.key).toList();
 
   logger.debug(
     'Mining conditional tree for prefix: ${prefix.map(mapper.getItem).join(', ')}',
   );
 
-  for (final item in sortedItems) {
+  for (var i = 0; i < sortedItems.length; i++) {
+    final item = sortedItems[i];
     final itemResult = mineForItem(
       tree,
       item,
@@ -164,10 +162,16 @@ Map<List<int>, int> buildConditionalTransactions(
     final path = entry.key;
     final count = entry.value;
 
-    final orderedPath = path
-        .where((item) => conditionalFrequentItems.containsKey(item))
-        .toList()
-      ..sort((a, b) {
+    final orderedPath = <int>[];
+    for (var i = 0; i < path.length; i++) {
+      final item = path[i];
+      if (conditionalFrequentItems.containsKey(item)) {
+        orderedPath.add(item);
+      }
+    }
+
+    if (orderedPath.isNotEmpty) {
+      orderedPath.sort((a, b) {
         final compare = conditionalFrequentItems[b]!.compareTo(
           conditionalFrequentItems[a]!,
         );
@@ -177,8 +181,6 @@ Map<List<int>, int> buildConditionalTransactions(
         }
         return compare;
       });
-
-    if (orderedPath.isNotEmpty) {
       weightedTransactions[orderedPath] = count;
     }
   }

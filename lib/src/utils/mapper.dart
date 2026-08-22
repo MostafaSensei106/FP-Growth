@@ -21,15 +21,14 @@ class ItemMapper<T> {
         _idToItem = Map.from(idToItem),
         _nextId = nextId;
 
-  /// Gets the integer ID for a given [item].
-  ///
-  /// If the item has not been seen before, a new ID is created and assigned.
   int getId(T item) {
-    return _itemToId.putIfAbsent(item, () {
-      final id = _nextId++;
+    var id = _itemToId[item];
+    if (id == null) {
+      id = _nextId++;
+      _itemToId[item] = id;
       _idToItem[id] = item;
-      return id;
-    });
+    }
+    return id;
   }
 
   /// Gets the original item for a given integer [id].
