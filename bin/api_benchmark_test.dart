@@ -69,8 +69,8 @@ class FPGrowthCustomStreamCsvBenchmark extends AsyncBenchmarkBase {
     this.minSupport, {
     this.parallelism = 1,
   }) : super(
-         'FPGrowth.mine (Custom Stream Provider, Parallelism: $parallelism)',
-       );
+          'FPGrowth.mine (Custom Stream Provider, Parallelism: $parallelism)',
+        );
 
   @override
   Future<void> setup() async {
@@ -94,7 +94,8 @@ class FPGrowthCustomStreamCsvBenchmark extends AsyncBenchmarkBase {
 
 void main(List<String> args) async {
   if (args.isEmpty) {
-    print('Usage: dart run bin/api_benchmark_test.dart <csv_file> [min_support]');
+    print(
+        'Usage: dart run bin/api_benchmark_test.dart <csv_file> [min_support]');
     exit(1);
   }
 

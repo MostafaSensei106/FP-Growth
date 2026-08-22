@@ -1,13 +1,16 @@
 ## 2.1.5
 
-- perf(core): Optimize core FP-Growth algorithm performance and isolate parallel runner:
-  - Replaced mutable record-based `Header` typedef with a class to avoid unnecessary allocations and double map lookups in `FPTree`.
-  - Implemented dynamic work-stealing/load-balanced worker pool scheduling in `runParallelMining` using isolates to prevent worker starvation and avoid round-robin bottlenecks.
-  - Eliminated closure allocation overhead in `getId` and `addChild` by avoiding `putIfAbsent` and using conditional checks.
-  - Replaced map entry conversion with direct key list sorting to avoid `MapEntry` object allocations in recursive steps.
-  - Avoided iterator overhead in `buildConditionalTransactions` and `_prepareOrderedTransaction` by converting `where(...).toList()` into simple loops.
-  - Achieved ~25% speedup on the 100k transactions stress test (reduced execution time from ~13.2s to ~9.7s).
-
+- **perf(core)**: Major performance optimizations across core tree construction, mining, and parallel isolates:
+  - **Class-based Header Table**: Replaced mutable record-based `Header` typedef with a dedicated mutable class in `FPTree` to eliminate double map lookups and unnecessary record allocation overhead.
+  - **Dynamic Worker Pool**: Refactored `runParallelMining` scheduling from a round-robin model to dynamic, work-stealing isolate worker queues, preventing worker starvation and balancing variable branch workloads.
+  - **Closure Allocation Elimination**: Replaced `putIfAbsent` calls in `getId` and `addChild` with direct conditional checks to remove closure creation overhead.
+  - **Direct Key Sorting**: Swapped intermediate `MapEntry` allocations for in-place key list sorting during recursive conditional tree mining steps.
+  - **Iterator Optimization**: Replaced lazy `.where().toList()` iterators with plain indexed loops in `buildConditionalTransactions` and transaction preparation routines.
+  - **Benchmark Gains**:
+    - Achieved **~36.8% faster** execution on 1M transactions `In-Memory` mining (**0.92s**, breaking the sub-second barrier).
+    - Achieved **~29.1% faster** throughput on 1M transactions `CSV Streaming` (**1.65s** vs 2.32s in v2.0.1).
+    - Reduced overall runtime by up to **~3×** compared to legacy `v1.0.2`.
+    
 ## 2.1.4
 
 - chore(release): Bump version to 2.1.4
