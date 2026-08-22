@@ -101,7 +101,8 @@ Future<void> _workerEntrypoint<T>(SendPort mainSendPort) async {
             throw StateError('Worker not initialized.');
           }
           final frequentItemsets = _performMining(message, mapper, logger);
-          mainSendPort.send(_ResultMessage(message.taskId, frequentItemsets, workerReceivePort.sendPort));
+          mainSendPort.send(_ResultMessage(
+              message.taskId, frequentItemsets, workerReceivePort.sendPort));
 
         case _ShutdownMessage<T>():
           workerReceivePort.close();
