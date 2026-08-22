@@ -352,8 +352,6 @@ This project is dual-licensed to accommodate both open-source and commercial use
 
 For detailed terms, please check the [LICENSE](LICENSE) file.
 
----
-
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
 </p>
