@@ -21,6 +21,10 @@ class ItemMapper<T> {
         _idToItem = Map.from(idToItem),
         _nextId = nextId;
 
+  /// Gets the unique integer ID for a given [item].
+  ///
+  /// If the item has not been mapped yet, a new ID is generated, stored,
+  /// and returned.
   int getId(T item) {
     var id = _itemToId[item];
     if (id == null) {

@@ -313,7 +313,7 @@ A pre-packaged benchmark script is included in the project. You can run benchmar
 
 ```bash
 # Run benchmark on a custom CSV file with an optional support count/percentage
-dart compile exe bin/api_benchmark_test.dart -o benchmark
+dart compile exe test/api_benchmark_test.dart -o benchmark
 
 ./benchmark <path_to_csv_file> [min_support]
 ```
