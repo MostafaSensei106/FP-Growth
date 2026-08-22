@@ -3,10 +3,17 @@ import 'fp_node.dart';
 /// Holds header table information, including the total count
 /// of an item and the head/tail of its node-link list in the FP-Tree.
 class Header {
+  /// The total frequency count of the item in the dataset.
   final int count;
+
+  /// The first node in the node-link list for this item in the FP-Tree.
   FPNode? head;
+
+  /// The last node in the node-link list for this item in the FP-Tree.
+  /// Used for efficient O(1) appending of new nodes to the list.
   FPNode? tail;
 
+  /// Creates a new [Header] with the given [count], and optional [head] and [tail].
   Header({required this.count, this.head, this.tail});
 }
 
