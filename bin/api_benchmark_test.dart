@@ -1,96 +1,83 @@
-import 'dart:io';
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:fp_growth/fp_growth_io.dart';
 
-// Helper for formatting Output
-String formatSize(int bytes) =>
-    '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
+/// Benchmarks in-memory FP-Growth execution using [FPGrowth.mineFromList]
+class FPGrowthInMemoryCsvBenchmark extends AsyncBenchmarkBase {
+  final String filePath;
+  final double minSupport;
+  final int parallelism;
+  late List<List<String>> transactions;
+  late FPGrowth<String> fp;
 
-void main(List<String> args) async {
-  if (args.isEmpty) {
-    print(
-      'Usage: dart compile exe benchmark_all.dart -o bench && ./bench <csv_file>',
-    );
-    exit(1);
+  FPGrowthInMemoryCsvBenchmark(
+    this.filePath,
+    this.minSupport, {
+    this.parallelism = 1,
+  }) : super('FPGrowth.mineFromList (In-Memory, Parallelism: $parallelism)');
+
+  @override
+  Future<void> setup() async {
+    final file = File(filePath);
+    final lines = await file.readAsLines();
+    transactions = lines.map((line) => line.split(',')).toList();
+    fp = FPGrowth<String>(minSupport: minSupport, parallelism: parallelism);
   }
 
-  final filePath = args[0];
-  final file = File(filePath);
+  @override
+  Future<void> run() async {
+    await fp.mineFromList(transactions);
+  }
+}
 
-  if (!file.existsSync()) {
-    print('Error: File not found.');
-    exit(1);
+/// Benchmarks streaming FP-Growth execution using [FPGrowth.mineFromCsv]
+class FPGrowthStreamingCsvBenchmark extends AsyncBenchmarkBase {
+  final String filePath;
+  final double minSupport;
+  final int parallelism;
+  late FPGrowth<String> fp;
+
+  FPGrowthStreamingCsvBenchmark(
+    this.filePath,
+    this.minSupport, {
+    this.parallelism = 1,
+  }) : super('FPGrowth.mineFromCsv (CSV Stream, Parallelism: $parallelism)');
+
+  @override
+  Future<void> setup() async {
+    fp = FPGrowth<String>(minSupport: minSupport, parallelism: parallelism);
   }
 
-  print('==================================================');
-  print('🧪 STARTING COMPREHENSIVE BENCHMARK');
-  print('📂 Dataset: $filePath');
-  print('==================================================\n');
+  @override
+  Future<void> run() async {
+    await fp.mineFromCsv(filePath);
+  }
+}
 
-  // ---------------------------------------------------------
-  // SCENARIO 1: mineFromList (Memory Heavy)
-  // ---------------------------------------------------------
-  print('--- [Test 1] In-Memory List (mineFromList) ---');
-  print('Loading file into RAM first (Prep time)...');
+/// Benchmarks streaming FP-Growth execution using custom stream provider and [FPGrowth.mine]
+class FPGrowthCustomStreamCsvBenchmark extends AsyncBenchmarkBase {
+  final String filePath;
+  final double minSupport;
+  final int parallelism;
+  late FPGrowth<String> fp;
+  late File file;
 
-  // Pre-load data to treat it as "Already in Memory"
-  final lines = await file.readAsLines();
-  final transactions = lines
-      .map((line) => line.split(',')) // Simple CSV split
-      .toList();
+  FPGrowthCustomStreamCsvBenchmark(
+    this.filePath,
+    this.minSupport, {
+    this.parallelism = 1,
+  }) : super(
+         'FPGrowth.mine (Custom Stream Provider, Parallelism: $parallelism)',
+       );
 
-  print('Data Loaded. Starting Algorithm Timer...');
+  @override
+  Future<void> setup() async {
+    file = File(filePath);
+    fp = FPGrowth<String>(minSupport: minSupport, parallelism: parallelism);
+  }
 
-  final sw1 = Stopwatch()..start();
-  final memStart1 = ProcessInfo.currentRss;
-
-  final fp1 = FPGrowth<String>(
-    minSupport: 0.05,
-    parallelism: Platform.numberOfProcessors,
-  );
-  final (res1, count1) = await fp1.mineFromList(transactions);
-
-  sw1.stop();
-  final memEnd1 = ProcessInfo.currentRss;
-
-  print('✅ Result: ${res1.length} itemsets found.');
-  print('⏱️  Time: ${sw1.elapsedMilliseconds} ms');
-  print(
-    '💾 Memory Delta: ${formatSize(memEnd1 - memStart1)} (Excludes initial data load)',
-  );
-  print('--------------------------------------------------\n');
-
-  // ---------------------------------------------------------
-  // SCENARIO 2: mineFromCsv (Low Memory / Streaming)
-  // ---------------------------------------------------------
-  print('--- [Test 2] CSV Streaming (mineFromCsv) ---');
-  // Trigger GC logic is hard in Dart, so just assume steady state or restart process ideally.
-
-  final sw2 = Stopwatch()..start();
-  final memStart2 = ProcessInfo.currentRss;
-
-  final fp2 = FPGrowth<String>(
-    minSupport: 0.05,
-    parallelism: Platform.numberOfProcessors,
-  );
-  final (res2, count2) = await fp2.mineFromCsv(filePath);
-
-  sw2.stop();
-  final memEnd2 = ProcessInfo.currentRss;
-
-  print('✅ Result: ${res2.length} itemsets found.');
-  print('⏱️  Time: ${sw2.elapsedMilliseconds} ms');
-  print(
-    '💾 Memory Delta: ${formatSize(memEnd2 - memStart2)} (Very Low footprint)',
-  );
-  print('--------------------------------------------------\n');
-
-  // ---------------------------------------------------------
-  // SCENARIO 3: Custom Stream Provider (Advanced)
-  // ---------------------------------------------------------
-  print('--- [Test 3] Custom Stream Provider (mine generic) ---');
-
-  // Define the provider logic
   Stream<List<String>> streamProvider() {
     return file
         .openRead()
@@ -99,20 +86,62 @@ void main(List<String> args) async {
         .map((line) => line.split(','));
   }
 
-  final sw3 = Stopwatch()..start();
+  @override
+  Future<void> run() async {
+    await fp.mine(streamProvider);
+  }
+}
 
-  final fp3 = FPGrowth<String>(
-    minSupport: 0.05,
-    parallelism: Platform.numberOfProcessors,
-  );
-  final (res3, count3) = await fp3.mine(streamProvider); // Passing the function
+void main(List<String> args) async {
+  if (args.isEmpty) {
+    print('Usage: dart run bin/api_benchmark_test.dart <csv_file> [min_support]');
+    exit(1);
+  }
 
-  sw3.stop();
+  final filePath = args[0];
+  final file = File(filePath);
 
-  print('✅ Result: ${res3.length} itemsets found.');
-  print('⏱️  Time: ${sw3.elapsedMilliseconds} ms');
-  print('💾 Memory Delta: N/A');
-  print('--------------------------------------------------\n');
+  if (!file.existsSync()) {
+    print('Error: File not found: $filePath');
+    exit(1);
+  }
 
-  print('🏁 ALL TESTS COMPLETE.');
+  double minSupport = 0.05;
+  if (args.length > 1) {
+    minSupport = double.tryParse(args[1]) ?? 0.05;
+  }
+
+  print('==================================================');
+  print('🧪 RUNNING FP-GROWTH BENCHMARKS USING BENCHMARK_HARNESS');
+  print('📂 Dataset: $filePath');
+  print('📊 Min Support: $minSupport');
+  print('==================================================\n');
+
+  print('Running In-Memory Benchmark (Single-threaded)...');
+  await FPGrowthInMemoryCsvBenchmark(filePath, minSupport, parallelism: 1)
+      .report();
+
+  print('\nRunning In-Memory Benchmark (Parallelism: 4)...');
+  await FPGrowthInMemoryCsvBenchmark(filePath, minSupport, parallelism: 4)
+      .report();
+
+  print('\nRunning CSV Streaming Benchmark (Single-threaded)...');
+  await FPGrowthStreamingCsvBenchmark(filePath, minSupport, parallelism: 1)
+      .report();
+
+  print('\nRunning CSV Streaming Benchmark (Parallelism: 4)...');
+  await FPGrowthStreamingCsvBenchmark(filePath, minSupport, parallelism: 4)
+      .report();
+
+  print('\nRunning Custom Stream Benchmark (Single-threaded)...');
+  await FPGrowthCustomStreamCsvBenchmark(filePath, minSupport, parallelism: 1)
+      .report();
+
+  print('\nRunning Custom Stream Benchmark (Parallelism: 4)...');
+  await FPGrowthCustomStreamCsvBenchmark(filePath, minSupport, parallelism: 4)
+      .report();
+
+  print('\n==================================================');
+  print('🏁 ALL BENCHMARKS COMPLETE.');
+  print('==================================================');
 }
