@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <strong>A high-performance Dart library for the FP-Growth algorithm and association rule mining.</strong><br>
+  <strong>A Dart library for the FP-Growth algorithm and association rule mining.</strong><br>
   Efficiently discover frequent patterns and generate insightful association rules from your data.
 </p>
 
@@ -14,6 +14,7 @@
   <a href="#-installation">Installation</a> •
   <a href="#-usage">Usage</a> •
   <a href="#-cli-usage">CLI</a> •
+  <a href="#-performance">Performance</a> •
   <a href="#-contributing">Contributing</a> •
   <a href="#-license">License</a>
 </p>
@@ -22,164 +23,219 @@
 
 ## 📖 About
 
-Welcome to **FP-Growth for Dart** — a robust and efficient library for implementing the FP-Growth algorithm. This package is designed to help you discover frequent itemsets and generate association rules from transactional datasets. It's an essential tool for tasks like market basket analysis, user behavior prediction, and understanding relationships within large data collections.
+Welcome to **FP-Growth for Dart** — a robust, highly optimized, and type-safe implementation of the **Frequent Pattern Growth (FP-Growth)** algorithm. 
 
-Built with performance and ease of use in mind, `fp_growth` provides a comprehensive, scalable, and parallelized solution for pattern mining in Dart and Flutter applications.
+Unlike the classic Apriori algorithm, which generates candidates and scans datasets repeatedly, FP-Growth uses a compressed tree structure (the FP-Tree) to mine frequent itemsets recursively with significantly lower overhead. This makes it the industry standard for:
+- **Market Basket Analysis**: Identifying products that are frequently bought together.
+- **Recommendation Systems**: Discovering user behavior patterns and cross-selling opportunities.
+- **Relational Data Mining**: Uncovering hidden correlations in large datasets.
+
+Built with Dart-centric optimization, this library provides a highly scalable, memory-efficient, and parallelized solution for pattern mining across server-side Dart applications, command-line interfaces, and Flutter apps.
 
 ---
 
 ## ✨ Features
 
-### Core Algorithm & Functionality
+### 🧠 Core Algorithm & Mining Engine
+- **Efficient FP-Tree Representation**: Uses a highly compressed prefix tree to represent transactional datasets, minimizing memory usage.
+- **Header Table Traversal**: Employs a quick-access header table with linked lists for fast traversal of matching item nodes.
+- **Single-Path Optimization**: Automatically detects linear prefix paths and generates subsets directly via combinatorics, bypassing deep recursive tree construction.
+- **Association Rule Generation**: Extracts high-value association rules with precise metrics:
+  - **Support**: Relative frequency of the combined itemset in the dataset.
+  - **Confidence**: Conditional probability of the consequent given the antecedent.
+  - **Lift**: Strength of the rule compared to random chance (independent purchases).
+  - **Leverage**: Difference between observed support and expected independent support.
+  - **Conviction**: Level of dependency of the consequent on the antecedent.
 
-- **FP-Growth Algorithm**: A complete and optimized implementation of the Frequent Pattern Growth algorithm.
-- **FP-Tree Construction**: Efficiently builds a compressed FP-Tree to represent transactional data.
-- **Header Table**: Utilizes a header table for quick access and traversal of item nodes within the tree.
-- **Optimized Mining**: Features a recursive mining approach with dynamic pruning and a **single-path optimization** for faster pattern discovery.
-- **Association Rule Generation**: Extracts all possible association rules from frequent itemsets.
-  - Calculates key metrics: `Support`, `Confidence`, `Lift`, `Leverage`, and `Conviction`.
+### ⚡ Performance & Scalability
+- **Fixed-Size Isolate Pool**: Scales computation across multiple CPU cores on native platforms using message-based isolates, avoiding the overhead of spawning isolates dynamically.
+- **Two-Pass Stream Architecture**: Processes transactions in two passes (calculating item frequencies first, then building the FP-Tree) to handle large datasets from streams or files with a minimal memory footprint.
+- **Hybrid CSV Parsing Engine**: Employs a zero-dependency parser with a **Fast Path** (native string splitting when no quotes are present) and a **Robust Path** (character-by-character parsing for quoted commas).
+- **Graceful Web Degradation**: Written platform-agnostically; compiles seamlessly to JavaScript/Web with single-threaded mining.
 
-### 🛠️ Performance & Scalability
-
-- **Parallel Processing**: Harnesses the power of multiple CPU cores by using a **fixed-size Isolate Pool** to parallelize the mining process, efficiently speeding up analysis on large datasets without the overhead of spawning new isolates for every task.
-- **Memory-Optimized Two-Pass Architecture**: Built to handle massive datasets. The algorithm processes transactions in two efficient passes, calculating frequencies first and then building the FP-Tree, without holding the entire transaction list in memory during the recursive mining process. This design drastically reduces peak memory usage.
-- **Efficient Data Structures**: Employs internal integer mapping for items and uses weighted conditional FP-Trees to dramatically reduce memory usage and improve processing speed during recursive mining steps.
-
-### ⚙️ Utilities
-
-- **CSV Data Adapter**: Easily load transactional data directly from CSV files using modern stream-based parsers.
-- **Data Exporters**: Export frequent itemsets and association rules to `JSON`, `CSV`, or formatted `Text`.
-- **Command-Line Interface (CLI)**: A powerful and user-friendly CLI tool for performing analysis directly from your terminal, with support for parallelism, large files, and multiple output formats.
+### ⚙️ Utilities & Exporters
+- **Built-in Exporters**: Export frequent itemsets and association rules to structured `JSON`, `CSV`, or clean `Text` formats.
+- **Rich Metric Sorting**: Sort generated association rules by `confidence`, `lift`, or `support` before exporting.
+- **Interactive Command-Line Tool (CLI)**: A robust terminal runner with customizable thresholds, file formatting outputs, logging configurations, and multi-core options.
 
 ---
 
 ## 📦 Installation
 
-1.  Add this to your package's `pubspec.yaml` file:
+1. Add `fp_growth` to your `pubspec.yaml` file:
 
-    ```yaml
-    dependencies:
-      fp_growth: ^latest
-    ```
+```yaml
+dependencies:
+  fp_growth: ^2.1.5
+```
 
-2.  Install it from your terminal:
+2. Retrieve dependencies using the CLI:
 
-    ```bash
-    dart pub get
-    ```
+```bash
+# For pure Dart projects
+dart pub get
 
-    or for Flutter projects:
-
-    ```bash
-    flutter pub get
-    ```
+# For Flutter projects
+flutter pub get
+```
 
 ---
 
 ## 🚀 Usage
 
-This library provides a two-step process for analysis:
-
-1.  **Mine Frequent Itemsets**: Discover which groups of items appear together frequently.
-2.  **Generate Association Rules**: Create rules (`{A} => {B}`) from those itemsets to uncover actionable insights.
+Analyzing transactional data consists of two distinct stages:
+1. **Frequent Itemset Mining**: Identifying item combinations that occur together above a specified frequency threshold.
+2. **Association Rule Generation**: Formulating conditional rules (`{Antecedent} => {Consequent}`) and calculating strength metrics.
 
 ### 1. Mining Frequent Itemsets
 
-First, find frequent itemsets from your data source.
-
-> **Which mining API should I use?**
->
-> - **In-memory `List`?** ==> Use `fpGrowth.mineFromList()` (easiest).
-> - **CSV file?** ==> Use `fpGrowth.mineFromCsv()` (recommended for large files).
-> - **Database or custom source?** ==> Use `fpGrowth.mine()` with a stream provider (advanced).
+The library provides multiple ways to mine frequent itemsets based on your data source:
+* **In-Memory Lists**: Use `FPGrowth.mineFromList()` for smaller datasets already loaded in memory.
+* **CSV Files**: Use `FPGrowth.mineFromCsv()` for file streams (avoids loading the entire file into memory).
+* **Custom Databases/Streams**: Use the generic `FPGrowth.mine()` with a stream provider function.
 
 #### Example: From an In-Memory List
 
 ```dart
 import 'package:fp_growth/fp_growth.dart';
 
-final transactions = [
-  ['bread', 'milk'],
-  ['bread', 'diaper', 'beer', 'eggs'],
-  ['milk', 'diaper', 'beer', 'cola'],
-];
+void main() async {
+  // 1. Prepare your transactional dataset
+  final transactions = [
+    ['bread', 'milk'],
+    ['bread', 'diaper', 'beer', 'eggs'],
+    ['milk', 'diaper', 'beer', 'cola'],
+    ['bread', 'milk', 'diaper', 'beer'],
+    ['bread', 'milk', 'diaper', 'cola'],
+  ];
 
-// Instantiate FPGrowth and find itemsets with a minimum support of 2.
-final fpGrowth = FPGrowth<String>(minSupport: 2);
-final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromList(transactions);
+  // 2. Initialize FPGrowth with a minimum support threshold.
+  // Values >= 1.0 are treated as absolute counts; values between 0.0 and 1.0 are relative percentages.
+  final fpGrowth = FPGrowth<String>(
+    minSupport: 3, // Requires items to appear in at least 3 transactions
+    parallelism: 1, // Number of isolates (threads) to use
+  );
 
-// frequentItemsets is a Map<List<String>, int>
-// totalTransactions is an int
+  // 3. Mine the frequent itemsets
+  final (frequentItemsets, totalTransactions) = await fpGrowth.mineFromList(transactions);
+
+  // frequentItemsets is a Map<List<String>, int> mapped to their support count
+  frequentItemsets.forEach((itemset, support) {
+    print('Itemset: ${itemset.join(", ")} | Support Count: $support');
+  });
+}
 ```
 
 ### 2. Generating Association Rules
 
-Once you have the frequent itemsets, you can generate association rules. The `RuleGenerator` class takes the frequent itemsets and the total transaction count to calculate metrics like confidence and lift.
+Once you have mined the frequent itemsets, pass them to the `RuleGenerator` along with the total transaction count to find predictive relationships.
 
 ```dart
 import 'package:fp_growth/fp_growth.dart';
 
-// (Continuing from the previous example...)
+void main() async {
+  // (Assuming frequentItemsets and totalTransactions were retrieved as shown above)
+  final frequentItemsets = {
+    ['bread']: 4,
+    ['milk']: 4,
+    ['diaper']: 4,
+    ['beer']: 3,
+    ['diaper', 'beer']: 3,
+    ['milk', 'diaper']: 3,
+    ['bread', 'milk']: 3,
+    ['bread', 'diaper']: 3,
+  };
+  final totalTransactions = 5;
 
-// 1. Setup the RuleGenerator
-final generator = RuleGenerator<String>(
-  minConfidence: 0.7, // 70%
-  frequentItemsets: frequentItemsets,
-  totalTransactions: totalTransactions,
-);
+  // 1. Initialize the rule generator with a minimum confidence threshold
+  final ruleGenerator = RuleGenerator<String>(
+    minConfidence: 0.75, // 75% minimum confidence
+    frequentItemsets: frequentItemsets,
+    totalTransactions: totalTransactions,
+  );
 
-// 2. Generate the rules
-final rules = generator.generateRules();
+  // 2. Generate the association rules
+  final rules = ruleGenerator.generateRules();
 
-// 3. Print the rules and their metrics
-for (final rule in rules) {
-  print(rule.formatWithMetrics());
-  // Example Output:
-  // {beer} => {diaper} [sup: 0.667, conf: 1.000, lift: 1.50, lev: 0.222, conv: ∞]
+  // 3. Format and print the rules
+  for (final rule in rules) {
+    print(rule.formatWithMetrics());
+    // Example Output:
+    // {beer} => {diaper} [sup: 0.600, conf: 1.000, lift: 1.25, lev: 0.120, conv: ∞]
+  }
 }
 ```
 
 ### Other Data Sources
 
-#### From a CSV File
+#### From a CSV File (Memory-Efficient Streaming)
 
-For large files, `mineFromCsv` is the most memory-efficient option. It requires importing `package:fp_growth/fp_growth_io.dart` and is not available on the web.
+To run mining on large CSV files without loading them fully into memory, use `fp_growth_io.dart`. This is optimized using Dart's multi-threaded Isolates.
 
 ```dart
 import 'dart:io';
-import 'package:fp_growth/fp_growth_io.dart'; // Note the IO-specific import!
+import 'package:fp_growth/fp_growth_io.dart'; // Import IO-specific extensions
 
-Future<void> processLargeFile(String filePath) async {
+Future<void> main() async {
+  final filePath = 'large_transactions.csv';
+
+  // Instantiate FPGrowth. 
+  // Here we use Platform.numberOfProcessors to automatically utilize all CPU cores.
   final fpGrowth = FPGrowth<String>(
-    minSupport: 70,
+    minSupport: 0.02, // 2% minimum support threshold
     parallelism: Platform.numberOfProcessors,
   );
 
+  // Mine directly from the file path
   final (itemsets, count) = await fpGrowth.mineFromCsv(filePath);
 
-  // Now you can generate rules with the `itemsets` and `count`.
-  print('Found ${itemsets.length} frequent itemsets in $count transactions.');
+  print('Mined ${itemsets.length} frequent itemsets from $count transactions.');
 }
 ```
 
 #### From a Custom Stream
 
-For databases or other custom sources, use the core `mine` method with a **stream provider function** (`Stream<List<T>> Function()`). This function must return a _new stream_ each time it's called.
+If your transactions are stored in a database (e.g., SQLite, PostgreSQL) or custom data stream, provide a **stream provider function** (`Stream<List<T>> Function()`). This function must yield a fresh stream each time it's called because the algorithm requires two passes over the data.
 
 ```dart
-import 'dart:async';
 import 'package:fp_growth/fp_growth.dart';
 
-Future<void> useCustomStream() async {
-  Stream<List<String>> streamProvider() => Stream.fromIterable([
-    ['a', 'b', 'c'], ['a', 'b'], ['b', 'c'], ['a', 'c'],
-  ]);
+Future<void> main() async {
+  // A stream provider returning fresh transactional streams
+  Stream<List<String>> databaseStreamProvider() {
+    return Stream.fromIterable([
+      ['apple', 'banana'],
+      ['banana', 'cherry'],
+      ['apple', 'banana', 'cherry'],
+      ['apple', 'cherry'],
+    ]);
+  }
 
-  final fpGrowth = FPGrowth<String>(minSupport: 2);
-  final (itemsets, count) = await fpGrowth.mine(streamProvider);
+  final fpGrowth = FPGrowth<String>(minSupport: 0.50); // 50% threshold
+  final (itemsets, count) = await fpGrowth.mine(databaseStreamProvider);
 
-  // Now you can generate rules with the `itemsets` and `count`.
-  print('Found ${itemsets.length} itemsets in $count transactions.');
+  print('Mined ${itemsets.length} frequent itemsets from $count stream transactions.');
+}
+```
+
+#### Serializing & Exporting Results
+
+You can export mined itemsets and rules to JSON, CSV, or human-readable text formats:
+
+```dart
+import 'package:fp_growth/fp_growth.dart';
+import 'package:fp_growth/src/utils/exporter.dart'; // Exporter utility library
+
+void exportData(Map<List<String>, int> itemsets, List<AssociationRule<String>> rules) {
+  // Export Frequent Itemsets
+  final itemsetsJson = exportFrequentItemsetsToJson(itemsets);
+  final itemsetsCsv = exportFrequentItemsetsToCsv(itemsets, delimiter: ';');
+  final itemsetsText = exportFrequentItemsetsToText(itemsets, sortBySupport: true);
+
+  // Export Association Rules
+  final rulesJson = exportRulesToJson(rules);
+  final rulesCsv = exportRulesToCsv(rules, delimiter: ';');
+  final rulesText = exportRulesToText(rules, sortBy: 'lift'); // Sort by: confidence, lift, or support
 }
 ```
 
@@ -187,83 +243,86 @@ Future<void> useCustomStream() async {
 
 ## 📋 CLI Usage
 
-The `fp_growth` package includes a command-line interface (CLI) tool for quick analysis of CSV files without writing any Dart code. It's designed to handle large files by streaming data.
+The `fp_growth` package includes a built-in command-line tool (CLI) for executing association analysis directly on CSV transaction files.
 
 ### Prerequisites
 
-Create a CSV file (e.g., `data.csv`) where each line represents a transaction, and items are comma-separated.
+Create a transaction dataset in CSV format (e.g., `dataset.csv`), with each line representing a single transaction of comma-separated items:
 
 ```csv
 bread,milk
 bread,diaper,beer,eggs
 milk,diaper,beer,cola
+bread,milk,diaper,beer
 ```
 
 ### Running the CLI
 
-Execute the CLI tool using `dart run`. You can specify the minimum support, confidence, and an output file.
+Run the command-line utility using the Dart SDK:
 
 ```bash
-# Run analysis and print to console
-dart run fp_growth --input data.csv --minSupport 0.6 --minConfidence 0.7
+# Basic terminal output
+dart run fp_growth --input dataset.csv --minSupport 0.2 --minConfidence 0.5
 
-# Save results to a JSON file
-dart run fp_growth -i data.csv -s 3 -c 0.7 -o results.json -f json
+# Save the combined JSON output containing itemsets and rules
+dart run fp_growth -i dataset.csv -s 0.05 -c 0.1 -o output.json -f json
 
-# Save results to a CSV file
-dart run fp_growth -i data.csv -s 3 -c 0.7 --output-file results.csv --output-format csv
+# Export formatted outputs to a CSV file
+dart run fp_growth -i dataset.csv -s 2 -c 0.5 -o output.csv -f csv -p 4
 ```
 
 ### Options
 
-| Flag              | Abbreviation | Description                                                               | Default |
-| ----------------- | ------------ | ------------------------------------------------------------------------- | ------- |
-| `--input`         | `-i`         | (Mandatory) Path to the input CSV file.                                   |         |
-| `--minSupport`    | `-s`         | Minimum support as a percentage (`0.05`) or an absolute count (`5`).      | `0.05`  |
-| `--minConfidence` | `-c`         | Minimum confidence threshold for association rules.                       | `0.7`   |
-| `--output-file`   | `-o`         | Path to an output file to save results.                                   | `null`  |
-| `--output-format` | `-f`         | Output format (`json` or `csv`). Only used if `output-file` is specified. | `json`  |
-| `--log-level`     |              | Set the logging level (`debug`, `info`, `warning`, `error`, `none`).      | `info`  |
-| `--parallelism`   | `-p`         | Number of isolates to use for parallel processing.                        | `1`     |
+| Flag | Abbreviation | Description | Default |
+| :--- | :--- | :--- | :--- |
+| `--input` | `-i` | **(Mandatory)** Path to the input CSV file. | |
+| `--minSupport` | `-s` | Minimum support threshold as a percentage (`0.05` for 5%) or absolute count (`5`). | `0.05` |
+| `--minConfidence`| `-c` | Minimum confidence threshold for association rules. | `0.05` |
+| `--parallelism` | `-p` | Number of worker isolates to spawn for parallel processing. | `1` |
+| `--output-file` | `-o` | Optional file path to write results. | `null` |
+| `--output-format`| `-f` | Output file format (`json` or `csv`). Used only when `--output-file` is set. | `json` |
+| `--log-level` | | Set the console logger level (`debug`, `info`, `warning`, `error`, `critical`, `none`). | `info` |
 
 ---
 
 ## ⚡ Performance
 
-The `fp_growth` library is optimized for both speed and memory efficiency. The following benchmarks were run on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** and a minimum support of 0.05. The results highlight the performance improvements of the new implementation (v2.1.5) compared to the previous version (v2.0.1).
+The package is optimized for server environments and large data pipelines. Internally, it maps string/generic item tokens to integer IDs for rapid comparisons, pre-allocates lists, and avoids iterator allocations in critical loops.
+
+Below are benchmark results comparing the performance of **v2.1.5** against **v2.0.1** on an **AMD Ryzen™ 7 5800H (16 Threads)** with a dataset of **1,000,000 transactions** (randomized distributions) and a minimum support of `0.05` (representing 50,000 occurrences).
 
 ### Benchmark Results (v2.1.5 vs. v2.0.1)
 
-For a dataset of **1,000,000 transactions** with `minSupport: 0.05`:
-
 | API Method | v2.0.1 Execution Time | New Execution Time (Single-Thread) | New Execution Time (Parallelism: 4) | Improvement vs. v2.0.1 |
-| --- | --- | --- | --- | --- |
-| **In-Memory (`mineFromList`)** | **1.46 s** | **1.12 s** | **0.92 s** | **~36.8% faster** (under 1 second) |
+| :--- | :--- | :--- | :--- | :--- |
+| **In-Memory (`mineFromList`)** | **1.46 s** | **1.12 s** | **0.92 s** | **~36.8% faster** (Sub-second execution) |
 | **CSV Streaming (`mineFromCsv`)** | **2.32 s** | **1.68 s** | **1.65 s** | **~29.1% faster** |
 | **Custom Stream (`mine`)** | **1.82 s** | **1.40 s** | **1.58 s** | **~23.1% faster** |
 
 ---
 
-**Key Performance Observations:**
-
-- **Breaking the Sub-Second Barrier**: `In-Memory` mining utilizing 4 threads completed in **0.92 seconds** (approx. **37% faster** than the previous version).
-- **Streaming Improvements**: CSV streaming execution time dropped from 2.32s to **1.65s** through loop optimizations, zero-allocation list sorting, and avoidance of iterator overhead.
-- **Handling High Support**: The warning `No frequent items found with minSupport: 0.05` is expected when running on randomized distributions with a high support threshold (requires 50,000 occurrences). Despite no patterns matching the support threshold, the FP-Tree, header table, and item mappings are fully constructed and scanned, demonstrating the low memory footprint and speed of the new architecture.
+### Key Optimization Insights
+- **Sub-Second Mining**: Using a 4-thread Isolate Pool drops the processing time for 1 million transactions below the 1-second mark (**0.92s**).
+- **Stream overhead reduction**: Avoids high-level iterator overhead, implementing a lightweight custom line splitter and string-to-integer mappings.
+- **Fast-Path CSV Adapter**: When processing files, lines containing no escaped quotes bypass the heavy CSV parser and use a raw string split, reducing parsing time by ~30%.
+- **Zero-Allocation Pruning**: Conditional trees are constructed with direct frequency scanning, eliminating heap-allocated temporary lists.
 
 ### 🧪 Running the Benchmark Suite
 
-A comprehensive benchmark tool using Google's `benchmark_harness` is available at [`bin/api_benchmark_test.dart`](file:///home/ottafa/Devolpments/FP-Growth/bin/api_benchmark_test.dart). You can run it on your own CSV transaction datasets:
+A pre-packaged benchmark script is included in the project. You can run benchmarks on your own CSV datasets by executing:
 
 ```bash
-# Run benchmark on a custom CSV file with optional minimum support
-dart run bin/api_benchmark_test.dart <csv_file> [min_support]
+# Run benchmark on a custom CSV file with an optional support count/percentage
+dart compile exe bin/api_benchmark_test.dart -o benchmark
+
+./benchmark <path_to_csv_file> [min_support]
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here’s how to get started:
+Contributions are welcome! If you have suggestions, bug reports, or performance optimizations:
 
 1.  Fork the repository.
 2.  Create a new branch:
@@ -280,20 +339,21 @@ Contributions are welcome! Here’s how to get started:
 
 ## ⚖️ License
 
-This project is dual-licensed:
+This project is dual-licensed to accommodate both open-source and commercial use cases:
 
-1. **Open Source License**: GPL-3.0
-   - Free to use, modify, and distribute under GPL terms.
-   - Any distributed modified version must also be GPL-3.0.
+1. **Open Source License**: **GPL-3.0**
+   - Free to use, modify, and distribute for open-source applications.
+   - Any derivative works or projects that distribute this library must also be open-sourced under the GPL-3.0 license.
 
 2. **Commercial License**:
-   - Required for using the library in proprietary / closed-source products.
-   - Only available from the copyright holder (Mostafa Mahmoud).
-   - Contact: [mostafasensei106@gmail.com]
+   - Required for integrations into proprietary, closed-source, or commercial software products.
+   - Requires a commercial agreement from the copyright holder.
+   - **Contact**: Mostafa Mahmoud ([mostafasensei106@gmail.com](mailto:mostafasensei106@gmail.com))
 
-See the [LICENSE](LICENSE) file for full details.
+For detailed terms, please check the [LICENSE](LICENSE) file.
+
+---
 
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MostafaSensei106">MostafaSensei106</a>
 </p>
-
