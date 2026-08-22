@@ -1,8 +1,14 @@
 import 'fp_node.dart';
 
-/// A record to hold header table information, including the total count
+/// Holds header table information, including the total count
 /// of an item and the head/tail of its node-link list in the FP-Tree.
-typedef Header = ({int count, FPNode? head, FPNode? tail});
+class Header {
+  final int count;
+  FPNode? head;
+  FPNode? tail;
+
+  Header({required this.count, this.head, this.tail});
+}
 
 /// Represents the FP-Tree (Frequent Pattern Tree).
 ///
@@ -22,7 +28,7 @@ class FPTree {
   FPTree(Map<int, int> frequency) {
     // Initialize header table with frequent items and their counts.
     for (final item in frequency.keys) {
-      headerTable[item] = (count: frequency[item]!, head: null, tail: null);
+      headerTable[item] = Header(count: frequency[item]!);
     }
   }
 
@@ -61,21 +67,17 @@ class FPTree {
     }
   }
 
-  /// Updates the header table with a new node, linking it to the existing chain.
   void _updateHeaderTable(int item, FPNode newNode) {
     final header = headerTable[item];
     if (header != null) {
       if (header.tail != null) {
         // Append to the end of the node-link list.
         header.tail!.next = newNode;
-        headerTable[item] = (
-          count: header.count,
-          head: header.head,
-          tail: newNode,
-        );
+        header.tail = newNode;
       } else {
         // This is the first node for this item.
-        headerTable[item] = (count: header.count, head: newNode, tail: newNode);
+        header.head = newNode;
+        header.tail = newNode;
       }
     }
   }

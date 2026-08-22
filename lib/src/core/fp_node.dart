@@ -32,13 +32,11 @@ class FPNode {
   /// This is an O(1) operation using the Map lookup.
   FPNode? findChild(int item) => children[item];
 
-  /// Adds a child node to this node.
-  ///
-  /// Assumes the child's item is non-null.
-  /// Only adds if the child doesn't already exist.
   void addChild(FPNode child) {
     assert(child.item != null, 'Child node must have a non-null item');
-    children.putIfAbsent(child.item!, () => child);
+    if (!children.containsKey(child.item!)) {
+      children[child.item!] = child;
+    }
   }
 
   /// Increments the count of this node.

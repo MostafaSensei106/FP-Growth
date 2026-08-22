@@ -52,14 +52,19 @@ class _ShutdownMessage<T> extends _WorkerMessage<T> {}
 sealed class _MainMessage {}
 
 /// Message indicating the worker is ready to receive tasks.
-class _ReadyMessage extends _MainMessage {}
+class _ReadyMessage extends _MainMessage {
+  final SendPort workerSendPort;
+
+  _ReadyMessage(this.workerSendPort);
+}
 
 /// Message containing the result of a completed mining task.
 class _ResultMessage extends _MainMessage {
   final int taskId;
   final Map<List<int>, int> frequentItemsets;
+  final SendPort workerSendPort;
 
-  _ResultMessage(this.taskId, this.frequentItemsets);
+  _ResultMessage(this.taskId, this.frequentItemsets, this.workerSendPort);
 }
 
 /// Message containing an error that occurred in the worker.
@@ -89,14 +94,14 @@ Future<void> _workerEntrypoint<T>(SendPort mainSendPort) async {
             message.nextId,
           );
           logger = Logger(initialLevel: message.logLevel);
-          mainSendPort.send(_ReadyMessage());
+          mainSendPort.send(_ReadyMessage(workerReceivePort.sendPort));
 
         case _MineTaskMessage<T>():
           if (mapper == null || logger == null) {
             throw StateError('Worker not initialized.');
           }
           final frequentItemsets = _performMining(message, mapper, logger);
-          mainSendPort.send(_ResultMessage(message.taskId, frequentItemsets));
+          mainSendPort.send(_ResultMessage(message.taskId, frequentItemsets, workerReceivePort.sendPort));
 
         case _ShutdownMessage<T>():
           workerReceivePort.close();
@@ -184,7 +189,6 @@ Future<Map<List<int>, int>> runParallelMining<T>({
   final completer = Completer<Map<List<int>, int>>();
   final results = <List<int>, int>{};
   final workerPorts = <SendPort>[];
-  var readyWorkers = 0;
   var tasksSent = 0;
   var tasksCompleted = 0;
 
@@ -243,6 +247,17 @@ Future<Map<List<int>, int>> runParallelMining<T>({
     mainReceivePort.close();
   }
 
+  final idleWorkers = <SendPort>[];
+
+  void sendNextTask(SendPort workerPort) {
+    if (tasksSent < tasks.length) {
+      workerPort.send(tasks[tasksSent]);
+      tasksSent++;
+    } else {
+      idleWorkers.add(workerPort);
+    }
+  }
+
   mainReceivePort.listen((message) {
     switch (message) {
       case SendPort():
@@ -259,14 +274,7 @@ Future<Map<List<int>, int>> runParallelMining<T>({
         );
 
       case _ReadyMessage():
-        readyWorkers++;
-        if (readyWorkers == parallelism) {
-          // All workers are ready, start sending tasks.
-          for (int i = 0; i < parallelism && i < tasks.length; i++) {
-            workerPorts[i].send(tasks[i]);
-            tasksSent++;
-          }
-        }
+        sendNextTask(message.workerSendPort);
 
       case _ResultMessage():
         results.addAll(message.frequentItemsets);
@@ -276,12 +284,8 @@ Future<Map<List<int>, int>> runParallelMining<T>({
           if (!completer.isCompleted) {
             completer.complete(results);
           }
-        } else if (tasksSent < tasks.length) {
-          // Send next task to the worker that just finished.
-          // The sender of the result is not easily known, so we just round-robin.
-          final workerIndex = tasksCompleted % parallelism;
-          workerPorts[workerIndex].send(tasks[tasksSent]);
-          tasksSent++;
+        } else {
+          sendNextTask(message.workerSendPort);
         }
 
       case _ErrorMessage():
